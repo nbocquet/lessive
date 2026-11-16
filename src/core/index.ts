@@ -10,3 +10,4 @@ export * from "./registry/index.ts";
 export * from "./analyzer/index.ts";
 export * from "./transform/index.ts";
 export * from "./mapping/index.ts";
+export * from "./crypto/index.ts";

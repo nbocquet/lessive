@@ -7,6 +7,16 @@ export interface SessionOptions {
   id?: string;
 }
 
+/** État interne d'une session, sans le format de fichier (voir `snapshot.ts`). */
+export interface SessionState {
+  id: string;
+  entities: Entity[];
+  counters: Partial<Record<EntityType, number>>;
+  /** Pseudonymes d'entités fusionnées → id de l'entité qui les a absorbées. */
+  aliases: Record<string, string>;
+  sequence: number;
+}
+
 function generateId(): string {
   const c = (globalThis as { crypto?: { randomUUID?: () => string } }).crypto;
   return c?.randomUUID
@@ -42,6 +52,36 @@ export class InMemorySession implements Session {
 
   constructor(options: SessionOptions = {}) {
     this.id = options.id ?? generateId();
+  }
+
+  /**
+   * État interne complet, en copie profonde (données sensibles, R5 : à ne
+   * jamais écrire en clair). Utilisé par `serializeSession`.
+   */
+  exportState(): SessionState {
+    return {
+      id: this.id,
+      entities: this.entities().map((e) => ({ ...e })),
+      counters: Object.fromEntries(this.#counters),
+      aliases: Object.fromEntries(this.#retired),
+      sequence: this.#sequence,
+    };
+  }
+
+  /** Reconstruit une session depuis un état déjà validé (voir `restoreSession`). */
+  static fromState(state: SessionState): InMemorySession {
+    const session = new InMemorySession({ id: state.id });
+    for (const e of state.entities) {
+      session.#entities.set(e.id, { ...e, surfaceForms: [...e.surfaceForms] });
+    }
+    for (const [type, n] of Object.entries(state.counters)) {
+      session.#counters.set(type as EntityType, n);
+    }
+    for (const [pseudonym, id] of Object.entries(state.aliases)) {
+      session.#retired.set(pseudonym, id);
+    }
+    session.#sequence = state.sequence;
+    return session;
   }
 
   resolve(surfaceForm: string, entityType: EntityType): Entity {
