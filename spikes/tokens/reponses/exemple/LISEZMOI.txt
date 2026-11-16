@@ -1,0 +1,8 @@
+RÉPONSES FACTICES — ne pas les mélanger aux vraies réponses.
+
+Les trois fichiers de ce dossier ont été écrits à la main par l'agent qui a préparé le spike S2,
+uniquement pour vérifier que score.mjs fonctionne (jetons déformés, manquants ou inconnus mis
+volontairement). Ce ne sont PAS des sorties de LLM et ils ne prouvent rien sur les formats.
+
+score.mjs les ignore par défaut ; l'option --include-exemple les inclut et écrit alors
+results.exemple.md (jamais results.md).

@@ -1,0 +1,65 @@
+{
+  "id": "rh",
+  "titre": "Courriel RH",
+  "synthetique": true,
+  "entites": [
+    {
+      "type": "PERSON",
+      "value": "Étienne",
+      "surfaces": [
+        "Étienne"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Julie Aubert",
+      "surfaces": [
+        "Julie Aubert",
+        "Julie"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Isabelle Fontana",
+      "surfaces": [
+        "Isabelle Fontana",
+        "Mme Fontana"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Nadia Perrin",
+      "surfaces": [
+        "Nadia Perrin"
+      ]
+    },
+    {
+      "type": "ORGANIZATION",
+      "value": "Transports Lémaniques SA",
+      "surfaces": [
+        "Transports Lémaniques SA"
+      ]
+    },
+    {
+      "type": "LOCATION",
+      "value": "Carouge",
+      "surfaces": [
+        "Carouge"
+      ]
+    },
+    {
+      "type": "EMAIL",
+      "value": "ressources.humaines@transports-lemaniques.example",
+      "surfaces": [
+        "ressources.humaines@transports-lemaniques.example"
+      ]
+    },
+    {
+      "type": "PHONE",
+      "value": "+41 22 555 01 42",
+      "surfaces": [
+        "+41 22 555 01 42"
+      ]
+    }
+  ]
+}

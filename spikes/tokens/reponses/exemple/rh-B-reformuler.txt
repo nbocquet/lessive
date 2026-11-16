@@ -1,0 +1,14 @@
+[RÉPONSE FACTICE — écrite à la main pour tester score.mjs ; ce n'est pas la sortie d'un LLM]
+
+Objet : Entretien annuel de [PERSONNE_1]
+
+Bonjour PERSONNE_2,
+
+À la suite de notre entretien de mardi, j'ai le plaisir de vous confirmer que l'entretien annuel de [personne_001] se tiendra le jeudi 12 mars à 10 h, dans nos locaux de \[LIEU\_1\]. Vous y participerez avec Mme [PERSONNE_3], qui représente la direction.
+
+Je vous remercie de bien vouloir me transmettre le bilan de l'équipe avant lundi. [PERSONNE_3] souhaite également faire le point sur les projets menés avec [ORGANISATION_1]. Pour toute question, vous pouvez me joindre à [EMAIL_1] ou au [TELEPHONE_1].
+
+Je vous prie d'agréer, Monsieur, mes salutations distinguées.
+
+[PERSONNE_4]
+Ressources humaines, [ORGANISATION_1]

@@ -1,0 +1,12 @@
+Objet : Entretien annuel de [PERSONNE_1]
+
+Bonjour [PERSONNE_2],
+
+Suite à notre échange de mardi, je confirme que l'entretien annuel de [PERSONNE_1] aura lieu le jeudi 12 mars à 10 h, dans nos locaux de [LIEU_1]. Tu y participeras avec Mme [PERSONNE_3], qui représente la direction. [PERSONNE_1] m'a demandé de pouvoir passer à 80 % dès la rentrée ; merci de préparer ton avis sur ce point.
+
+Pour la suite, j'ai besoin que tu me transmettes le bilan de l'équipe avant lundi. [PERSONNE_3] souhaite aussi un point sur les projets menés avec nos clients de [ORGANISATION_1]. Si le créneau ne convient pas, écris-moi à [EMAIL_1] ou appelle-moi au [TELEPHONE_1].
+
+Bien cordialement,
+
+[PERSONNE_4]
+Ressources humaines, [ORGANISATION_1]

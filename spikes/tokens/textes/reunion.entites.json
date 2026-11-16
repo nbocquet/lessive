@@ -1,0 +1,59 @@
+{
+  "id": "reunion",
+  "titre": "Compte rendu de réunion",
+  "synthetique": true,
+  "entites": [
+    {
+      "type": "PERSON",
+      "value": "Thierry Gaillard",
+      "surfaces": [
+        "Thierry Gaillard",
+        "Thierry"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Sandrine Moret",
+      "surfaces": [
+        "Sandrine Moret",
+        "Sandrine"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Hugo Perret",
+      "surfaces": [
+        "Hugo Perret",
+        "Hugo"
+      ]
+    },
+    {
+      "type": "ORGANIZATION",
+      "value": "Association Sports Léman",
+      "surfaces": [
+        "Association Sports Léman"
+      ]
+    },
+    {
+      "type": "LOCATION",
+      "value": "Annemasse",
+      "surfaces": [
+        "Annemasse"
+      ]
+    },
+    {
+      "type": "IBAN",
+      "value": "FR76 3000 6000 0112 3456 7890 189",
+      "surfaces": [
+        "FR76 3000 6000 0112 3456 7890 189"
+      ]
+    },
+    {
+      "type": "PHONE",
+      "value": "04 50 55 01 23",
+      "surfaces": [
+        "04 50 55 01 23"
+      ]
+    }
+  ]
+}

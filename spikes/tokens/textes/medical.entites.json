@@ -1,0 +1,66 @@
+{
+  "id": "medical",
+  "titre": "Note médicale administrative",
+  "synthetique": true,
+  "entites": [
+    {
+      "type": "PERSON",
+      "value": "Anne-Laure Pittet",
+      "surfaces": [
+        "Dr Anne-Laure Pittet",
+        "Dr Pittet"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Raphaël Jaccard",
+      "surfaces": [
+        "M. Raphaël Jaccard",
+        "M. Jaccard",
+        "Raphaël"
+      ]
+    },
+    {
+      "type": "CH_AVS",
+      "value": "756.1234.5678.97",
+      "surfaces": [
+        "756.1234.5678.97"
+      ]
+    },
+    {
+      "type": "ORGANIZATION",
+      "value": "Fiduciaire Rochat SA",
+      "surfaces": [
+        "Fiduciaire Rochat SA"
+      ]
+    },
+    {
+      "type": "ORGANIZATION",
+      "value": "Cabinet médical des Cèdres",
+      "surfaces": [
+        "Cabinet médical des Cèdres"
+      ]
+    },
+    {
+      "type": "LOCATION",
+      "value": "Morges",
+      "surfaces": [
+        "Morges"
+      ]
+    },
+    {
+      "type": "PHONE",
+      "value": "+41 21 555 01 36",
+      "surfaces": [
+        "+41 21 555 01 36"
+      ]
+    },
+    {
+      "type": "EMAIL",
+      "value": "secretariat@cabinet-cedres.example",
+      "surfaces": [
+        "secretariat@cabinet-cedres.example"
+      ]
+    }
+  ]
+}

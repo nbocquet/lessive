@@ -1,0 +1,14 @@
+Objet : [LIEU_1] — litige sur la cave n° 14
+Copie : [PERSONNE_1]
+
+Bonjour [PERSONNE_1],
+
+Comme convenu, voici le résumé du litige qui oppose M. [PERSONNE_2] et Mme [PERSONNE_3], copropriétaires de la [LIEU_1] à [LIEU_2]. [PERSONNE_2] affirme que la cave n° 14 lui a été attribuée lors de l'assemblée générale de 2019. [PERSONNE_3] conteste et soutient qu'elle utilise cette cave depuis son achat.
+
+La [ORGANISATION_1], en tant que syndic, a demandé les procès-verbaux aux deux parties. M. [PERSONNE_2] les a transmis ; Mme [PERSONNE_3] a promis de le faire d'ici vendredi. [PERSONNE_2] a aussi proposé une médiation, mais [PERSONNE_3] refuse tant que la serrure n'est pas remplacée.
+
+Merci de me renvoyer l'avis de [PERSONNE_1] avant la prochaine assemblée à [EMAIL_1]. Le syndic souhaite éviter une procédure.
+
+Cordialement,
+
+[PERSONNE_4]

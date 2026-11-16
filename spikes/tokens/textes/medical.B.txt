@@ -1,0 +1,9 @@
+Note administrative — [ORGANISATION_1], [LIEU_1]
+
+Le Dr [PERSONNE_1] atteste que M. [PERSONNE_2], assuré sous le numéro AVS [AVS_1], s'est présenté à une consultation le 6 octobre. Cette note ne contient aucune information médicale. Elle est établie à la demande de l'intéressé pour son employeur, [ORGANISATION_2].
+
+M. [PERSONNE_2] est dispensé de présence au travail du 7 au 11 octobre inclus. Le secrétariat du [ORGANISATION_1] transmettra le certificat original par courrier. [PERSONNE_2] pourra aussi le retirer à la réception ou le recevoir par voie électronique.
+
+Pour toute question administrative, le secrétariat de [LIEU_1] répond au [TELEPHONE_1] ou à [EMAIL_1]. Le Dr [PERSONNE_1] reste joignable le mardi et le jeudi.
+
+Fait à [LIEU_1], le 6 octobre.

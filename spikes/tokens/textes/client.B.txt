@@ -1,0 +1,16 @@
+De : [PERSONNE_1]
+À : [PERSONNE_2]
+Objet : Facture de mars, paiement non retrouvé
+
+Bonjour Madame [PERSONNE_2],
+
+Je reviens vers vous au sujet de la facture de mars pour notre dépôt de [LIEU_1]. Nous avons réglé le montant le 28 depuis le compte IBAN [IBAN_1] de [ORGANISATION_1], mais votre service comptable indique n'avoir rien reçu. Pouvez-vous vérifier de votre côté ?
+
+Par ailleurs, mon associé [PERSONNE_3] a remarqué que l'adresse de livraison était encore celle de l'ancien site. Merci de la corriger et de nous confirmer la prochaine date de passage du livreur.
+
+Vous pouvez me joindre sur mon mobile, le [TELEPHONE_1], ou à [EMAIL_1].
+
+Merci d'avance, [PERSONNE_2], pour votre réactivité.
+
+[PERSONNE_1]
+Directeur, [ORGANISATION_1]

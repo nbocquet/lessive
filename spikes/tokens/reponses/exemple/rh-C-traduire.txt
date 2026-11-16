@@ -1,0 +1,14 @@
+[RÉPONSE FACTICE — écrite à la main pour tester score.mjs ; ce n'est pas la sortie d'un LLM]
+
+Subject: Annual review of [[P1]]
+
+Hello ⟦P2⟧,
+
+Following our conversation on Tuesday, I confirm that ⟦P1⟧'s annual review will take place on Thursday, March 12 at 10 a.m., at our offices. You will attend with Ms. ⟦P3⟧, who represents management. ⟦P1⟧ asked to move to 80% from the start of the school year.
+
+I also need the team report before Monday. ⟦P3⟧ would like an update on the projects carried out with ⟦O1⟧. Write to me at ⟦E1⟧ or call ⟦T1⟧.
+
+Best regards,
+
+⟦P9⟧
+Human Resources, ⟦O1⟧

@@ -1,0 +1,11 @@
+Compte rendu de la réunion du comité du 4 novembre, à LIEU_001
+
+Présents : PERSONNE_001 (président), PERSONNE_002 (trésorière), PERSONNE_003 (secrétaire).
+
+1. Budget. PERSONNE_002 a présenté les comptes de l'ORGANISATION_001 : le déficit prévu est de 3 200 francs. PERSONNE_001 propose de relancer les sponsors avant la fin du mois. PERSONNE_003 se charge de rédiger le courrier.
+
+2. Tournoi de printemps. Le comité retient la salle d'LIEU_001 pour le 18 avril. Pour réserver, il faut verser un acompte de 400 francs sur le compte IBAN IBAN_001. PERSONNE_002 effectuera le virement cette semaine. PERSONNE_001 confirmera la réservation auprès de la mairie.
+
+3. Divers. Pour toute question, joindre PERSONNE_003 au TELEPHONE_001. La prochaine réunion de l'ORGANISATION_001 aura lieu le 2 décembre.
+
+Compte rendu rédigé par PERSONNE_003.

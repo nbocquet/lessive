@@ -1,0 +1,65 @@
+{
+  "id": "client",
+  "titre": "Échange avec un client",
+  "synthetique": true,
+  "entites": [
+    {
+      "type": "PERSON",
+      "value": "Sylvain Chevalley",
+      "surfaces": [
+        "Sylvain Chevalley"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Lucie Roche",
+      "surfaces": [
+        "Lucie Roche",
+        "Madame Roche",
+        "Lucie"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Julien Barras",
+      "surfaces": [
+        "Julien Barras"
+      ]
+    },
+    {
+      "type": "ORGANIZATION",
+      "value": "Chevalley & Fils Sàrl",
+      "surfaces": [
+        "Chevalley & Fils Sàrl"
+      ]
+    },
+    {
+      "type": "LOCATION",
+      "value": "Lausanne",
+      "surfaces": [
+        "Lausanne"
+      ]
+    },
+    {
+      "type": "IBAN",
+      "value": "CH93 0076 2011 6238 5295 7",
+      "surfaces": [
+        "CH93 0076 2011 6238 5295 7"
+      ]
+    },
+    {
+      "type": "PHONE",
+      "value": "+41 79 555 01 87",
+      "surfaces": [
+        "+41 79 555 01 87"
+      ]
+    },
+    {
+      "type": "EMAIL",
+      "value": "s.chevalley@chevalley-fils.example",
+      "surfaces": [
+        "s.chevalley@chevalley-fils.example"
+      ]
+    }
+  ]
+}

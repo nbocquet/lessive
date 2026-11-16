@@ -1,0 +1,68 @@
+{
+  "id": "copro",
+  "titre": "Litige de copropriété",
+  "synthetique": true,
+  "entites": [
+    {
+      "type": "PERSON",
+      "value": "Mathieu Girard",
+      "surfaces": [
+        "Mathieu Girard",
+        "Mathieu"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Corinne Duc",
+      "surfaces": [
+        "Corinne Duc"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Hervé Bernard",
+      "surfaces": [
+        "Hervé Bernard",
+        "M. Bernard",
+        "Hervé"
+      ]
+    },
+    {
+      "type": "PERSON",
+      "value": "Christine Bernard",
+      "surfaces": [
+        "Christine Bernard",
+        "Mme Bernard",
+        "Christine"
+      ]
+    },
+    {
+      "type": "ORGANIZATION",
+      "value": "Régie Mont-Blanc SAS",
+      "surfaces": [
+        "Régie Mont-Blanc SAS"
+      ]
+    },
+    {
+      "type": "LOCATION",
+      "value": "Résidence Les Mélèzes",
+      "surfaces": [
+        "Résidence Les Mélèzes"
+      ]
+    },
+    {
+      "type": "LOCATION",
+      "value": "Annecy-le-Vieux",
+      "surfaces": [
+        "Annecy-le-Vieux"
+      ]
+    },
+    {
+      "type": "EMAIL",
+      "value": "gestion@regie-montblanc.example",
+      "surfaces": [
+        "gestion@regie-montblanc.example"
+      ]
+    }
+  ]
+}
