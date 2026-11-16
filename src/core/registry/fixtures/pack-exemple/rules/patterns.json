@@ -1,0 +1,24 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "numero-test",
+      "entityType": "CREDIT_CARD",
+      "score": 0.6,
+      "pattern": "\\b\\d{4}(?: \\d{4}){3}\\b",
+      "validator": "luhn",
+      "languages": "any",
+      "context": { "words": { "fr": ["carte"], "en": ["card"] } },
+      "description": "Numéro de carte fictif, validé par Luhn."
+    },
+    {
+      "kind": "pattern",
+      "id": "ref_dossier",
+      "entityType": "SECRET",
+      "score": 0.7,
+      "pattern": "\\bREF-[A-Z]{3}-\\d{4}\\b",
+      "flags": "i",
+      "enabled": false
+    }
+  ]
+}

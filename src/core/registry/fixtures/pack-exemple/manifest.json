@@ -1,0 +1,9 @@
+{
+  "id": "exemple-synthetique",
+  "version": "1.0.0",
+  "engineVersion": "0.1.0",
+  "type": "domain",
+  "name": "Pack d'exemple (données synthétiques)",
+  "description": "Pack fictif utilisé par les tests du registre.",
+  "rules": ["rules/patterns.json", "rules/dictionaries.json"]
+}

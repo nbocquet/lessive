@@ -1,0 +1,13 @@
+{
+  "rules": [
+    {
+      "kind": "dictionary",
+      "id": "prenoms-fictifs",
+      "entityType": "PERSON",
+      "score": 0.5,
+      "terms": ["Alice Exemple", "Bob Imaginaire", "Camille Factice"],
+      "caseSensitive": true,
+      "languages": ["fr", "en"]
+    }
+  ]
+}
