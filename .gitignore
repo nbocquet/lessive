@@ -7,4 +7,4 @@ spikes/**/node_modules/
 spikes/**/models/
 .DS_Store
 *.log
-.lessive-sync.tgz
+.lessive-sync*.tgz
