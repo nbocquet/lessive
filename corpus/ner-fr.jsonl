@@ -1,0 +1,150 @@
+{"id":"fr-001-std","text":"Jean Dupont a signé le contrat hier après-midi.","entities":[{"start":0,"end":11,"type":"PERSON"}]}
+{"id":"fr-002-std","text":"Le rapport a été rédigé par Marie Lefèvre et relu par Paul Garnier.","entities":[{"start":28,"end":41,"type":"PERSON"},{"start":54,"end":66,"type":"PERSON"}]}
+{"id":"fr-003-std","text":"Sophie Martin dirige l'équipe commerciale depuis janvier.","entities":[{"start":0,"end":13,"type":"PERSON"}]}
+{"id":"fr-004-std","text":"J'ai rendez-vous avec Antoine Bernard jeudi à 14 h.","entities":[{"start":22,"end":37,"type":"PERSON"}]}
+{"id":"fr-005-std","text":"La réunion sera présidée par Claire Fontaine.","entities":[{"start":29,"end":44,"type":"PERSON"}]}
+{"id":"fr-006-std","text":"Thomas Girard et Julie Roux ont présenté le projet au comité.","entities":[{"start":0,"end":13,"type":"PERSON"},{"start":17,"end":27,"type":"PERSON"}]}
+{"id":"fr-007-std","text":"Peux-tu transmettre ce dossier à Isabelle Mercier ?","entities":[{"start":33,"end":49,"type":"PERSON"}]}
+{"id":"fr-008-std","text":"Selon Nathalie Perrin, le budget sera validé la semaine prochaine.","entities":[{"start":6,"end":21,"type":"PERSON"}]}
+{"id":"fr-009-std","text":"Le colis est au nom de Laurent Dumas.","entities":[{"start":23,"end":36,"type":"PERSON"}]}
+{"id":"fr-010-std","text":"Camille Lambert remplace Olivier Chevalier pendant ses vacances.","entities":[{"start":0,"end":15,"type":"PERSON"},{"start":25,"end":42,"type":"PERSON"}]}
+{"id":"fr-011-std","text":"Merci à Véronique Blanchard pour son aide précieuse.","entities":[{"start":8,"end":27,"type":"PERSON"}]}
+{"id":"fr-012-std","text":"Le formulaire doit être signé par Pascal Morel avant vendredi.","entities":[{"start":34,"end":46,"type":"PERSON"}]}
+{"id":"fr-013-std","text":"Émilie Duval a quitté l'entreprise en juin dernier.","entities":[{"start":0,"end":12,"type":"PERSON"}]}
+{"id":"fr-014-std","text":"C'est Bruno Carpentier qui a répondu au téléphone.","entities":[{"start":6,"end":22,"type":"PERSON"}]}
+{"id":"fr-015-std","text":"Le comité a auditionné Hélène Barbier puis Julien Colin.","entities":[{"start":23,"end":37,"type":"PERSON"},{"start":43,"end":55,"type":"PERSON"}]}
+{"id":"fr-016-std","text":"La facture a été adressée à Sandrine Leclerc.","entities":[{"start":28,"end":44,"type":"PERSON"}]}
+{"id":"fr-017-swiss","text":"Pierre-Alain Rochat a pris la parole à l'assemblée générale.","entities":[{"start":0,"end":19,"type":"PERSON"}]}
+{"id":"fr-018-swiss","text":"Le certificat est établi au nom de Jean-Luc Chappuis.","entities":[{"start":35,"end":52,"type":"PERSON"}]}
+{"id":"fr-019-swiss","text":"Sylvie Jaccard et Rémy Bovet sont arrivés en retard.","entities":[{"start":0,"end":14,"type":"PERSON"},{"start":18,"end":28,"type":"PERSON"}]}
+{"id":"fr-020-swiss","text":"La famille Pittet habite à côté de l'église.","entities":[{"start":11,"end":17,"type":"PERSON"}]}
+{"id":"fr-021-swiss","text":"Fabienne Monnard enseigne les mathématiques au gymnase.","entities":[{"start":0,"end":16,"type":"PERSON"}]}
+{"id":"fr-022-swiss","text":"Urs Gygax a répondu en allemand à la question.","entities":[{"start":0,"end":9,"type":"PERSON"}]}
+{"id":"fr-023-swiss","text":"Le mandat a été confié à Beat Zbinden.","entities":[{"start":25,"end":37,"type":"PERSON"}]}
+{"id":"fr-024-swiss","text":"Le syndic, Michel Cuendet, a inauguré le nouveau collège.","entities":[{"start":11,"end":25,"type":"PERSON"}]}
+{"id":"fr-025-swiss","text":"Christelle Perrenoud gère les inscriptions.","entities":[{"start":0,"end":20,"type":"PERSON"}]}
+{"id":"fr-026-swiss","text":"Andrea Burri est notre contact à Berne.","entities":[{"start":0,"end":12,"type":"PERSON"},{"start":33,"end":38,"type":"LOCATION"}]}
+{"id":"fr-027-foreign","text":"Minh Nguyen a rejoint l'équipe informatique.","entities":[{"start":0,"end":11,"type":"PERSON"}]}
+{"id":"fr-028-foreign","text":"La candidature de Reza Karimi a été retenue.","entities":[{"start":18,"end":29,"type":"PERSON"}]}
+{"id":"fr-029-foreign","text":"Chinedu Okafor présentera les résultats demain.","entities":[{"start":0,"end":14,"type":"PERSON"}]}
+{"id":"fr-030-foreign","text":"Le colis est destiné à Piotr Kowalski.","entities":[{"start":23,"end":37,"type":"PERSON"}]}
+{"id":"fr-031-foreign","text":"Ana Fernandes nous a envoyé les photos.","entities":[{"start":0,"end":13,"type":"PERSON"}]}
+{"id":"fr-032-foreign","text":"J'ai eu Karim Haddad au téléphone ce matin.","entities":[{"start":8,"end":20,"type":"PERSON"}]}
+{"id":"fr-033-foreign","text":"Yuki Tanaka est en visite à Genève cette semaine.","entities":[{"start":0,"end":11,"type":"PERSON"},{"start":28,"end":34,"type":"LOCATION"}]}
+{"id":"fr-034-foreign","text":"L'élève Milan Petrović a obtenu la meilleure note.","entities":[{"start":8,"end":22,"type":"PERSON"}]}
+{"id":"fr-035-foreign","text":"Mehmet Yılmaz et Fatima Benali organisent la fête de fin d'année.","entities":[{"start":0,"end":13,"type":"PERSON"},{"start":17,"end":30,"type":"PERSON"}]}
+{"id":"fr-036-foreign","text":"La lettre est adressée à Leila Ahmadi.","entities":[{"start":25,"end":37,"type":"PERSON"}]}
+{"id":"fr-037-foreign","text":"Le technicien, Dmitri Volkov, passera lundi.","entities":[{"start":15,"end":28,"type":"PERSON"}]}
+{"id":"fr-038-foreign","text":"Joaquim Pereira habite à Lausanne depuis dix ans.","entities":[{"start":0,"end":15,"type":"PERSON"},{"start":25,"end":33,"type":"LOCATION"}]}
+{"id":"fr-039-first","text":"Camille viendra nous voir samedi.","entities":[{"start":0,"end":7,"type":"PERSON"}]}
+{"id":"fr-040-first","text":"Dis bonjour à Théo de ma part.","entities":[{"start":14,"end":18,"type":"PERSON"}]}
+{"id":"fr-041-first","text":"Léa et Hugo sont dans la même classe.","entities":[{"start":0,"end":3,"type":"PERSON"},{"start":7,"end":11,"type":"PERSON"}]}
+{"id":"fr-042-first","text":"Je n'ai pas de nouvelles de Mathilde depuis une semaine.","entities":[{"start":28,"end":36,"type":"PERSON"}]}
+{"id":"fr-043-first","text":"Sacha a oublié son sac au vestiaire.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"fr-044-first","text":"Merci Karine, c'est parfait !","entities":[{"start":6,"end":12,"type":"PERSON"}]}
+{"id":"fr-045-first","text":"On attend encore Inès et Romain.","entities":[{"start":17,"end":21,"type":"PERSON"},{"start":25,"end":31,"type":"PERSON"}]}
+{"id":"fr-046-first","text":"Demande plutôt à Noémie, elle connaît le dossier.","entities":[{"start":17,"end":23,"type":"PERSON"}]}
+{"id":"fr-047-first","text":"Elias a pris le train de 8 h 12.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"fr-048-lower","text":"j'ai parlé avec jean dupont hier soir","entities":[{"start":16,"end":27,"type":"PERSON"}]}
+{"id":"fr-049-lower","text":"envoie le fichier à marie lefevre s'il te plaît","entities":[{"start":20,"end":33,"type":"PERSON"}]}
+{"id":"fr-050-lower","text":"le rapport de paul garnier est en pièce jointe","entities":[{"start":14,"end":26,"type":"PERSON"}]}
+{"id":"fr-051-lower","text":"on a vu sophie martin au marché ce matin","entities":[{"start":8,"end":21,"type":"PERSON"}]}
+{"id":"fr-052-lower","text":"c'est antoine qui a les clés","entities":[{"start":6,"end":13,"type":"PERSON"}]}
+{"id":"fr-053-lower","text":"thomas girard habite à annecy depuis 2019.","entities":[{"start":0,"end":13,"type":"PERSON"},{"start":23,"end":29,"type":"LOCATION"}]}
+{"id":"fr-054-lower","text":"dis à julie roux que la réunion est décalée","entities":[{"start":6,"end":16,"type":"PERSON"}]}
+{"id":"fr-055-lower","text":"la commande de laurent dumas part demain","entities":[{"start":15,"end":28,"type":"PERSON"}]}
+{"id":"fr-056-lower","text":"je passe chez olivier chevalier vers 18h","entities":[{"start":14,"end":31,"type":"PERSON"}]}
+{"id":"fr-057-email","text":"salut Marc, tu peux m'envoyer le fichier stp ? merci, Sylvie","entities":[{"start":6,"end":10,"type":"PERSON"},{"start":54,"end":60,"type":"PERSON"}]}
+{"id":"fr-058-email","text":"Hello Julie, petit rappel pour la réunion de demain. A+, Pascal","entities":[{"start":6,"end":11,"type":"PERSON"},{"start":57,"end":63,"type":"PERSON"}]}
+{"id":"fr-059-email","text":"Coucou Manon ! Tu viens ce soir ? Bises, Lucas","entities":[{"start":7,"end":12,"type":"PERSON"},{"start":41,"end":46,"type":"PERSON"}]}
+{"id":"fr-060-email","text":"Objet : Re: devis Alpimex SA Bonjour Claire, ci-joint le devis. Bien à toi, Hervé","entities":[{"start":18,"end":28,"type":"ORGANIZATION"},{"start":37,"end":43,"type":"PERSON"},{"start":76,"end":81,"type":"PERSON"}]}
+{"id":"fr-061-email","text":"Bonjour à tous, Philippe sera absent jusqu'au 12. Bonne journée, Nadia","entities":[{"start":16,"end":24,"type":"PERSON"},{"start":65,"end":70,"type":"PERSON"}]}
+{"id":"fr-062-email","text":"Merci pour ton retour Damien. Je regarde ça cet après-midi et je te redis. Estelle","entities":[{"start":22,"end":28,"type":"PERSON"},{"start":75,"end":82,"type":"PERSON"}]}
+{"id":"fr-063-email","text":"Salut Jérôme, je te mets en copie Anne-Sophie et Gilles.","entities":[{"start":6,"end":12,"type":"PERSON"},{"start":34,"end":45,"type":"PERSON"},{"start":49,"end":55,"type":"PERSON"}]}
+{"id":"fr-064-email","text":"Bonjour, suite à notre échange avec Florence Gillet, je vous confirme le rendez-vous. Bien cordialement, Patrick Lopez","entities":[{"start":36,"end":51,"type":"PERSON"},{"start":105,"end":118,"type":"PERSON"}]}
+{"id":"fr-065-email","text":"re : facture - merci Alex, je transmets à la compta.","entities":[{"start":21,"end":25,"type":"PERSON"}]}
+{"id":"fr-066-email","text":"Cc : Béatrice Henry, Cédric Aubert","entities":[{"start":5,"end":19,"type":"PERSON"},{"start":21,"end":34,"type":"PERSON"}]}
+{"id":"fr-067-email","text":"De : Mélanie Schmid À : Raphaël Gay Objet : planning de la semaine","entities":[{"start":5,"end":19,"type":"PERSON"},{"start":24,"end":35,"type":"PERSON"}]}
+{"id":"fr-068-email","text":"tu peux prévenir Chloé ? je n'ai pas son mail","entities":[{"start":17,"end":22,"type":"PERSON"}]}
+{"id":"fr-069-title","text":"M. Durand a demandé un rappel.","entities":[{"start":3,"end":9,"type":"PERSON"}]}
+{"id":"fr-070-title","text":"Mme Corinne Favre est la nouvelle directrice de l'école.","entities":[{"start":4,"end":17,"type":"PERSON"}]}
+{"id":"fr-071-title","text":"Le Dr Martinez vous recevra à 10 h.","entities":[{"start":6,"end":14,"type":"PERSON"}]}
+{"id":"fr-072-title","text":"Me Gilbert Mayor représentera la société.","entities":[{"start":3,"end":16,"type":"PERSON"}]}
+{"id":"fr-073-title","text":"Mlle Léonie Cuche a été nommée déléguée de classe.","entities":[{"start":5,"end":17,"type":"PERSON"}]}
+{"id":"fr-074-title","text":"Le Pr Henri Vuilleumier donnera la conférence d'ouverture.","entities":[{"start":6,"end":23,"type":"PERSON"}]}
+{"id":"fr-075-title","text":"Bonjour Madame Bonvin, votre commande est prête.","entities":[{"start":15,"end":21,"type":"PERSON"}]}
+{"id":"fr-076-title","text":"Monsieur Jean-Pierre Maillard est attendu à la réception.","entities":[{"start":9,"end":29,"type":"PERSON"}]}
+{"id":"fr-077-title","text":"Mme Dubois et M. Petit ont été convoqués.","entities":[{"start":4,"end":10,"type":"PERSON"},{"start":17,"end":22,"type":"PERSON"}]}
+{"id":"fr-078-title","text":"La Dre Ruth Baumann est en congé jusqu'à lundi.","entities":[{"start":7,"end":19,"type":"PERSON"}]}
+{"id":"fr-079-title","text":"M. Kowalczyk a téléphoné de la part de Tavannes Horlogerie SA.","entities":[{"start":3,"end":12,"type":"PERSON"},{"start":39,"end":61,"type":"ORGANIZATION"}]}
+{"id":"fr-080-org","text":"Vallotton & Fils SA a remporté l'appel d'offres.","entities":[{"start":0,"end":19,"type":"ORGANIZATION"}]}
+{"id":"fr-081-org","text":"La société Brasserie du Léman Sàrl cherche un comptable.","entities":[{"start":11,"end":34,"type":"ORGANIZATION"}]}
+{"id":"fr-082-org","text":"Lacroix Industries SAS est basée à Annecy.","entities":[{"start":0,"end":22,"type":"ORGANIZATION"},{"start":35,"end":41,"type":"LOCATION"}]}
+{"id":"fr-083-org","text":"Bergmann Technik GmbH nous a livré les pièces hier.","entities":[{"start":0,"end":21,"type":"ORGANIZATION"}]}
+{"id":"fr-084-org","text":"Notre fournisseur, Alpimex SA, a augmenté ses tarifs.","entities":[{"start":19,"end":29,"type":"ORGANIZATION"}]}
+{"id":"fr-085-org","text":"Le contrat avec Sorbier Conseil Sàrl arrive à échéance.","entities":[{"start":16,"end":36,"type":"ORGANIZATION"}]}
+{"id":"fr-086-org","text":"Électricité du Chablais SA interviendra lundi matin.","entities":[{"start":0,"end":26,"type":"ORGANIZATION"}]}
+{"id":"fr-087-org","text":"Fiduciaire Cuénod & Associés a établi les comptes.","entities":[{"start":0,"end":28,"type":"ORGANIZATION"}]}
+{"id":"fr-088-org","text":"L'Association des parents d'élèves de Cossonay organise un vide-grenier.","entities":[{"start":2,"end":46,"type":"ORGANIZATION"}]}
+{"id":"fr-089-org","text":"Imprimerie Duvanel SAS a livré les flyers.","entities":[{"start":0,"end":22,"type":"ORGANIZATION"}]}
+{"id":"fr-090-org","text":"Swisscom a coupé la ligne hier.","entities":[{"start":0,"end":8,"type":"ORGANIZATION"}]}
+{"id":"fr-091-org","text":"Boulangerie Pittet Sàrl ferme à midi le samedi.","entities":[{"start":0,"end":23,"type":"ORGANIZATION"}]}
+{"id":"fr-092-commune","text":"Nous déménageons de Lausanne à Yverdon-les-Bains.","entities":[{"start":20,"end":28,"type":"LOCATION"},{"start":31,"end":48,"type":"LOCATION"}]}
+{"id":"fr-093-commune","text":"Le marché de Carouge a lieu le mercredi.","entities":[{"start":13,"end":20,"type":"LOCATION"}]}
+{"id":"fr-094-commune","text":"Il habite à Saint-Julien-en-Genevois depuis trois ans.","entities":[{"start":12,"end":36,"type":"LOCATION"}]}
+{"id":"fr-095-commune","text":"Le train pour Neuchâtel part de la voie 4.","entities":[{"start":14,"end":23,"type":"LOCATION"}]}
+{"id":"fr-096-commune","text":"Meyrin et Vernier ont voté le même budget.","entities":[{"start":0,"end":6,"type":"LOCATION"},{"start":10,"end":17,"type":"LOCATION"}]}
+{"id":"fr-097-commune","text":"Rendez-vous à Thonon-les-Bains pour la visite du port.","entities":[{"start":14,"end":30,"type":"LOCATION"}]}
+{"id":"fr-098-commune","text":"L'école est située à Cossonay, dans le canton de Vaud.","entities":[{"start":21,"end":29,"type":"LOCATION"},{"start":49,"end":53,"type":"LOCATION"}]}
+{"id":"fr-099-commune","text":"Ils ont passé le week-end à Chamonix, en Haute-Savoie.","entities":[{"start":28,"end":36,"type":"LOCATION"},{"start":41,"end":53,"type":"LOCATION"}]}
+{"id":"fr-100-commune","text":"Le camion est parti de Martigny vers Sion.","entities":[{"start":23,"end":31,"type":"LOCATION"},{"start":37,"end":41,"type":"LOCATION"}]}
+{"id":"fr-101-commune","text":"Nous avons un client à Annemasse et un autre à Cluses.","entities":[{"start":23,"end":32,"type":"LOCATION"},{"start":47,"end":53,"type":"LOCATION"}]}
+{"id":"fr-102-commune","text":"Départ de Genève, arrivée à Lyon vers 18 h.","entities":[{"start":10,"end":16,"type":"LOCATION"},{"start":28,"end":32,"type":"LOCATION"}]}
+{"id":"fr-103-commune","text":"Ferney-Voltaire se trouve juste à côté de Genève.","entities":[{"start":0,"end":15,"type":"LOCATION"},{"start":42,"end":48,"type":"LOCATION"}]}
+{"id":"fr-104-accent","text":"Zoé Béguelin habite à Évian-les-Bains.","entities":[{"start":0,"end":12,"type":"PERSON"},{"start":22,"end":37,"type":"LOCATION"}]}
+{"id":"fr-105-accent","text":"Renée Lüthi a présenté son œuvre à Delémont.","entities":[{"start":0,"end":11,"type":"PERSON"},{"start":35,"end":43,"type":"LOCATION"}]}
+{"id":"fr-106-accent","text":"Jérémy Dällenbach est né à Saint-Maurice.","entities":[{"start":0,"end":17,"type":"PERSON"},{"start":27,"end":40,"type":"LOCATION"}]}
+{"id":"fr-107-accent","text":"Hélène Sträuli a étudié à Zürich.","entities":[{"start":0,"end":14,"type":"PERSON"},{"start":26,"end":32,"type":"LOCATION"}]}
+{"id":"fr-108-accent","text":"Gaëlle Çelik est arrivée à Neuchâtel en août.","entities":[{"start":0,"end":12,"type":"PERSON"},{"start":27,"end":36,"type":"LOCATION"}]}
+{"id":"fr-109-emoji","text":"Merci Julie 😊 à demain !","entities":[{"start":6,"end":11,"type":"PERSON"}]}
+{"id":"fr-110-emoji","text":"🎉 Bravo à Marc Rochat pour sa promotion chez Alpimex SA 🎉","entities":[{"start":11,"end":22,"type":"PERSON"},{"start":46,"end":56,"type":"ORGANIZATION"}]}
+{"id":"fr-111-emoji","text":"🚗 Rendez-vous devant la gare de Nyon avec Sandrine 👍","entities":[{"start":33,"end":37,"type":"LOCATION"},{"start":43,"end":51,"type":"PERSON"}]}
+{"id":"fr-112-emoji","text":"😂😂 Hugo a encore oublié ses clés !","entities":[{"start":5,"end":9,"type":"PERSON"}]}
+{"id":"fr-113-emoji","text":"📍Lausanne - réunion avec Karim Haddad 📞","entities":[{"start":2,"end":10,"type":"LOCATION"},{"start":26,"end":38,"type":"PERSON"}]}
+{"id":"fr-114-emoji","text":"👋 Bonjour Léa ! Voici le lien 🔗 pour Brasserie du Léman Sàrl.","entities":[{"start":11,"end":14,"type":"PERSON"},{"start":39,"end":62,"type":"ORGANIZATION"}]}
+{"id":"fr-115-emoji","text":"❤️ Joyeux anniversaire Mathilde 🎂🎈","entities":[{"start":23,"end":31,"type":"PERSON"}]}
+{"id":"fr-116-emoji","text":"👨‍👩‍👧 La famille Bovet part à Chamonix ⛷️ demain.","entities":[{"start":20,"end":25,"type":"PERSON"},{"start":33,"end":41,"type":"LOCATION"}]}
+{"id":"fr-117-none","text":"La réunion est reportée à jeudi prochain.","entities":[]}
+{"id":"fr-118-none","text":"Merci de bien vouloir envoyer le document avant midi.","entities":[]}
+{"id":"fr-119-none","text":"Le serveur sera redémarré cette nuit pour une mise à jour.","entities":[]}
+{"id":"fr-120-none","text":"Il pleut depuis ce matin et la route est coupée.","entities":[]}
+{"id":"fr-121-none","text":"Veuillez agréer, Madame, Monsieur, mes salutations distinguées.","entities":[]}
+{"id":"fr-122-none","text":"Pensez à éteindre les ordinateurs avant de partir.","entities":[]}
+{"id":"fr-123-none","text":"Le total de la facture s'élève à 1 250 francs.","entities":[]}
+{"id":"fr-124-none","text":"N'oubliez pas de remplir le questionnaire en ligne.","entities":[]}
+{"id":"fr-125-none","text":"Les élèves ont rendez-vous à 8 h devant la salle de sport.","entities":[]}
+{"id":"fr-126-none","text":"Peux-tu relire le paragraphe 3 et me dire ce que tu en penses ?","entities":[]}
+{"id":"fr-127-none","text":"La mise à jour sera déployée progressivement sur tous les postes.","entities":[]}
+{"id":"fr-128-none","text":"🙏 Merci d'avance pour votre compréhension.","entities":[]}
+{"id":"fr-129-trap","text":"Elle a cueilli une rose rouge dans le jardin.","entities":[]}
+{"id":"fr-130-trap","text":"Le mur est construit en pierre de taille.","entities":[]}
+{"id":"fr-131-trap","text":"J'ai mangé une orange et bu un jus de pomme.","entities":[]}
+{"id":"fr-132-trap","text":"Le logo est orange vif sur fond blanc.","entities":[]}
+{"id":"fr-133-trap","text":"Orange a annoncé une panne du réseau mobile.","entities":[{"start":0,"end":6,"type":"ORGANIZATION"}]}
+{"id":"fr-134-trap","text":"Rose a envoyé un bouquet à Pierre.","entities":[{"start":0,"end":4,"type":"PERSON"},{"start":27,"end":33,"type":"PERSON"}]}
+{"id":"fr-135-trap","text":"Pierre a ramassé une pierre au bord du lac.","entities":[{"start":0,"end":6,"type":"PERSON"}]}
+{"id":"fr-136-trap","text":"Marc Petit trouve la salle trop petite.","entities":[{"start":0,"end":10,"type":"PERSON"}]}
+{"id":"fr-137-trap","text":"Le boulanger ouvre à 6 h, mais Éric Boulanger est notaire.","entities":[{"start":31,"end":45,"type":"PERSON"}]}
+{"id":"fr-138-trap","text":"La victoire est à portée de main.","entities":[]}
+{"id":"fr-139-trap","text":"Victoire est arrivée en retard.","entities":[{"start":0,"end":8,"type":"PERSON"}]}
+{"id":"fr-140-trap","text":"Le renard a traversé la route.","entities":[]}
+{"id":"fr-141-trap","text":"Louis Renard a traversé la route.","entities":[{"start":0,"end":12,"type":"PERSON"}]}
+{"id":"fr-142-trap","text":"Olive a planté un olivier.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"fr-143-trap","text":"Blanche porte une chemise blanche.","entities":[{"start":0,"end":7,"type":"PERSON"}]}
+{"id":"fr-144-trap","text":"Marguerite a cueilli une marguerite.","entities":[{"start":0,"end":10,"type":"PERSON"}]}
+{"id":"fr-145-trap","text":"Fleur aime les fleurs.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"fr-146-trap","text":"Le vin de Lavaux est réputé.","entities":[{"start":10,"end":16,"type":"LOCATION"}]}
+{"id":"fr-147-trap","text":"Il a pris l'avion pour Paris.","entities":[{"start":23,"end":28,"type":"LOCATION"}]}
+{"id":"fr-148-trap","text":"Le Café de la Poste cherche un serveur.","entities":[{"start":3,"end":19,"type":"ORGANIZATION"}]}
+{"id":"fr-149-trap","text":"Le saint-bernard a retrouvé le randonneur.","entities":[]}
+{"id":"fr-150-trap","text":"Il a croqué dans une pomme verte.","entities":[]}

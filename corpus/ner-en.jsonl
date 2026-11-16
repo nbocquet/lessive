@@ -1,0 +1,150 @@
+{"id":"en-001-std","text":"John Smith signed the contract yesterday afternoon.","entities":[{"start":0,"end":10,"type":"PERSON"}]}
+{"id":"en-002-std","text":"The report was written by Emily Clarke and reviewed by David Walsh.","entities":[{"start":26,"end":38,"type":"PERSON"},{"start":55,"end":66,"type":"PERSON"}]}
+{"id":"en-003-std","text":"Sarah Johnson has led the sales team since January.","entities":[{"start":0,"end":13,"type":"PERSON"}]}
+{"id":"en-004-std","text":"I have a meeting with Michael Turner on Thursday at 2 pm.","entities":[{"start":22,"end":36,"type":"PERSON"}]}
+{"id":"en-005-std","text":"The workshop will be chaired by Laura Bennett.","entities":[{"start":32,"end":45,"type":"PERSON"}]}
+{"id":"en-006-std","text":"Daniel Hughes and Rachel Moore presented the plan to the board.","entities":[{"start":0,"end":13,"type":"PERSON"},{"start":18,"end":30,"type":"PERSON"}]}
+{"id":"en-007-std","text":"Can you forward this file to Jessica Taylor?","entities":[{"start":29,"end":43,"type":"PERSON"}]}
+{"id":"en-008-std","text":"According to Andrew Phillips, the budget will be approved next week.","entities":[{"start":13,"end":28,"type":"PERSON"}]}
+{"id":"en-009-std","text":"The parcel is addressed to Christopher Evans.","entities":[{"start":27,"end":44,"type":"PERSON"}]}
+{"id":"en-010-std","text":"Hannah Wright is covering for Oliver Mitchell while he is away.","entities":[{"start":0,"end":13,"type":"PERSON"},{"start":30,"end":45,"type":"PERSON"}]}
+{"id":"en-011-std","text":"Thanks to Megan Cooper for all her help.","entities":[{"start":10,"end":22,"type":"PERSON"}]}
+{"id":"en-012-std","text":"The form has to be signed by Patrick Gallagher before Friday.","entities":[{"start":29,"end":46,"type":"PERSON"}]}
+{"id":"en-013-std","text":"Natalie Foster left the company last June.","entities":[{"start":0,"end":14,"type":"PERSON"}]}
+{"id":"en-014-std","text":"It was Brian Hamilton who picked up the phone.","entities":[{"start":7,"end":21,"type":"PERSON"}]}
+{"id":"en-015-std","text":"The panel interviewed Helen Barker and then Julian Cole.","entities":[{"start":22,"end":34,"type":"PERSON"},{"start":44,"end":55,"type":"PERSON"}]}
+{"id":"en-016-std","text":"The invoice was sent to Samantha Lewis.","entities":[{"start":24,"end":38,"type":"PERSON"}]}
+{"id":"en-017-swiss","text":"Pierre-Alain Rochat spoke at the general assembly.","entities":[{"start":0,"end":19,"type":"PERSON"}]}
+{"id":"en-018-swiss","text":"The certificate is issued in the name of Jean-Luc Chappuis.","entities":[{"start":41,"end":58,"type":"PERSON"}]}
+{"id":"en-019-swiss","text":"Sylvie Jaccard and Remy Bovet arrived late.","entities":[{"start":0,"end":14,"type":"PERSON"},{"start":19,"end":29,"type":"PERSON"}]}
+{"id":"en-020-swiss","text":"The Pittet family lives next to the church.","entities":[{"start":4,"end":10,"type":"PERSON"}]}
+{"id":"en-021-swiss","text":"Fabienne Monnard teaches mathematics at the high school.","entities":[{"start":0,"end":16,"type":"PERSON"}]}
+{"id":"en-022-swiss","text":"Urs Gygax answered the question in German.","entities":[{"start":0,"end":9,"type":"PERSON"}]}
+{"id":"en-023-swiss","text":"The mandate was given to Beat Zbinden.","entities":[{"start":25,"end":37,"type":"PERSON"}]}
+{"id":"en-024-swiss","text":"The mayor, Michel Cuendet, opened the new school building.","entities":[{"start":11,"end":25,"type":"PERSON"}]}
+{"id":"en-025-swiss","text":"Christelle Perrenoud manages the registrations.","entities":[{"start":0,"end":20,"type":"PERSON"}]}
+{"id":"en-026-swiss","text":"Andrea Burri is our contact in Bern.","entities":[{"start":0,"end":12,"type":"PERSON"},{"start":31,"end":35,"type":"LOCATION"}]}
+{"id":"en-027-foreign","text":"Minh Nguyen joined the IT team.","entities":[{"start":0,"end":11,"type":"PERSON"}]}
+{"id":"en-028-foreign","text":"Reza Karimi's application was accepted.","entities":[{"start":0,"end":11,"type":"PERSON"}]}
+{"id":"en-029-foreign","text":"Chinedu Okafor will present the results tomorrow.","entities":[{"start":0,"end":14,"type":"PERSON"}]}
+{"id":"en-030-foreign","text":"The package is for Piotr Kowalski.","entities":[{"start":19,"end":33,"type":"PERSON"}]}
+{"id":"en-031-foreign","text":"Ana Fernandes sent us the photos.","entities":[{"start":0,"end":13,"type":"PERSON"}]}
+{"id":"en-032-foreign","text":"I spoke to Karim Haddad on the phone this morning.","entities":[{"start":11,"end":23,"type":"PERSON"}]}
+{"id":"en-033-foreign","text":"Yuki Tanaka is visiting Geneva this week.","entities":[{"start":0,"end":11,"type":"PERSON"},{"start":24,"end":30,"type":"LOCATION"}]}
+{"id":"en-034-foreign","text":"The student Milan Petrović got the highest grade.","entities":[{"start":12,"end":26,"type":"PERSON"}]}
+{"id":"en-035-foreign","text":"Mehmet Yılmaz and Fatima Benali are organising the end-of-year party.","entities":[{"start":0,"end":13,"type":"PERSON"},{"start":18,"end":31,"type":"PERSON"}]}
+{"id":"en-036-foreign","text":"The letter is addressed to Leila Ahmadi.","entities":[{"start":27,"end":39,"type":"PERSON"}]}
+{"id":"en-037-foreign","text":"The technician, Dmitri Volkov, will come on Monday.","entities":[{"start":16,"end":29,"type":"PERSON"}]}
+{"id":"en-038-foreign","text":"Joaquim Pereira has lived in Lausanne for ten years.","entities":[{"start":0,"end":15,"type":"PERSON"},{"start":29,"end":37,"type":"LOCATION"}]}
+{"id":"en-039-first","text":"Camille will come and see us on Saturday.","entities":[{"start":0,"end":7,"type":"PERSON"}]}
+{"id":"en-040-first","text":"Say hi to Theo for me.","entities":[{"start":10,"end":14,"type":"PERSON"}]}
+{"id":"en-041-first","text":"Lea and Hugo are in the same class.","entities":[{"start":0,"end":3,"type":"PERSON"},{"start":8,"end":12,"type":"PERSON"}]}
+{"id":"en-042-first","text":"I haven't heard from Matilda for a week.","entities":[{"start":21,"end":28,"type":"PERSON"}]}
+{"id":"en-043-first","text":"Sasha left a bag in the changing room.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"en-044-first","text":"Thanks Karen, that's perfect!","entities":[{"start":7,"end":12,"type":"PERSON"}]}
+{"id":"en-045-first","text":"We are still waiting for Ines and Romain.","entities":[{"start":25,"end":29,"type":"PERSON"},{"start":34,"end":40,"type":"PERSON"}]}
+{"id":"en-046-first","text":"Better ask Naomi, she knows the file.","entities":[{"start":11,"end":16,"type":"PERSON"}]}
+{"id":"en-047-first","text":"Elias took the 8:12 train.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"en-048-lower","text":"i talked to john smith last night","entities":[{"start":12,"end":22,"type":"PERSON"}]}
+{"id":"en-049-lower","text":"send the file to emily clarke please","entities":[{"start":17,"end":29,"type":"PERSON"}]}
+{"id":"en-050-lower","text":"david walsh's report is attached","entities":[{"start":0,"end":11,"type":"PERSON"}]}
+{"id":"en-051-lower","text":"we saw sarah johnson at the market this morning","entities":[{"start":7,"end":20,"type":"PERSON"}]}
+{"id":"en-052-lower","text":"it's michael who has the keys","entities":[{"start":5,"end":12,"type":"PERSON"}]}
+{"id":"en-053-lower","text":"daniel hughes has lived in manchester since 2019.","entities":[{"start":0,"end":13,"type":"PERSON"},{"start":27,"end":37,"type":"LOCATION"}]}
+{"id":"en-054-lower","text":"tell rachel moore the meeting has been moved","entities":[{"start":5,"end":17,"type":"PERSON"}]}
+{"id":"en-055-lower","text":"christopher evans's order ships tomorrow","entities":[{"start":0,"end":17,"type":"PERSON"}]}
+{"id":"en-056-lower","text":"hannah wright called me yesterday about the quote","entities":[{"start":0,"end":13,"type":"PERSON"}]}
+{"id":"en-057-email","text":"hi Marc, can you send me the file pls? thx, Sylvia","entities":[{"start":3,"end":7,"type":"PERSON"},{"start":44,"end":50,"type":"PERSON"}]}
+{"id":"en-058-email","text":"Hello Julie, quick reminder about tomorrow's meeting. Cheers, Pascal","entities":[{"start":6,"end":11,"type":"PERSON"},{"start":62,"end":68,"type":"PERSON"}]}
+{"id":"en-059-email","text":"Hey Manon! Are you coming tonight? Cheers, Lucas","entities":[{"start":4,"end":9,"type":"PERSON"},{"start":43,"end":48,"type":"PERSON"}]}
+{"id":"en-060-email","text":"Subject: Re: quote Alpimex SA Hi Claire, quote attached. Best, Hervé","entities":[{"start":19,"end":29,"type":"ORGANIZATION"},{"start":33,"end":39,"type":"PERSON"},{"start":63,"end":68,"type":"PERSON"}]}
+{"id":"en-061-email","text":"Hi all, Philip will be out until the 12th. Have a good day, Nadia","entities":[{"start":8,"end":14,"type":"PERSON"},{"start":60,"end":65,"type":"PERSON"}]}
+{"id":"en-062-email","text":"Thanks for getting back to me Damien. I'll look at it this afternoon. Estelle","entities":[{"start":30,"end":36,"type":"PERSON"},{"start":70,"end":77,"type":"PERSON"}]}
+{"id":"en-063-email","text":"Hi Jerome, adding Anne-Sophie and Giles in copy.","entities":[{"start":3,"end":9,"type":"PERSON"},{"start":18,"end":29,"type":"PERSON"},{"start":34,"end":39,"type":"PERSON"}]}
+{"id":"en-064-email","text":"Hello, following my chat with Florence Gillet, I confirm the appointment. Kind regards, Patrick Lopez","entities":[{"start":30,"end":45,"type":"PERSON"},{"start":88,"end":101,"type":"PERSON"}]}
+{"id":"en-065-email","text":"re: invoice - thanks Alex, forwarding to accounting.","entities":[{"start":21,"end":25,"type":"PERSON"}]}
+{"id":"en-066-email","text":"Cc: Beatrice Henry, Cedric Aubert","entities":[{"start":4,"end":18,"type":"PERSON"},{"start":20,"end":33,"type":"PERSON"}]}
+{"id":"en-067-email","text":"From: Melanie Schmid To: Raphael Gay Subject: weekly planning","entities":[{"start":6,"end":20,"type":"PERSON"},{"start":25,"end":36,"type":"PERSON"}]}
+{"id":"en-068-email","text":"can you ping Chloe? i don't have her email","entities":[{"start":13,"end":18,"type":"PERSON"}]}
+{"id":"en-069-title","text":"Mr Durand asked for a call back.","entities":[{"start":3,"end":9,"type":"PERSON"}]}
+{"id":"en-070-title","text":"Mrs Corinne Favre is the new head of the school.","entities":[{"start":4,"end":17,"type":"PERSON"}]}
+{"id":"en-071-title","text":"Dr Martinez will see you at 10 am.","entities":[{"start":3,"end":11,"type":"PERSON"}]}
+{"id":"en-072-title","text":"Ms Leonie Cuche was appointed class representative.","entities":[{"start":3,"end":15,"type":"PERSON"}]}
+{"id":"en-073-title","text":"Prof. Henry Vuilleumier will give the opening lecture.","entities":[{"start":6,"end":23,"type":"PERSON"}]}
+{"id":"en-074-title","text":"Good morning Mrs Bonvin, your order is ready.","entities":[{"start":17,"end":23,"type":"PERSON"}]}
+{"id":"en-075-title","text":"Mr Jean-Pierre Maillard is expected at reception.","entities":[{"start":3,"end":23,"type":"PERSON"}]}
+{"id":"en-076-title","text":"Mrs Dubois and Mr Petit have been summoned.","entities":[{"start":4,"end":10,"type":"PERSON"},{"start":18,"end":23,"type":"PERSON"}]}
+{"id":"en-077-title","text":"Dr. Ruth Baumann is on leave until Monday.","entities":[{"start":4,"end":16,"type":"PERSON"}]}
+{"id":"en-078-title","text":"Mr. Kowalczyk called on behalf of Tavannes Horlogerie SA.","entities":[{"start":4,"end":13,"type":"PERSON"},{"start":34,"end":56,"type":"ORGANIZATION"}]}
+{"id":"en-079-title","text":"Sir Gilbert Mayor will represent the company.","entities":[{"start":4,"end":17,"type":"PERSON"}]}
+{"id":"en-080-org","text":"Vallotton & Sons Ltd won the tender.","entities":[{"start":0,"end":20,"type":"ORGANIZATION"}]}
+{"id":"en-081-org","text":"Brasserie du Léman Sàrl is looking for an accountant.","entities":[{"start":0,"end":23,"type":"ORGANIZATION"}]}
+{"id":"en-082-org","text":"Lacroix Industries Inc is based in Annecy.","entities":[{"start":0,"end":22,"type":"ORGANIZATION"},{"start":35,"end":41,"type":"LOCATION"}]}
+{"id":"en-083-org","text":"Bergmann Technik GmbH delivered the parts yesterday.","entities":[{"start":0,"end":21,"type":"ORGANIZATION"}]}
+{"id":"en-084-org","text":"Our supplier, Alpimex SA, has raised its prices.","entities":[{"start":14,"end":24,"type":"ORGANIZATION"}]}
+{"id":"en-085-org","text":"The contract with Sorbier Consulting LLC expires soon.","entities":[{"start":18,"end":40,"type":"ORGANIZATION"}]}
+{"id":"en-086-org","text":"Chablais Electric AG will intervene on Monday morning.","entities":[{"start":0,"end":20,"type":"ORGANIZATION"}]}
+{"id":"en-087-org","text":"Cuénod & Partners prepared the accounts.","entities":[{"start":0,"end":17,"type":"ORGANIZATION"}]}
+{"id":"en-088-org","text":"The Cossonay Parents Association is organising a garage sale.","entities":[{"start":4,"end":32,"type":"ORGANIZATION"}]}
+{"id":"en-089-org","text":"Duvanel Printing SAS delivered the flyers.","entities":[{"start":0,"end":20,"type":"ORGANIZATION"}]}
+{"id":"en-090-org","text":"Swisscom cut the line yesterday.","entities":[{"start":0,"end":8,"type":"ORGANIZATION"}]}
+{"id":"en-091-org","text":"Pittet Bakery Ltd closes at noon on Saturdays.","entities":[{"start":0,"end":17,"type":"ORGANIZATION"}]}
+{"id":"en-092-commune","text":"We are moving from Lausanne to Yverdon-les-Bains.","entities":[{"start":19,"end":27,"type":"LOCATION"},{"start":31,"end":48,"type":"LOCATION"}]}
+{"id":"en-093-commune","text":"The market in Carouge takes place on Wednesdays.","entities":[{"start":14,"end":21,"type":"LOCATION"}]}
+{"id":"en-094-commune","text":"He has lived in Saint-Julien-en-Genevois for three years.","entities":[{"start":16,"end":40,"type":"LOCATION"}]}
+{"id":"en-095-commune","text":"The train to Neuchâtel leaves from platform 4.","entities":[{"start":13,"end":22,"type":"LOCATION"}]}
+{"id":"en-096-commune","text":"Meyrin and Vernier voted the same budget.","entities":[{"start":0,"end":6,"type":"LOCATION"},{"start":11,"end":18,"type":"LOCATION"}]}
+{"id":"en-097-commune","text":"Meet me in Thonon-les-Bains for the harbour tour.","entities":[{"start":11,"end":27,"type":"LOCATION"}]}
+{"id":"en-098-commune","text":"The school is in Cossonay, in the canton of Vaud.","entities":[{"start":17,"end":25,"type":"LOCATION"},{"start":44,"end":48,"type":"LOCATION"}]}
+{"id":"en-099-commune","text":"They spent the weekend in Chamonix, in Haute-Savoie.","entities":[{"start":26,"end":34,"type":"LOCATION"},{"start":39,"end":51,"type":"LOCATION"}]}
+{"id":"en-100-commune","text":"The truck left Martigny for Sion.","entities":[{"start":15,"end":23,"type":"LOCATION"},{"start":28,"end":32,"type":"LOCATION"}]}
+{"id":"en-101-commune","text":"We have one client in Manchester and another in Leeds.","entities":[{"start":22,"end":32,"type":"LOCATION"},{"start":48,"end":53,"type":"LOCATION"}]}
+{"id":"en-102-commune","text":"Departure from Geneva, arrival in London around 6 pm.","entities":[{"start":15,"end":21,"type":"LOCATION"},{"start":34,"end":40,"type":"LOCATION"}]}
+{"id":"en-103-commune","text":"Ferney-Voltaire is right next to Geneva.","entities":[{"start":0,"end":15,"type":"LOCATION"},{"start":33,"end":39,"type":"LOCATION"}]}
+{"id":"en-104-accent","text":"Zoé Béguelin lives in Évian-les-Bains.","entities":[{"start":0,"end":12,"type":"PERSON"},{"start":22,"end":37,"type":"LOCATION"}]}
+{"id":"en-105-accent","text":"Renée Lüthi showed her work in Delémont.","entities":[{"start":0,"end":11,"type":"PERSON"},{"start":31,"end":39,"type":"LOCATION"}]}
+{"id":"en-106-accent","text":"Jérémy Dällenbach was born in Saint-Maurice.","entities":[{"start":0,"end":17,"type":"PERSON"},{"start":30,"end":43,"type":"LOCATION"}]}
+{"id":"en-107-accent","text":"Hélène Sträuli studied in Zürich.","entities":[{"start":0,"end":14,"type":"PERSON"},{"start":26,"end":32,"type":"LOCATION"}]}
+{"id":"en-108-accent","text":"Gaëlle Çelik arrived in Neuchâtel in August.","entities":[{"start":0,"end":12,"type":"PERSON"},{"start":24,"end":33,"type":"LOCATION"}]}
+{"id":"en-109-emoji","text":"Thanks Julie 😊 see you tomorrow!","entities":[{"start":7,"end":12,"type":"PERSON"}]}
+{"id":"en-110-emoji","text":"🎉 Congrats to Marc Rochat on his promotion at Alpimex SA 🎉","entities":[{"start":15,"end":26,"type":"PERSON"},{"start":47,"end":57,"type":"ORGANIZATION"}]}
+{"id":"en-111-emoji","text":"🚗 Meet in front of Nyon station with Sandra 👍","entities":[{"start":20,"end":24,"type":"LOCATION"},{"start":38,"end":44,"type":"PERSON"}]}
+{"id":"en-112-emoji","text":"😂😂 Hugo forgot his keys again!","entities":[{"start":5,"end":9,"type":"PERSON"}]}
+{"id":"en-113-emoji","text":"📍Lausanne - meeting with Karim Haddad 📞","entities":[{"start":2,"end":10,"type":"LOCATION"},{"start":26,"end":38,"type":"PERSON"}]}
+{"id":"en-114-emoji","text":"👋 Hi Lea! Here is the link 🔗 for Brasserie du Léman Sàrl.","entities":[{"start":6,"end":9,"type":"PERSON"},{"start":35,"end":58,"type":"ORGANIZATION"}]}
+{"id":"en-115-emoji","text":"❤️ Happy birthday Matilda 🎂🎈","entities":[{"start":18,"end":25,"type":"PERSON"}]}
+{"id":"en-116-emoji","text":"👨‍👩‍👧 The Bovet family is off to Chamonix ⛷️ tomorrow.","entities":[{"start":13,"end":18,"type":"PERSON"},{"start":36,"end":44,"type":"LOCATION"}]}
+{"id":"en-117-none","text":"The meeting has been postponed to next Thursday.","entities":[]}
+{"id":"en-118-none","text":"Please send the document before noon.","entities":[]}
+{"id":"en-119-none","text":"The server will be restarted tonight for an update.","entities":[]}
+{"id":"en-120-none","text":"It has been raining since this morning and the road is closed.","entities":[]}
+{"id":"en-121-none","text":"Yours faithfully, and thank you for your attention.","entities":[]}
+{"id":"en-122-none","text":"Remember to switch off the computers before leaving.","entities":[]}
+{"id":"en-123-none","text":"The invoice total comes to 1,250 francs.","entities":[]}
+{"id":"en-124-none","text":"Don't forget to fill in the online questionnaire.","entities":[]}
+{"id":"en-125-none","text":"Students are meeting at 8 am in front of the gym.","entities":[]}
+{"id":"en-126-none","text":"Can you re-read paragraph 3 and tell me what you think?","entities":[]}
+{"id":"en-127-none","text":"The update will be rolled out gradually to all workstations.","entities":[]}
+{"id":"en-128-none","text":"🙏 Thanks in advance for your understanding.","entities":[]}
+{"id":"en-129-trap","text":"She picked a red rose in the garden.","entities":[]}
+{"id":"en-130-trap","text":"The wall is built of dressed stone.","entities":[]}
+{"id":"en-131-trap","text":"I ate an orange and drank some apple juice.","entities":[]}
+{"id":"en-132-trap","text":"The logo is bright orange on a white background.","entities":[]}
+{"id":"en-133-trap","text":"Orange announced an outage on its mobile network.","entities":[{"start":0,"end":6,"type":"ORGANIZATION"}]}
+{"id":"en-134-trap","text":"Rose sent a bouquet to Pierre.","entities":[{"start":0,"end":4,"type":"PERSON"},{"start":23,"end":29,"type":"PERSON"}]}
+{"id":"en-135-trap","text":"Can you pay the bill before Friday?","entities":[]}
+{"id":"en-136-trap","text":"Bill paid the bill before Friday.","entities":[{"start":0,"end":4,"type":"PERSON"}]}
+{"id":"en-137-trap","text":"I will mark the exam tomorrow.","entities":[]}
+{"id":"en-138-trap","text":"Mark will mark the exam tomorrow.","entities":[{"start":0,"end":4,"type":"PERSON"}]}
+{"id":"en-139-trap","text":"Grace showed great grace under pressure.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"en-140-trap","text":"Will will arrive at noon.","entities":[{"start":0,"end":4,"type":"PERSON"}]}
+{"id":"en-141-trap","text":"Amber wore an amber necklace.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"en-142-trap","text":"Hunter is a hunter by trade.","entities":[{"start":0,"end":6,"type":"PERSON"}]}
+{"id":"en-143-trap","text":"Faith kept her faith.","entities":[{"start":0,"end":5,"type":"PERSON"}]}
+{"id":"en-144-trap","text":"Apple released a security update.","entities":[{"start":0,"end":5,"type":"ORGANIZATION"}]}
+{"id":"en-145-trap","text":"He took an apple from the basket.","entities":[]}
+{"id":"en-146-trap","text":"Jordan flew to Jordan last week.","entities":[{"start":0,"end":6,"type":"PERSON"},{"start":15,"end":21,"type":"LOCATION"}]}
+{"id":"en-147-trap","text":"Chelsea lives in Chelsea, not in Paris.","entities":[{"start":0,"end":7,"type":"PERSON"},{"start":17,"end":24,"type":"LOCATION"},{"start":33,"end":38,"type":"LOCATION"}]}
+{"id":"en-148-trap","text":"Victoria met Georgia at the station.","entities":[{"start":0,"end":8,"type":"PERSON"},{"start":13,"end":20,"type":"PERSON"}]}
+{"id":"en-149-trap","text":"The fox crossed the road.","entities":[]}
+{"id":"en-150-trap","text":"Louis Fox crossed the road.","entities":[{"start":0,"end":9,"type":"PERSON"}]}

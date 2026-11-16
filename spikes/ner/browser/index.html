@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lessive — spike S1 : NER dans le navigateur</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { font: 15px/1.45 system-ui, sans-serif; max-width: 62rem; margin: 1.5rem auto; padding: 0 1rem; }
+      fieldset { margin: 0 0 1rem; }
+      textarea { width: 100%; box-sizing: border-box; font: inherit; }
+      table { border-collapse: collapse; margin: .5rem 0; }
+      td, th { border: 1px solid #bbb; padding: .2rem .6rem; text-align: left; }
+      #view { white-space: pre-wrap; border: 1px solid #bbb; padding: .5rem; min-height: 3rem; }
+      mark { padding: 0 .1em; border-radius: 3px; }
+      mark.PERSON { background: #ffd54f; }
+      mark.ORGANIZATION { background: #81d4fa; }
+      mark.LOCATION { background: #a5d6a7; }
+      code { background: #eee; padding: 0 .25em; }
+      #log { color: #555; font-size: 13px; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>Spike S1 — NER dans le navigateur</h1>
+    <p>Charge un modèle depuis <code>models/</code> dans un Web Worker (aucun téléchargement) et mesure les temps.</p>
+
+    <fieldset>
+      <legend>Modèle</legend>
+      <label>Modèle <select id="model"></select></label>
+      <label>Précision <select id="dtype"><option>q8</option><option>fp32</option><option>int8</option><option>uint8</option><option>fp16</option></select></label>
+      <label>Backend <select id="device"><option>wasm</option><option>webgpu</option></select></label>
+      <label>Threads <input id="threads" type="number" min="1" max="16" value="1" style="width:4rem" /></label>
+      <button id="load">Charger</button>
+      <div id="models-hint"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Texte</legend>
+      <textarea id="text" rows="5">Bonjour Zoé Béguelin 😊 Mme Favre de Brasserie du Léman Sàrl habite à Saint-Julien-en-Genevois, près de Genève.</textarea>
+      <button id="run" disabled>Détecter</button>
+      <button id="run5000" disabled>Texte de 5000 caractères (3 essais)</button>
+    </fieldset>
+
+    <h2>Résultat</h2>
+    <div id="view"></div>
+    <table id="spans"></table>
+
+    <h2>Mesures</h2>
+    <table id="stats"></table>
+    <div id="log"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
