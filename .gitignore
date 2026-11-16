@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+models/*
+!models/README.md
+spikes/**/node_modules/
+spikes/**/models/
+.DS_Store
+*.log

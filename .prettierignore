@@ -1,0 +1,7 @@
+dist/
+node_modules/
+models/
+spikes/
+corpus/
+package-lock.json
+*.md

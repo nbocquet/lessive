@@ -1,0 +1,11 @@
+Lessive
+Copyright 2026 Nicolas Bocquet et les contributeurs de Lessive
+
+Ce produit est distribué sous la licence Apache 2.0 (voir LICENSE).
+
+Composants tiers
+----------------
+Les notices des composants tiers embarqués dans la distribution seront
+listées ici : modèle NER, listes de prénoms, motifs de détection repris
+de Presidio (https://github.com/data-privacy-stack/presidio, licence MIT,
+Copyright (c) Microsoft Corporation).
