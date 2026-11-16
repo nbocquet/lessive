@@ -32,10 +32,15 @@ export default tseslint.config(
               message: "src/core ne doit pas dépendre de src/ner ni de src/web (R3).",
             },
             {
-              group: ["node:*", "fs", "path", "crypto", "os"],
+              group: ["node:*"],
               message: "src/core doit rester indépendant de Node (R3).",
             },
           ],
+          // Noms exacts : un motif « crypto » bloquerait aussi le dossier src/core/crypto.
+          paths: ["fs", "path", "crypto", "os", "child_process", "worker_threads"].map((name) => ({
+            name,
+            message: "src/core doit rester indépendant de Node (R3).",
+          })),
         },
       ],
     },
