@@ -52,7 +52,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["**/*.test.ts", "*.config.{js,ts}"],
+    files: ["**/*.test.ts", "*.config.{js,ts}", "packs/_tools/**/*.ts"],
     languageOptions: { globals: { ...globals.node } },
     rules: { "no-restricted-imports": "off", "no-console": "off" },
   },

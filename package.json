@@ -30,6 +30,7 @@
     "globals": "17.14.0",
     "prettier": "3.10.1",
     "prettier-plugin-svelte": "4.1.1",
+    "redos-detector": "6.1.4",
     "svelte-check": "4.7.8",
     "typescript": "6.0.3",
     "typescript-eslint": "8.73.0",
