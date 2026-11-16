@@ -2,7 +2,14 @@
  * Banc d'essai commun à tous les packs livrés.
  *
  * 1. Chaque pack se charge et passe le schéma.
- * 2. Aucun motif n'est signalé par le détecteur de ReDoS.
+ * 2. ReDoS, en deux contrôles :
+ *    a. statique : le motif ANCRÉ (^(?:motif)) doit passer redos-detector. On ancre parce que,
+ *       sans ancre, l'outil compte les redémarrages du balayage et rejette des motifs bornés
+ *       inoffensifs ; l'ancre isole le vrai danger, le retour arrière explosif dans une tentative.
+ *       Exceptions relues et justifiées : packs/_tools/redos-exceptions.json ;
+ *    b. dynamique, pour TOUS les motifs : balayage complet d'entrées adverses de 20 000
+ *       caractères (répétitions des littéraux du motif et de séquences usuelles) en moins de
+ *       ADVERSARIAL_BUDGET_MS chacune. Ce contrôle couvre aussi le coût des redémarrages.
  * 3. Les cas de tests/cases.json de chaque pack passent, TOUS LES PACKS ÉTANT ACTIFS
  *    ensemble (critère AC-05 : Suisse et France activables simultanément).
  *
@@ -29,6 +36,37 @@ import { isSafePattern } from "redos-detector";
 import { describe, expect, it } from "vitest";
 import { createAnalyzer, PackRegistry, type Language } from "../../src/core/index.ts";
 import { bundledPackDirs, loadPackDir } from "./load.ts";
+
+const ADVERSARIAL_LENGTH = 20_000;
+const ADVERSARIAL_BUDGET_MS = 150;
+
+const exceptions = new Set(
+  (
+    JSON.parse(readFileSync(new URL("./redos-exceptions.json", import.meta.url), "utf8")) as {
+      exceptions: Array<{ rule: string }>;
+    }
+  ).exceptions.map((e) => e.rule),
+);
+
+/** Graines adverses : séquences usuelles + littéraux et préfixes présents dans le motif. */
+function adversarialSeeds(pattern: string): string[] {
+  const seeds = new Set(["a", "A", "0", " ", ".", "-", "_", ":", "a.", "0.", "a-", "0 ", "aA0"]);
+  const literals = pattern.replace(/\\[dDwWsSbBpPkuxc]|\\./g, "").replace(/[[\](){}?*+|^$]/g, "");
+  for (const ch of literals) seeds.add(ch);
+  const runs = pattern.match(/(?:[A-Za-z0-9_@:=/-]|\\[.-]){2,}/g) ?? [];
+  for (const run of runs) seeds.add(run.replace(/\\/g, ""));
+  return [...seeds];
+}
+
+function scanDuration(re: RegExp, input: string): number {
+  const t0 = performance.now();
+  re.lastIndex = 0;
+  let guard = 0;
+  for (let m = re.exec(input); m !== null && guard < 1_000_000; m = re.exec(input), guard++) {
+    if (m[0].length === 0) re.lastIndex++;
+  }
+  return performance.now() - t0;
+}
 
 interface Case {
   id: string;
@@ -59,15 +97,31 @@ describe("packs livrés", () => {
 
       for (const rule of pack.rules) {
         if (rule.kind !== "pattern") continue;
-        it(`motif ${rule.id} sans risque de ReDoS`, () => {
-          const flags = rule.flags ?? "";
-          const res = isSafePattern(rule.pattern, {
+        const globalId = `${pack.manifest.id}/${rule.id}`;
+        const flags = rule.flags ?? "";
+        const staticSafe =
+          exceptions.has(globalId) ||
+          isSafePattern(`^(?:${rule.pattern})`, {
             caseInsensitive: flags.includes("i"),
             unicode: flags.includes("u"),
             dotAll: flags.includes("s"),
             multiLine: flags.includes("m"),
-          });
-          expect(res.safe, `motif ${rule.id} potentiellement catastrophique`).toBe(true);
+          }).safe;
+        it(`motif ${rule.id} : contrôle statique ReDoS (ancré)`, () => {
+          expect(staticSafe, `motif ${globalId} potentiellement catastrophique`).toBe(true);
+        });
+        // Le test de durée n'est lancé que si le contrôle statique passe : un motif réellement
+        // exponentiel bloquerait le processus au lieu d'échouer proprement.
+        it.skipIf(!staticSafe)(`motif ${rule.id} : durée sur entrées adverses`, () => {
+          const re = new RegExp(rule.pattern, `${flags}g`);
+          for (const seed of adversarialSeeds(rule.pattern)) {
+            const input = seed.repeat(Math.ceil(ADVERSARIAL_LENGTH / seed.length)) + "!";
+            const ms = scanDuration(re, input);
+            expect(
+              ms,
+              `motif ${globalId} lent (${ms.toFixed(0)} ms) sur la graine ${JSON.stringify(seed)}`,
+            ).toBeLessThan(ADVERSARIAL_BUDGET_MS);
+          }
         });
       }
 

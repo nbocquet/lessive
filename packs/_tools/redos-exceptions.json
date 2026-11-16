@@ -1,0 +1,13 @@
+{
+  "comment": "Règles dispensées du contrôle statique ReDoS après relecture humaine. Chaque exception reste soumise au test de durée sur entrées adverses. Ajouter une exception exige une justification et une relecture.",
+  "exceptions": [
+    {
+      "rule": "global/ipv4",
+      "reason": "Alternatives d'octets toutes bornées (au plus 3 chiffres), répétition {3} fixe, aucun quantificateur non borné. Le détecteur abandonne (hitMaxSteps) sans prouver de risque."
+    },
+    {
+      "rule": "global/ipv6",
+      "reason": "Alternatives de groupes hexadécimaux bornés ({1,4}, {1,7}), aucun quantificateur non borné hors de l'assertion finale. Le détecteur abandonne (hitMaxScore) sans prouver de risque."
+    }
+  ]
+}

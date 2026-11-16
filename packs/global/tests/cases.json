@@ -1,0 +1,708 @@
+{
+  "cases": [
+    {
+      "id": "email-simple-fr",
+      "language": "fr",
+      "text": "Écrivez-moi à jean.dupont@example.org pour la suite.",
+      "expect": [
+        {
+          "type": "EMAIL",
+          "value": "jean.dupont@example.org"
+        }
+      ]
+    },
+    {
+      "id": "email-ponctuation-finale-en",
+      "language": "en",
+      "text": "Contact: alice+news@mail.example.co.uk.",
+      "expect": [
+        {
+          "type": "EMAIL",
+          "value": "alice+news@mail.example.co.uk"
+        }
+      ]
+    },
+    {
+      "id": "email-entre-parentheses-et-virgule",
+      "language": "fr",
+      "text": "Merci (contact@exemple.ch), à bientôt.",
+      "expect": [
+        {
+          "type": "EMAIL",
+          "value": "contact@exemple.ch"
+        }
+      ]
+    },
+    {
+      "id": "email-deux-adresses",
+      "language": "en",
+      "text": "From a_b@test.example to c-d@sub.test.example!",
+      "expect": [
+        {
+          "type": "EMAIL",
+          "value": "a_b@test.example"
+        },
+        {
+          "type": "EMAIL",
+          "value": "c-d@sub.test.example"
+        }
+      ]
+    },
+    {
+      "id": "email-negatif-arobase-seul",
+      "language": "fr",
+      "text": "Rendez-vous @ 14 h chez Paul, voir @pseudo sur le forum.",
+      "expect": []
+    },
+    {
+      "id": "email-negatif-sans-domaine-valide",
+      "language": "en",
+      "text": "The string user@localhost is not an address, nor is foo@bar.",
+      "expect": []
+    },
+    {
+      "id": "url-https-simple",
+      "language": "en",
+      "text": "See https://example.org/docs/page.html for details.",
+      "expect": [
+        {
+          "type": "URL",
+          "value": "https://example.org/docs/page.html"
+        }
+      ]
+    },
+    {
+      "id": "url-point-final-fr",
+      "language": "fr",
+      "text": "Le site est https://www.exemple.ch/accueil.",
+      "expect": [
+        {
+          "type": "URL",
+          "value": "https://www.exemple.ch/accueil"
+        }
+      ]
+    },
+    {
+      "id": "url-entre-parentheses",
+      "language": "fr",
+      "text": "Voir la page (https://example.org/a/b?x=1&y=2) puis continuer.",
+      "expect": [
+        {
+          "type": "URL",
+          "value": "https://example.org/a/b?x=1&y=2"
+        }
+      ]
+    },
+    {
+      "id": "url-www-sans-schema",
+      "language": "en",
+      "text": "Visit www.example.com, it is fine.",
+      "expect": [
+        {
+          "type": "URL",
+          "value": "www.example.com"
+        }
+      ]
+    },
+    {
+      "id": "url-http-avec-port-et-ip",
+      "language": "en",
+      "text": "Admin panel: http://192.168.1.10:8080/admin.",
+      "expect": [
+        {
+          "type": "URL",
+          "value": "http://192.168.1.10:8080/admin"
+        }
+      ]
+    },
+    {
+      "id": "url-point-d-interrogation-final",
+      "language": "fr",
+      "text": "Avez-vous vu http://example.org/quoi?",
+      "expect": [
+        {
+          "type": "URL",
+          "value": "http://example.org/quoi"
+        }
+      ]
+    },
+    {
+      "id": "url-contenant-un-courriel",
+      "language": "en",
+      "text": "Open https://example.org/unsubscribe?mail=bob@example.net now",
+      "expect": [
+        {
+          "type": "URL",
+          "value": "https://example.org/unsubscribe?mail=bob@example.net"
+        }
+      ]
+    },
+    {
+      "id": "url-negatif-domaine-nu",
+      "language": "fr",
+      "text": "Le domaine example.org n'a pas de schéma, ni exemple.ch.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-simple",
+      "language": "fr",
+      "text": "Le serveur répond sur 192.168.0.12 depuis hier.",
+      "expect": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "192.168.0.12"
+        }
+      ]
+    },
+    {
+      "id": "ipv4-fin-de-phrase",
+      "language": "en",
+      "text": "Ping 10.0.0.254.",
+      "expect": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "10.0.0.254"
+        }
+      ]
+    },
+    {
+      "id": "ipv4-octet-255",
+      "language": "en",
+      "text": "Broadcast address is 255.255.255.255 here",
+      "expect": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "255.255.255.255"
+        }
+      ]
+    },
+    {
+      "id": "ipv4-negatif-octet-trop-grand",
+      "language": "en",
+      "text": "The value 256.1.1.1 and 1.2.3.999 are not addresses.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-negatif-version-logicielle",
+      "language": "en",
+      "text": "Upgrade to version 1.2.3 or 2.10.4 of the library.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-negatif-cinq-segments",
+      "language": "en",
+      "text": "Build number 1.2.3.4.5 is internal.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-negatif-heure-et-date",
+      "language": "fr",
+      "text": "Réunion à 12:30 le 12.03.2024 en salle 4.",
+      "expect": []
+    },
+    {
+      "id": "ipv6-complete",
+      "language": "en",
+      "text": "Host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 is down.",
+      "expect": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        }
+      ]
+    },
+    {
+      "id": "ipv6-compressee",
+      "language": "fr",
+      "text": "Adresse IP : 2001:db8::ff00:42:8329.",
+      "expect": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "2001:db8::ff00:42:8329"
+        }
+      ]
+    },
+    {
+      "id": "ipv6-lien-local",
+      "language": "en",
+      "text": "Link-local fe80::1 is configured.",
+      "expect": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "fe80::1"
+        }
+      ]
+    },
+    {
+      "id": "ipv6-loopback",
+      "language": "en",
+      "text": "Listening on ::1 only.",
+      "expect": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "::1"
+        }
+      ]
+    },
+    {
+      "id": "ipv6-negatif-heure",
+      "language": "fr",
+      "text": "Rendez-vous à 12:30 puis 14:45:10 ou 9:05.",
+      "expect": []
+    },
+    {
+      "id": "ipv6-negatif-cpp-namespace",
+      "language": "en",
+      "text": "Call std::vector and boost::asio::io_context here.",
+      "expect": []
+    },
+    {
+      "id": "iban-suisse-exemple-publie-groupe",
+      "language": "fr",
+      "text": "IBAN : CH93 0076 2011 6238 5295 7.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "CH93 0076 2011 6238 5295 7"
+        }
+      ]
+    },
+    {
+      "id": "iban-suisse-compact",
+      "language": "en",
+      "text": "Transfer to CH9300762011623852957 today.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "CH9300762011623852957"
+        }
+      ]
+    },
+    {
+      "id": "iban-allemand-groupe",
+      "language": "en",
+      "text": "Send it to DE89 3704 0044 0532 0130 00 please.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "DE89 3704 0044 0532 0130 00"
+        }
+      ]
+    },
+    {
+      "id": "iban-francais-groupe",
+      "language": "fr",
+      "text": "Mon RIB : FR76 3000 6000 0112 3456 7890 189, merci.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "FR76 3000 6000 0112 3456 7890 189"
+        }
+      ]
+    },
+    {
+      "id": "iban-britannique-lettres",
+      "language": "en",
+      "text": "UK account GB82 WEST 1234 5698 7654 32.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "GB82 WEST 1234 5698 7654 32"
+        }
+      ]
+    },
+    {
+      "id": "iban-belge-quatre-groupes",
+      "language": "fr",
+      "text": "Compte BE68 5390 0754 7034 ouvert en 2020.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "BE68 5390 0754 7034"
+        }
+      ]
+    },
+    {
+      "id": "iban-espagnol-compact",
+      "language": "en",
+      "text": "IBAN ES9121000418450200051332 (savings).",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "ES9121000418450200051332"
+        }
+      ]
+    },
+    {
+      "id": "iban-italien-groupe",
+      "language": "en",
+      "text": "Account IT60 X054 2811 1010 0000 0123 456.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "IT60 X054 2811 1010 0000 0123 456"
+        }
+      ]
+    },
+    {
+      "id": "iban-liechtenstein-groupe",
+      "language": "fr",
+      "text": "Compte LI21 0881 0000 2324 013A A au nom de la société.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "LI21 0881 0000 2324 013A A"
+        }
+      ]
+    },
+    {
+      "id": "iban-negatif-cle-invalide",
+      "language": "fr",
+      "text": "IBAN : CH93 0076 2011 6238 5295 8.",
+      "expect": []
+    },
+    {
+      "id": "iban-negatif-mauvaise-longueur",
+      "language": "en",
+      "text": "Wrong length DE89 3704 0044 0532 0130 0 here.",
+      "expect": []
+    },
+    {
+      "id": "iban-negatif-reference-quelconque",
+      "language": "en",
+      "text": "Order reference AB12 CDEF GH34 is not a bank account.",
+      "expect": []
+    },
+    {
+      "id": "carte-visa-test-groupee",
+      "language": "fr",
+      "text": "Carte Visa 4111 1111 1111 1111, expire 12/30.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "4111 1111 1111 1111"
+        }
+      ]
+    },
+    {
+      "id": "carte-mastercard-tirets",
+      "language": "en",
+      "text": "Card number 5555-5555-5555-4444 was charged.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "5555-5555-5555-4444"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-sans-contexte",
+      "language": "fr",
+      "text": "Paiement avec 4111111111111111 refusé.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "4111111111111111"
+        }
+      ]
+    },
+    {
+      "id": "carte-amex-4-6-5",
+      "language": "en",
+      "text": "Amex 3782 822463 10005 on file.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3782 822463 10005"
+        }
+      ]
+    },
+    {
+      "id": "carte-amex-compacte",
+      "language": "en",
+      "text": "Amex: 378282246310005.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "378282246310005"
+        }
+      ]
+    },
+    {
+      "id": "carte-diners-4-6-4",
+      "language": "fr",
+      "text": "Carte Diners 3056 930902 5904 enregistrée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3056 930902 5904"
+        }
+      ]
+    },
+    {
+      "id": "carte-visa-13-chiffres",
+      "language": "en",
+      "text": "Old card 4222222222222 expired.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "4222222222222"
+        }
+      ]
+    },
+    {
+      "id": "carte-negatif-luhn-invalide",
+      "language": "fr",
+      "text": "Carte bancaire 4111 1111 1111 1112 saisie.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-compacte-luhn-invalide",
+      "language": "en",
+      "text": "Card 4111111111111112 declined.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-telephone-suisse",
+      "language": "fr",
+      "text": "Appelez le +41 79 123 45 67 ou le 0041 79 123 45 67.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-telephone-francais-compact",
+      "language": "fr",
+      "text": "Fixe : 0033123456789 ou +33 1 23 45 67 89.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-avs-avec-points",
+      "language": "en",
+      "text": "My AHV number is 756.1234.5678.97.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-avs-compact",
+      "language": "fr",
+      "text": "Numéro AVS sans points : 7561234567897.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-horodatage",
+      "language": "en",
+      "text": "Epoch in milliseconds: 1700000000000.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-iban-ne-donne-pas-carte",
+      "language": "en",
+      "text": "IBAN DE77 3704 0044 0532 0008 00 is the account.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "DE77 3704 0044 0532 0008 00"
+        }
+      ]
+    },
+    {
+      "id": "secret-aws-access-key",
+      "language": "en",
+      "text": "aws_access_key_id = \u0041KIAIOSFODNN7EXAMPLE",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0041KIAIOSFODNN7EXAMPLE"
+        }
+      ]
+    },
+    {
+      "id": "secret-github-ghp",
+      "language": "en",
+      "text": "export GITHUB_TOKEN=\u0067hp_a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0067hp_a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8"
+        }
+      ]
+    },
+    {
+      "id": "secret-github-fine-grained",
+      "language": "en",
+      "text": "Use \u0067ithub_pat_11AAAAAAA0EXAMPLE0EXAMPLE_0123456789abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLM.",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0067ithub_pat_11AAAAAAA0EXAMPLE0EXAMPLE_0123456789abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLM"
+        }
+      ]
+    },
+    {
+      "id": "secret-slack-bot",
+      "language": "fr",
+      "text": "Jeton du bot : \u0078oxb-123456789012-1234567890123-EXAMPLEexampleEXAMPLEexam",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0078oxb-123456789012-1234567890123-EXAMPLEexampleEXAMPLEexam"
+        }
+      ]
+    },
+    {
+      "id": "secret-stripe-test",
+      "language": "fr",
+      "text": "Clé Stripe de test : \u0073k_test_EXAMPLEEXAMPLEEXAMPLE0000.",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0073k_test_EXAMPLEEXAMPLEEXAMPLE0000"
+        }
+      ]
+    },
+    {
+      "id": "secret-google-api",
+      "language": "en",
+      "text": "key=\u0041IzaSyEXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE12&q=x",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0041IzaSyEXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE12"
+        }
+      ]
+    },
+    {
+      "id": "secret-anthropic",
+      "language": "en",
+      "text": "ANTHROPIC_API_KEY=\u0073k-ant-api03-EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE_-0123456789",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0073k-ant-api03-EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE_-0123456789"
+        }
+      ]
+    },
+    {
+      "id": "secret-openai-proj",
+      "language": "en",
+      "text": "OPENAI_API_KEY=\"\u0073k-proj-EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0_-12\"",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0073k-proj-EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0_-12"
+        }
+      ]
+    },
+    {
+      "id": "secret-openai-ancienne-forme",
+      "language": "en",
+      "text": "Old key \u0073k-EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0AB still works",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0073k-EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0AB"
+        }
+      ]
+    },
+    {
+      "id": "secret-jwt",
+      "language": "en",
+      "text": "Authorization: Bearer \u0065yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.\u0065yJzdWIiOiJ0ZXN0IiwibmFtZSI6IkV4YW1wbGUifQ.c2lnbmF0dXJlRVhBTVBMRQ",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u0065yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.\u0065yJzdWIiOiJ0ZXN0IiwibmFtZSI6IkV4YW1wbGUifQ.c2lnbmF0dXJlRVhBTVBMRQ"
+        }
+      ]
+    },
+    {
+      "id": "secret-pem-pkcs8",
+      "language": "en",
+      "text": "Here is the key:\n\u002d----BEGIN PRIVATE \u004bEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7EXAMPLE0\nEXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0AB==\n\u002d----END PRIVATE \u004bEY-----\nDo not share.",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u002d----BEGIN PRIVATE \u004bEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7EXAMPLE0\nEXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0AB==\n\u002d----END PRIVATE \u004bEY-----"
+        }
+      ]
+    },
+    {
+      "id": "secret-pem-rsa",
+      "language": "fr",
+      "text": "\u002d----BEGIN RSA PRIVATE \u004bEY-----\nMIIEowIBAAKCAQEAEXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0\nEXAMPLE0EXAMPLE0EXAMPLE0==\n\u002d----END RSA PRIVATE \u004bEY-----\nvoilà.",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "\u002d----BEGIN RSA PRIVATE \u004bEY-----\nMIIEowIBAAKCAQEAEXAMPLE0EXAMPLE0EXAMPLE0EXAMPLE0\nEXAMPLE0EXAMPLE0EXAMPLE0==\n\u002d----END RSA PRIVATE \u004bEY-----"
+        }
+      ]
+    },
+    {
+      "id": "secret-pem-certificat-publique-negatif",
+      "language": "en",
+      "text": "\u002d----BEGIN CERTIFICATE-----\nMIIBEXAMPLE0EXAMPLE0EXAMPLE0==\n\u002d----END CERTIFICATE-----",
+      "expect": []
+    },
+    {
+      "id": "secret-pem-sans-fin-negatif",
+      "language": "en",
+      "text": "\u002d----BEGIN PRIVATE \u004bEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcw",
+      "expect": []
+    },
+    {
+      "id": "secret-negatif-prefixes-trop-courts",
+      "language": "en",
+      "text": "Tokens like ghp_short, AKIA123, \u0073k-abc and \u0078oxb-1 are too short.",
+      "expect": []
+    },
+    {
+      "id": "secret-negatif-jwt-incomplet",
+      "language": "en",
+      "text": "Header only: \u0065yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9 and eyJ.eyJ.x",
+      "expect": []
+    },
+    {
+      "id": "secret-mot-de-passe-fr",
+      "language": "fr",
+      "text": "Mot de passe : Tr0ub4dor&3 à changer.",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "Tr0ub4dor&3"
+        }
+      ]
+    },
+    {
+      "id": "secret-password-egal-guillemets",
+      "language": "en",
+      "text": "config: password=\"s3cr3t-Pass99\" # demo",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "s3cr3t-Pass99"
+        }
+      ]
+    },
+    {
+      "id": "secret-mdp-deux-points",
+      "language": "fr",
+      "text": "mdp: azerty123!",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "azerty123!"
+        }
+      ]
+    },
+    {
+      "id": "secret-password-negatif-mot-ordinaire",
+      "language": "en",
+      "text": "Reset your password: please contact support.",
+      "expect": []
+    },
+    {
+      "id": "secret-mot-de-passe-negatif-phrase",
+      "language": "fr",
+      "text": "Le mot de passe doit contenir huit caractères.",
+      "expect": []
+    }
+  ]
+}

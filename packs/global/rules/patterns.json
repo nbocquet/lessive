@@ -1,0 +1,202 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "email",
+      "entityType": "EMAIL",
+      "score": 0.9,
+      "pattern": "(?<![\\w.%+-])[A-Za-z0-9][A-Za-z0-9._%+-]{0,63}@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\\.[A-Za-z]{2,24}(?![\\w-])",
+      "description": "Adresse électronique (forme usuelle de la RFC 5322, sans les formes exotiques)."
+    },
+    {
+      "kind": "pattern",
+      "id": "url",
+      "entityType": "URL",
+      "score": 0.9,
+      "pattern": "(?<![\\w@/.-])(?:https?://|www\\.)(?:[^\\s<>\"'`()\\[\\]{}.,;:!?]|[.,;:!?]+(?=[^\\s<>\"'`()\\[\\]{}.,;:!?]))+",
+      "flags": "i",
+      "description": "URL http(s):// ou commençant par www. ; la ponctuation finale et les parenthèses fermantes ne sont pas incluses."
+    },
+    {
+      "kind": "pattern",
+      "id": "ipv4",
+      "entityType": "IP_ADDRESS",
+      "score": 0.6,
+      "pattern": "(?<![\\w.])(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?![\\w]|\\.\\d)",
+      "context": {
+        "words": {
+          "fr": ["ip", "adresse ip", "serveur", "hôte", "passerelle", "réseau"],
+          "en": ["ip", "ip address", "server", "host", "gateway", "network"]
+        }
+      },
+      "description": "Adresse IPv4 (quatre octets de 0 à 255, sans zéro de tête)."
+    },
+    {
+      "kind": "pattern",
+      "id": "ipv6",
+      "entityType": "IP_ADDRESS",
+      "score": 0.7,
+      "pattern": "(?<![\\w:.])(?:(?:[0-9a-f]{1,4}:){7}[0-9a-f]{1,4}|(?:[0-9a-f]{1,4}:){1,6}:[0-9a-f]{1,4}|(?:[0-9a-f]{1,4}:){1,5}(?::[0-9a-f]{1,4}){1,2}|(?:[0-9a-f]{1,4}:){1,4}(?::[0-9a-f]{1,4}){1,3}|(?:[0-9a-f]{1,4}:){1,3}(?::[0-9a-f]{1,4}){1,4}|(?:[0-9a-f]{1,4}:){1,2}(?::[0-9a-f]{1,4}){1,5}|[0-9a-f]{1,4}:(?::[0-9a-f]{1,4}){1,6}|:(?::[0-9a-f]{1,4}){1,7}|(?:[0-9a-f]{1,4}:){1,7}:)(?![\\w:.]*\\w)",
+      "flags": "i",
+      "context": {
+        "words": {
+          "fr": ["ip", "adresse ip", "ipv6", "serveur", "hôte"],
+          "en": ["ip", "ip address", "ipv6", "server", "host"]
+        }
+      },
+      "description": "Adresse IPv6, forme complète ou compressée (::), sans forme IPv4 intégrée."
+    },
+    {
+      "kind": "pattern",
+      "id": "iban-compact",
+      "entityType": "IBAN",
+      "score": 0.5,
+      "pattern": "(?<![A-Za-z0-9])[A-Z]{2}\\d{2}[A-Z0-9]{11,30}(?![A-Za-z0-9])",
+      "validator": "iban_mod97",
+      "description": "IBAN de tout pays, forme compacte, validé par modulo 97 (ISO 13616)."
+    },
+    {
+      "kind": "pattern",
+      "id": "iban-grouped",
+      "entityType": "IBAN",
+      "score": 0.5,
+      "pattern": "(?<![A-Za-z0-9])[A-Z]{2}\\d{2}(?: [A-Z0-9]{4}){2,7}(?: [A-Z0-9]{1,3})?(?![A-Za-z0-9])",
+      "validator": "iban_mod97",
+      "description": "IBAN de tout pays, groupé par 4 avec espaces, validé par modulo 97 (ISO 13616)."
+    },
+    {
+      "kind": "pattern",
+      "id": "credit-card-grouped",
+      "entityType": "CREDIT_CARD",
+      "score": 0.6,
+      "pattern": "(?<![\\w+-])(?:\\d{4}([ -])\\d{4}\\1\\d{4}\\1\\d{4}|\\d{4}([ -])\\d{6}\\2\\d{4,5})(?![\\w-])",
+      "validator": "luhn",
+      "context": {
+        "words": {
+          "fr": ["carte", "carte bancaire", "carte bleue", "cb", "visa", "mastercard", "amex"],
+          "en": ["card", "credit card", "debit card", "visa", "mastercard", "amex"]
+        }
+      },
+      "description": "Carte bancaire groupée (4-4-4-4, ou 4-6-5 / 4-6-4), validée par Luhn."
+    },
+    {
+      "kind": "pattern",
+      "id": "credit-card-compact",
+      "entityType": "CREDIT_CARD",
+      "score": 0.6,
+      "pattern": "(?<![\\w+-])(?!756\\d{10}(?!\\d))[2-6]\\d{12,18}(?![\\w-])",
+      "validator": "luhn",
+      "context": {
+        "words": {
+          "fr": ["carte", "carte bancaire", "carte bleue", "cb", "visa", "mastercard", "amex"],
+          "en": ["card", "credit card", "debit card", "visa", "mastercard", "amex"]
+        }
+      },
+      "description": "Carte bancaire compacte de 13 à 19 chiffres commençant par 2 à 6, validée par Luhn ; écarte les 13 chiffres en 756."
+    },
+    {
+      "kind": "pattern",
+      "id": "aws-access-key-id",
+      "entityType": "SECRET",
+      "score": 0.9,
+      "pattern": "(?<![A-Za-z0-9])A[KS]IA[A-Z2-7]{16}(?![A-Za-z0-9])",
+      "description": "Identifiant de clé d'accès AWS (préfixe AKIA, ou ASIA pour les clés temporaires)."
+    },
+    {
+      "kind": "pattern",
+      "id": "github-token",
+      "entityType": "SECRET",
+      "score": 0.95,
+      "pattern": "(?<![A-Za-z0-9_])gh[pousr]_[A-Za-z0-9]{36,255}(?![A-Za-z0-9_])",
+      "description": "Jeton GitHub : ghp_, gho_, ghu_, ghs_, ghr_ (36 caractères ou plus)."
+    },
+    {
+      "kind": "pattern",
+      "id": "github-fine-grained-pat",
+      "entityType": "SECRET",
+      "score": 0.95,
+      "pattern": "(?<![A-Za-z0-9_])github_pat_[A-Za-z0-9_]{22,255}(?![A-Za-z0-9_])",
+      "description": "Jeton GitHub à granularité fine (github_pat_…)."
+    },
+    {
+      "kind": "pattern",
+      "id": "slack-token",
+      "entityType": "SECRET",
+      "score": 0.95,
+      "pattern": "(?<![A-Za-z0-9-])xox[abprs]-[A-Za-z0-9]{8,40}(?:-[A-Za-z0-9]{1,40}){1,4}(?![A-Za-z0-9-])",
+      "description": "Jeton Slack (xoxb-, xoxp-, xoxa-, xoxr-, xoxs-)."
+    },
+    {
+      "kind": "pattern",
+      "id": "stripe-secret-key",
+      "entityType": "SECRET",
+      "score": 0.95,
+      "pattern": "(?<![A-Za-z0-9_])[sr]k_(?:live|test)_[A-Za-z0-9]{16,99}(?![A-Za-z0-9_])",
+      "description": "Clé secrète ou restreinte Stripe (sk_live_, sk_test_, rk_live_, rk_test_)."
+    },
+    {
+      "kind": "pattern",
+      "id": "google-api-key",
+      "entityType": "SECRET",
+      "score": 0.9,
+      "pattern": "(?<![A-Za-z0-9_-])AIza[A-Za-z0-9_-]{35}(?![A-Za-z0-9_-])",
+      "description": "Clé d'API Google (préfixe AIza, 39 caractères)."
+    },
+    {
+      "kind": "pattern",
+      "id": "anthropic-api-key",
+      "entityType": "SECRET",
+      "score": 0.95,
+      "pattern": "(?<![A-Za-z0-9_-])sk-ant-[a-z]{3,5}\\d{2}-[A-Za-z0-9_-]{20,200}(?![A-Za-z0-9_-])",
+      "description": "Clé d'API Anthropic (sk-ant-api03-…, sk-ant-admin01-…)."
+    },
+    {
+      "kind": "pattern",
+      "id": "openai-api-key",
+      "entityType": "SECRET",
+      "score": 0.85,
+      "pattern": "(?<![A-Za-z0-9_-])sk-(?:proj|svcacct|admin)-[A-Za-z0-9_-]{40,200}(?![A-Za-z0-9_-])",
+      "description": "Clé d'API OpenAI à préfixe de projet (sk-proj-, sk-svcacct-, sk-admin-)."
+    },
+    {
+      "kind": "pattern",
+      "id": "openai-legacy-api-key",
+      "entityType": "SECRET",
+      "score": 0.75,
+      "pattern": "(?<![A-Za-z0-9_-])sk-[A-Za-z0-9]{32,64}(?![A-Za-z0-9_-])",
+      "description": "Ancienne clé d'API OpenAI : sk- suivi de 32 à 64 caractères alphanumériques."
+    },
+    {
+      "kind": "pattern",
+      "id": "jwt",
+      "entityType": "SECRET",
+      "score": 0.9,
+      "pattern": "(?<![A-Za-z0-9_-])eyJ[A-Za-z0-9_-]{8,}\\.eyJ[A-Za-z0-9_-]{8,}\\.[A-Za-z0-9_-]{8,}(?![A-Za-z0-9_-])",
+      "description": "Jeton JWT : trois segments base64url, en-tête et charge utile commençant par eyJ."
+    },
+    {
+      "kind": "pattern",
+      "id": "pem-private-key",
+      "entityType": "SECRET",
+      "score": 0.98,
+      "pattern": "-----BEGIN (?:[A-Z]{2,10} ){0,3}PRIVATE KEY-----[A-Za-z0-9+/=\\s]{16,8000}-----END (?:[A-Z]{2,10} ){0,3}PRIVATE KEY-----",
+      "description": "Bloc de clé privée PEM complet (PKCS#8, RSA, EC, OpenSSH, chiffré)."
+    },
+    {
+      "kind": "pattern",
+      "id": "password-assignment",
+      "entityType": "SECRET",
+      "score": 0.4,
+      "pattern": "(?<=(?:password|passwd|pwd|mot de passe|mdp)[ \\t]{0,3}[:=][ \\t]{0,3}[\"']?)(?=[^\\s\"',;]{0,63}[\\d!@#$%^&*_+=/-])[^\\s\"',;]{6,64}",
+      "flags": "i",
+      "context": {
+        "words": {
+          "fr": ["mot de passe", "mdp", "password", "passwd", "pwd"],
+          "en": ["password", "passwd", "pwd"]
+        },
+        "required": true
+      },
+      "description": "Valeur affectée à password=, pwd:, mot de passe :, mdp : (6 à 64 caractères dont un chiffre ou un symbole). Score bas, contexte obligatoire."
+    }
+  ]
+}

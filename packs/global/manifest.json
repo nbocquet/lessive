@@ -1,0 +1,9 @@
+{
+  "id": "global",
+  "version": "0.1.0",
+  "engineVersion": "0.1.0",
+  "type": "global",
+  "name": "Pack global",
+  "description": "Identifiants indépendants du pays : courriel, URL, adresses IP, IBAN (tous pays), cartes bancaires, secrets techniques.",
+  "rules": ["rules/patterns.json"]
+}
