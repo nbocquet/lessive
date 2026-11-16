@@ -1,0 +1,127 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "titres-nom",
+      "entityType": "PERSON",
+      "score": 0.7,
+      "flags": "u",
+      "pattern": "(?<=\\b(?:M(?:M?\\.|me?s?\\.?|lles?\\.?|onsieur|essieurs|adame|esdames|ademoiselle|rs?\\.?|s\\.?|iss|x\\.?)|Dre?\\.?|Docteure?|Pr\\.?|Prof\\.?|Professeure?|Ma[iî]tre|Sir)[ \\t\\u00a0]{1,2})(?!(?:Ils?|Elles?|Je|Nous|Vous|He|She|It|We)\\b)[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ](?:['’][A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ])?[\\p{L}\\p{M}]+(?:-[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ][\\p{L}\\p{M}]+)*(?:[ \\t][A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ](?:['’][A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ])?[\\p{L}\\p{M}]+(?:-[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ][\\p{L}\\p{M}]+)*)?",
+      "context": {
+        "words": {
+          "any": [
+            "M.",
+            "MM.",
+            "Mme",
+            "Mmes",
+            "Mlle",
+            "Mlles",
+            "Monsieur",
+            "Messieurs",
+            "Madame",
+            "Mesdames",
+            "Mademoiselle",
+            "Dr",
+            "Dre",
+            "Docteur",
+            "Docteure",
+            "Pr",
+            "Prof",
+            "Professeur",
+            "Professeure",
+            "Maître",
+            "Mr",
+            "Mrs",
+            "Ms",
+            "Miss",
+            "Mx",
+            "Sir"
+          ]
+        }
+      },
+      "description": "Nom (un ou deux mots capitalisés) précédé d'un titre : M. Dupont, Mme Martin-Favre, Dr Keller, Mr Smith, Maître Rossi. Le titre est exclu de l'intervalle."
+    },
+    {
+      "kind": "pattern",
+      "id": "titres-nom-particule",
+      "entityType": "PERSON",
+      "score": 0.7,
+      "flags": "u",
+      "pattern": "(?<=\\b(?:M(?:M?\\.|me?s?\\.?|lles?\\.?|onsieur|essieurs|adame|esdames|ademoiselle|rs?\\.?|s\\.?|iss|x\\.?)|Dre?\\.?|Docteure?|Pr\\.?|Prof\\.?|Professeure?|Ma[iî]tre|Sir)[ \\t\\u00a0]{1,2})(?:d(?:e(?:[ \\t]la|l|lla|[nrs])?|[aiu]s?)[ \\t]|v[ao]n[ \\t](?:d[ae][rn][ \\t])?|te[nr][ \\t]|d['’]|de[ \\t]l['’])[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ](?:['’][A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ])?[\\p{L}\\p{M}]+(?:-[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ][\\p{L}\\p{M}]+)*",
+      "context": {
+        "words": {
+          "any": [
+            "M.",
+            "MM.",
+            "Mme",
+            "Mmes",
+            "Mlle",
+            "Mlles",
+            "Monsieur",
+            "Messieurs",
+            "Madame",
+            "Mesdames",
+            "Mademoiselle",
+            "Dr",
+            "Dre",
+            "Docteur",
+            "Docteure",
+            "Pr",
+            "Prof",
+            "Professeur",
+            "Professeure",
+            "Maître",
+            "Mr",
+            "Mrs",
+            "Ms",
+            "Miss",
+            "Mx",
+            "Sir"
+          ]
+        }
+      },
+      "description": "Nom à particule juste après le titre : M. de Rougemont, Mme de la Fontaine, Dr van Berg. La particule est incluse."
+    },
+    {
+      "kind": "pattern",
+      "id": "titres-prenom-particule",
+      "entityType": "PERSON",
+      "score": 0.7,
+      "flags": "u",
+      "pattern": "(?<=\\b(?:M(?:M?\\.|me?s?\\.?|lles?\\.?|onsieur|essieurs|adame|esdames|ademoiselle|rs?\\.?|s\\.?|iss|x\\.?)|Dre?\\.?|Docteure?|Pr\\.?|Prof\\.?|Professeure?|Ma[iî]tre|Sir)[ \\t\\u00a0][A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ][-\\p{L}\\p{M}]+[ \\t])(?:d(?:e(?:[ \\t]la|l|lla|[nrs])?|[aiu]s?)[ \\t]|v[ao]n[ \\t](?:d[ae][rn][ \\t])?|te[nr][ \\t]|d['’]|de[ \\t]l['’])[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ](?:['’][A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ])?[\\p{L}\\p{M}]+(?:-[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ][\\p{L}\\p{M}]+)*",
+      "context": {
+        "words": {
+          "any": [
+            "M.",
+            "MM.",
+            "Mme",
+            "Mmes",
+            "Mlle",
+            "Mlles",
+            "Monsieur",
+            "Messieurs",
+            "Madame",
+            "Mesdames",
+            "Mademoiselle",
+            "Dr",
+            "Dre",
+            "Docteur",
+            "Docteure",
+            "Pr",
+            "Prof",
+            "Professeur",
+            "Professeure",
+            "Maître",
+            "Mr",
+            "Mrs",
+            "Ms",
+            "Miss",
+            "Mx",
+            "Sir"
+          ]
+        }
+      },
+      "description": "Partie à particule d'un nom précédé d'un titre et d'un prénom : « de la Fontaine » dans Mme Anne de la Fontaine (le prénom est détecté par titres-nom)."
+    }
+  ]
+}

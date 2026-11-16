@@ -1,0 +1,4 @@
+{
+  "_comment": "Prénoms qui sont aussi des mots courants (français ou anglais), des noms de lieux ou des mois. Retirés de la règle « prenoms » et placés dans « prenoms-ambigus » (casse exacte, contexte obligatoire). Ce fichier s'applique aussi à la régénération depuis les sources officielles.",
+  "terms": "Aimé Aimée Ange Carol Manuel Mason Reine Amber April Art Aurore Austin Avril Basile Bill Blanche Bob Ben Claire Clémence Clément Constance Crystal Daisy Dean Don Eve Faith Florence Frank Grace Grant Guy Hazel Holly Hope Hunter Iris Ivy Jack Jade Jean Jordan Joy June Lily Lorraine Marguerite Marie Marin Marine Mark Max Maxime May Mélodie Noël Océane Olivier Olive Pat Pearl Penny Pierre Poppy Prudence Ray Rob Robin Rose Ruby Sandy Serge Sue Summer Victoire Violet Will"
+}
