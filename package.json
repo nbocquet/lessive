@@ -2,7 +2,7 @@
   "name": "lessive",
   "version": "0.0.0",
   "private": true,
-  "description": "Détection et pseudonymisation locale des données personnelles avant usage dans un LLM",
+  "description": "D\u00e9tection et pseudonymisation locale des donn\u00e9es personnelles avant usage dans un LLM",
   "license": "Apache-2.0",
   "type": "module",
   "engines": {
@@ -16,7 +16,7 @@
     "test:watch": "vitest",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
   },
   "dependencies": {
     "svelte": "5.57.3",
@@ -25,6 +25,7 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "@types/node": "22.20.5",
     "eslint": "10.15.0",
     "eslint-plugin-svelte": "3.24.1",
     "globals": "17.14.0",
