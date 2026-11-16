@@ -1,0 +1,610 @@
+{
+  "cases": [
+    {
+      "id": "num-point-suisse",
+      "language": "fr",
+      "text": "Né le 12.03.1985 à Genève.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12.03.1985"
+        }
+      ]
+    },
+    {
+      "id": "num-point-1-chiffre",
+      "language": "fr",
+      "text": "Rendez-vous le 5.3.2021 au bureau.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "5.3.2021"
+        }
+      ]
+    },
+    {
+      "id": "num-slash",
+      "language": "fr",
+      "text": "Contrat signé le 01/09/2022.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "01/09/2022"
+        }
+      ]
+    },
+    {
+      "id": "num-slash-en",
+      "language": "en",
+      "text": "The invoice is dated 15/06/2019.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "15/06/2019"
+        }
+      ]
+    },
+    {
+      "id": "num-tiret",
+      "language": "fr",
+      "text": "Échéance : 31-12-2025.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "31-12-2025"
+        }
+      ]
+    },
+    {
+      "id": "num-iso",
+      "language": "en",
+      "text": "Created on 2023-07-04 by the admin.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2023-07-04"
+        }
+      ]
+    },
+    {
+      "id": "num-iso-avec-heure",
+      "language": "fr",
+      "text": "Horodatage 2024-02-29T10:15:00Z du journal.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2024-02-29"
+        }
+      ]
+    },
+    {
+      "id": "num-fin-de-phrase",
+      "language": "fr",
+      "text": "Il est parti le 12.03.2020.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12.03.2020"
+        }
+      ]
+    },
+    {
+      "id": "num-plage",
+      "language": "fr",
+      "text": "Du 12.03.2020-15.03.2020 inclus.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12.03.2020"
+        },
+        {
+          "type": "DATE",
+          "value": "15.03.2020"
+        }
+      ]
+    },
+    {
+      "id": "num-deux-dates",
+      "language": "fr",
+      "text": "Entre le 01.01.2000 et le 31.12.2099.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "01.01.2000"
+        },
+        {
+          "type": "DATE",
+          "value": "31.12.2099"
+        }
+      ]
+    },
+    {
+      "id": "num-sans-langue",
+      "text": "Date: 24.12.1999",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "24.12.1999"
+        }
+      ]
+    },
+    {
+      "id": "num-aa-avec-contexte",
+      "language": "fr",
+      "text": "Né le 12.03.85 à Lausanne.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12.03.85"
+        }
+      ]
+    },
+    {
+      "id": "num-aa-slash-en",
+      "language": "en",
+      "text": "Born on 03/11/78 in Leeds.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "03/11/78"
+        }
+      ]
+    },
+    {
+      "id": "num-aa-dob",
+      "language": "en",
+      "text": "DOB 07.08.90",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "07.08.90"
+        }
+      ]
+    },
+    {
+      "id": "num-annee-1899-refusee",
+      "language": "fr",
+      "text": "Archive du 01.01.1899.",
+      "expect": []
+    },
+    {
+      "id": "num-annee-2100-refusee",
+      "language": "fr",
+      "text": "Horizon 01.01.2100.",
+      "expect": []
+    },
+    {
+      "id": "invalide-jour-32",
+      "language": "fr",
+      "text": "Valeur 32.01.2020 incorrecte.",
+      "expect": []
+    },
+    {
+      "id": "invalide-mois-13",
+      "language": "fr",
+      "text": "Valeur 31/13/2020 incorrecte.",
+      "expect": []
+    },
+    {
+      "id": "invalide-jour-0",
+      "language": "fr",
+      "text": "Valeur 00.05.2020 incorrecte.",
+      "expect": []
+    },
+    {
+      "id": "invalide-iso-mois-13",
+      "language": "en",
+      "text": "Value 2020-13-01 is wrong.",
+      "expect": []
+    },
+    {
+      "id": "piege-heure-deux-points",
+      "language": "fr",
+      "text": "Réunion à 12:30 en salle 3.",
+      "expect": []
+    },
+    {
+      "id": "piege-heure-h",
+      "language": "fr",
+      "text": "Départ à 12h30 précises.",
+      "expect": []
+    },
+    {
+      "id": "piege-version",
+      "language": "fr",
+      "text": "Mise à jour vers la version 1.2.3 du client.",
+      "expect": []
+    },
+    {
+      "id": "piege-montant",
+      "language": "fr",
+      "text": "Total : 12.50 CHF, soit 1.20 EUR.",
+      "expect": []
+    },
+    {
+      "id": "piege-avs",
+      "language": "en",
+      "text": "My AHV number is 756.1234.5678.97.",
+      "expect": []
+    },
+    {
+      "id": "piege-iban",
+      "language": "fr",
+      "text": "IBAN CH93 0076 2011 6238 5295 7 pour le virement.",
+      "expect": []
+    },
+    {
+      "id": "piege-telephone-fr",
+      "language": "fr",
+      "text": "Appelez le 06.12.03.20.15 ou le 06 12 03 20 15.",
+      "expect": []
+    },
+    {
+      "id": "piege-telephone-ch",
+      "language": "fr",
+      "text": "Tél. +41 22 345 67 89, fax 022 345 67 90.",
+      "expect": []
+    },
+    {
+      "id": "piege-ipv4",
+      "language": "en",
+      "text": "Serveur 192.168.10.12 et passerelle 10.12.03.20.",
+      "expect": []
+    },
+    {
+      "id": "piege-article-loi",
+      "language": "fr",
+      "text": "Selon l'art. 12.3 CO et l'art. 31.12 LPD.",
+      "expect": []
+    },
+    {
+      "id": "piege-pages",
+      "language": "fr",
+      "text": "Voir pp. 12-13 et pages 01-02.",
+      "expect": []
+    },
+    {
+      "id": "piege-annee-seule",
+      "language": "fr",
+      "text": "Il a déménagé en 2020 puis en 1999.",
+      "expect": []
+    },
+    {
+      "id": "piege-annee-seule-en",
+      "language": "en",
+      "text": "She moved in 2020 and again in 1999.",
+      "expect": []
+    },
+    {
+      "id": "fr-complet",
+      "language": "fr",
+      "text": "Il est né le 12 mars 1985 à Annecy.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12 mars 1985"
+        }
+      ]
+    },
+    {
+      "id": "fr-premier",
+      "language": "fr",
+      "text": "Livraison prévue le 1er avril 2020.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "1er avril 2020"
+        }
+      ]
+    },
+    {
+      "id": "fr-sans-annee",
+      "language": "fr",
+      "text": "Rendez-vous le 3 janvier prochain.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "3 janvier"
+        }
+      ]
+    },
+    {
+      "id": "fr-jour-semaine",
+      "language": "fr",
+      "text": "Réunion le lundi 5 février 2024 à Genève.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "lundi 5 février 2024"
+        }
+      ]
+    },
+    {
+      "id": "fr-jour-semaine-sans-annee",
+      "language": "fr",
+      "text": "On se voit samedi 14 juin.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "14 juin"
+        }
+      ]
+    },
+    {
+      "id": "fr-abrege-point",
+      "language": "fr",
+      "text": "Facture du 15 janv. 2023.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "15 janv. 2023"
+        }
+      ]
+    },
+    {
+      "id": "fr-abrege-fevr",
+      "language": "fr",
+      "text": "Reçu le 3 févr. 2022 par courrier.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "3 févr. 2022"
+        }
+      ]
+    },
+    {
+      "id": "fr-abrege-sept",
+      "language": "fr",
+      "text": "Séance du 9 sept. 2021.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "9 sept. 2021"
+        }
+      ]
+    },
+    {
+      "id": "fr-sans-accent",
+      "language": "fr",
+      "text": "Paiement du 14 fevrier 2020 et du 2 aout 2021.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "14 fevrier 2020"
+        },
+        {
+          "type": "DATE",
+          "value": "2 aout 2021"
+        }
+      ]
+    },
+    {
+      "id": "fr-majuscules",
+      "language": "fr",
+      "text": "LE 25 DÉCEMBRE 2019 ÉTAIT UN MERCREDI.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "25 DÉCEMBRE 2019"
+        }
+      ]
+    },
+    {
+      "id": "fr-zero-initial",
+      "language": "fr",
+      "text": "Arrivée le 03 mai 2018.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "03 mai 2018"
+        }
+      ]
+    },
+    {
+      "id": "fr-deux-dates",
+      "language": "fr",
+      "text": "Du 3 juillet au 14 juillet 2022.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "3 juillet"
+        },
+        {
+          "type": "DATE",
+          "value": "14 juillet 2022"
+        }
+      ]
+    },
+    {
+      "id": "fr-pas-un-mois",
+      "language": "fr",
+      "text": "Il y a 12 marsupiaux et 3 maisons.",
+      "expect": []
+    },
+    {
+      "id": "fr-nombre-sans-mois",
+      "language": "fr",
+      "text": "Il a 12 ans et 1985 euros.",
+      "expect": []
+    },
+    {
+      "id": "fr-mois-seul",
+      "language": "fr",
+      "text": "Le mois de mars est froid.",
+      "expect": []
+    },
+    {
+      "id": "fr-jour-invalide",
+      "language": "fr",
+      "text": "Le 32 mars 1985 n'existe pas.",
+      "expect": []
+    },
+    {
+      "id": "en-mdy",
+      "language": "en",
+      "text": "He was born on March 12, 1985 in Leeds.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "March 12, 1985"
+        }
+      ]
+    },
+    {
+      "id": "en-mdy-ordinal",
+      "language": "en",
+      "text": "Due by June 3rd, 2021.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "June 3rd, 2021"
+        }
+      ]
+    },
+    {
+      "id": "en-dmy",
+      "language": "en",
+      "text": "The meeting is on 12 March 1985.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12 March 1985"
+        }
+      ]
+    },
+    {
+      "id": "en-dmy-of",
+      "language": "en",
+      "text": "Born on the 12th of March 1985.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12th of March 1985"
+        }
+      ]
+    },
+    {
+      "id": "en-weekday",
+      "language": "en",
+      "text": "See you on Monday, March 12, 1990.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "Monday, March 12, 1990"
+        }
+      ]
+    },
+    {
+      "id": "en-weekday-abrege",
+      "language": "en",
+      "text": "Call me Tue 4 June.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "4 June"
+        }
+      ]
+    },
+    {
+      "id": "en-sans-annee-abrege",
+      "language": "en",
+      "text": "Deadline: Mar. 12 at noon.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "Mar. 12"
+        }
+      ]
+    },
+    {
+      "id": "en-sans-annee-jour-premier",
+      "language": "en",
+      "text": "Flight on 1st of September.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "1st of September"
+        }
+      ]
+    },
+    {
+      "id": "en-sans-annee-sept",
+      "language": "en",
+      "text": "Back on Sept 9th.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "Sept 9th"
+        }
+      ]
+    },
+    {
+      "id": "en-minuscules",
+      "language": "en",
+      "text": "arrived on 7 october 2020.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "7 october 2020"
+        }
+      ]
+    },
+    {
+      "id": "en-mois-et-annee-seuls",
+      "language": "en",
+      "text": "Founded in March 1985 in Leeds.",
+      "expect": []
+    },
+    {
+      "id": "en-montant-apres-mois",
+      "language": "en",
+      "text": "Revenue in May 12.5 million.",
+      "expect": []
+    },
+    {
+      "id": "en-heure-apres-mois",
+      "language": "en",
+      "text": "Logged Mar 12:30 pm.",
+      "expect": []
+    },
+    {
+      "id": "en-weekday-dmy",
+      "language": "en",
+      "text": "Meeting on Monday 12 March 1990 at noon.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "Monday 12 March 1990"
+        }
+      ]
+    },
+    {
+      "id": "en-ordinal-sans-annee-md",
+      "language": "en",
+      "text": "Back on March 12th.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "March 12th"
+        }
+      ]
+    },
+    {
+      "id": "yy-version-sans-contexte",
+      "language": "fr",
+      "text": "Mise à jour vers la version 10.12.15 effectuée.",
+      "expect": []
+    },
+    {
+      "id": "yy-avec-contexte-nee",
+      "language": "fr",
+      "text": "Elle est née le 10.12.85 à Sion.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "10.12.85"
+        }
+      ]
+    }
+  ]
+}

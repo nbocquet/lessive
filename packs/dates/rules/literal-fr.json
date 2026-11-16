@@ -1,0 +1,94 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "fr-long-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])[1-9]\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française avec année : « 12 mars 1985 », « 1er avril 2020 », « 15 janv. 2023 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-weekday-long-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\s[1-9]\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française avec année précédée du jour de la semaine : « lundi 5 février 2024 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-short-d1",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])[1-9]\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)(?![a-zà-ÿ])(?!\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française sans année : « 3 janvier » (le « le » n'est pas inclus)."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-long-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?=0[1-9]|[12]\\d|3[01])\\d\\d\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française avec année : « 12 mars 1985 », « 1er avril 2020 », « 15 janv. 2023 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-weekday-long-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\s(?=0[1-9]|[12]\\d|3[01])\\d\\d\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française avec année précédée du jour de la semaine : « lundi 5 février 2024 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-short-d2",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])(?=0[1-9]|[12]\\d|3[01])\\d\\d\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)(?![a-zà-ÿ])(?!\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française sans année : « 3 janvier » (le « le » n'est pas inclus)."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-long-er",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])1er\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française avec année : « 12 mars 1985 », « 1er avril 2020 », « 15 janv. 2023 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-weekday-long-er",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\s1er\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française avec année précédée du jour de la semaine : « lundi 5 février 2024 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-short-er",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])1er\\s(?:janv(?:ier|\\.)?|f[ée]v(?:rier|r\\.?|\\.)?|mars|avr(?:il|\\.)?|mai|juin|juil(?:let|\\.)?|ao[uû]t|sept(?:embre|\\.)?|oct(?:obre|\\.)?|nov(?:embre|\\.)?|d[ée]c(?:embre|\\.)?)(?![a-zà-ÿ])(?!\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Date française sans année : « 3 janvier » (le « le » n'est pas inclus)."
+    }
+  ]
+}

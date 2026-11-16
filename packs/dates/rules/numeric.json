@@ -1,0 +1,72 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "num-dot",
+      "entityType": "DATE",
+      "score": 0.6,
+      "pattern": "(?<![\\d.\\/])(?:0?[1-9]|[12]\\d|3[01])\\.(?:0?[1-9]|1[0-2])\\.(?=19|20)\\d{4}(?!\\d)(?!\\.\\d)",
+      "languages": "any",
+      "description": "JJ.MM.AAAA (usage suisse), année 1900-2099."
+    },
+    {
+      "kind": "pattern",
+      "id": "num-slash",
+      "entityType": "DATE",
+      "score": 0.6,
+      "pattern": "(?<![\\d.\\/])(?:0?[1-9]|[12]\\d|3[01])\\/(?:0?[1-9]|1[0-2])\\/(?=19|20)\\d{4}(?!\\d)(?!\\/\\d)",
+      "languages": "any",
+      "description": "JJ/MM/AAAA, année 1900-2099."
+    },
+    {
+      "kind": "pattern",
+      "id": "num-dash",
+      "entityType": "DATE",
+      "score": 0.6,
+      "pattern": "(?<![\\d.\\/-])(?:0?[1-9]|[12]\\d|3[01])-(?:0?[1-9]|1[0-2])-(?=19|20)\\d{4}(?!\\d)(?!-\\d)",
+      "languages": "any",
+      "description": "JJ-MM-AAAA, année 1900-2099."
+    },
+    {
+      "kind": "pattern",
+      "id": "num-iso",
+      "entityType": "DATE",
+      "score": 0.6,
+      "pattern": "(?<![\\d.\\/-])(?=19|20)\\d{4}-(?:0?[1-9]|1[0-2])-(?:0?[1-9]|[12]\\d|3[01])(?!\\d)(?!-\\d)",
+      "languages": "any",
+      "description": "AAAA-MM-JJ (ISO 8601), année 1900-2099."
+    },
+    {
+      "kind": "pattern",
+      "id": "num-dot-yy",
+      "entityType": "DATE",
+      "score": 0.45,
+      "pattern": "(?<![\\d.\\/])(?:0[1-9]|[12]\\d|3[01])\\.(?:0[1-9]|1[0-2])\\.\\d\\d(?!\\d)(?!\\.\\d)",
+      "languages": "any",
+      "description": "JJ.MM.AA, année à deux chiffres : score bas, rehaussé par un mot de contexte.",
+      "context": {
+        "words": {
+          "fr": ["né", "née", "naissance", "date", "le"],
+          "en": ["born", "birth", "date"],
+          "any": ["dob"]
+        }
+      }
+    },
+    {
+      "kind": "pattern",
+      "id": "num-slash-yy",
+      "entityType": "DATE",
+      "score": 0.45,
+      "pattern": "(?<![\\d.\\/])(?:0[1-9]|[12]\\d|3[01])\\/(?:0[1-9]|1[0-2])\\/\\d\\d(?!\\d)(?!\\/\\d)",
+      "languages": "any",
+      "description": "JJ/MM/AA, année à deux chiffres : score bas, rehaussé par un mot de contexte.",
+      "context": {
+        "words": {
+          "fr": ["né", "née", "naissance", "date", "le"],
+          "en": ["born", "birth", "date"],
+          "any": ["dob"]
+        }
+      }
+    }
+  ]
+}

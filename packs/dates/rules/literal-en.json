@@ -1,0 +1,244 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "en-mdy-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s[1-9],?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Date anglaise mois-jour-année : « March 12, 1985 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-mdy-ord-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s[1-9](?:st|nd|rd|th),?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec suffixe ordinal : « June 3rd, 2021 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dmy-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])[1-9]\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?),?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Date anglaise jour-mois-année : « 12 March 1985 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dmy-ord-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])[1-9](?:st|nd|rd|th)\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?),?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec suffixe ordinal : « 12th March 1985 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dmy-ord-of-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])[1-9](?:st|nd|rd|th)\\sof\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?),?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec « of » : « 12th of March 1985 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-weekday-mdy-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday),\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s[1-9],\\s(?=19|20)\\d{4}",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Forme complète avec jour de la semaine : « Monday, March 12, 1990 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-weekday-dmy-d1",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\\s[1-9]\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Jour de la semaine, jour, mois, année : « Monday 12 March 1990 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-md-d1",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s[1-9](?![\\da-z]|[:.]\\d|,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Date anglaise sans année, mois d'abord : « Mar. 12 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-md-ord-d1",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s[1-9](?:st|nd|rd|th)(?![\\da-z]|[:.]\\d|,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec suffixe ordinal : « Sept 9th »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dm-d1",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])[1-9]\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)(?![a-z])(?!,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Date anglaise sans année, jour d'abord : « 12 March »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dm-ord-d1",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])[1-9](?:st|nd|rd|th)\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)(?![a-z])(?!,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec suffixe ordinal : « 12th March »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dm-ord-of-d1",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])[1-9](?:st|nd|rd|th)\\sof\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)(?![a-z])(?!,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec « of » : « 1st of September »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-mdy-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s(?=0[1-9]|[12]\\d|3[01])\\d\\d,?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Date anglaise mois-jour-année : « March 12, 1985 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-mdy-ord-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s(?=0[1-9]|[12]\\d|3[01])\\d\\d(?:st|nd|rd|th),?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec suffixe ordinal : « June 3rd, 2021 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dmy-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?=0[1-9]|[12]\\d|3[01])\\d\\d\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?),?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Date anglaise jour-mois-année : « 12 March 1985 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dmy-ord-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?=0[1-9]|[12]\\d|3[01])\\d\\d(?:st|nd|rd|th)\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?),?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec suffixe ordinal : « 12th March 1985 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dmy-ord-of-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?=0[1-9]|[12]\\d|3[01])\\d\\d(?:st|nd|rd|th)\\sof\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?),?\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec « of » : « 12th of March 1985 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-weekday-mdy-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday),\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s(?=0[1-9]|[12]\\d|3[01])\\d\\d,\\s(?=19|20)\\d{4}",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Forme complète avec jour de la semaine : « Monday, March 12, 1990 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-weekday-dmy-d2",
+      "entityType": "DATE",
+      "score": 0.7,
+      "pattern": "(?<![\\w.\\/])(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\\s(?=0[1-9]|[12]\\d|3[01])\\d\\d\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s(?=19|20)\\d{4}(?!\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Jour de la semaine, jour, mois, année : « Monday 12 March 1990 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-md-d2",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s(?=0[1-9]|[12]\\d|3[01])\\d\\d(?![\\da-z]|[:.]\\d|,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Date anglaise sans année, mois d'abord : « Mar. 12 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-md-ord-d2",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)\\s(?=0[1-9]|[12]\\d|3[01])\\d\\d(?:st|nd|rd|th)(?![\\da-z]|[:.]\\d|,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec suffixe ordinal : « Sept 9th »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dm-d2",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])(?=0[1-9]|[12]\\d|3[01])\\d\\d\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)(?![a-z])(?!,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Date anglaise sans année, jour d'abord : « 12 March »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dm-ord-d2",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])(?=0[1-9]|[12]\\d|3[01])\\d\\d(?:st|nd|rd|th)\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)(?![a-z])(?!,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec suffixe ordinal : « 12th March »."
+    },
+    {
+      "kind": "pattern",
+      "id": "en-dm-ord-of-d2",
+      "entityType": "DATE",
+      "score": 0.55,
+      "pattern": "(?<![\\w.\\/])(?=0[1-9]|[12]\\d|3[01])\\d\\d(?:st|nd|rd|th)\\sof\\s(?:jan(?:uary|\\.)?|feb(?:ruary|\\.)?|mar(?:ch|\\.)?|apr(?:il|\\.)?|may|jun(?:e|\\.)?|jul(?:y|\\.)?|aug(?:ust|\\.)?|sep(?:t(?:ember|\\.)?|\\.)?|oct(?:ober|\\.)?|nov(?:ember|\\.)?|dec(?:ember|\\.)?)(?![a-z])(?!,?\\s(?:19|20)\\d\\d)",
+      "flags": "i",
+      "languages": ["en"],
+      "description": "Idem avec « of » : « 1st of September »."
+    }
+  ]
+}
