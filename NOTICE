@@ -5,7 +5,18 @@ Ce produit est distribué sous la licence Apache 2.0 (voir LICENSE).
 
 Composants tiers
 ----------------
-Les notices des composants tiers embarqués dans la distribution seront
-listées ici : modèle NER, listes de prénoms, motifs de détection repris
-de Presidio (https://github.com/data-privacy-stack/presidio, licence MIT,
+Listes de prénoms et de noms de famille (packs/lang-fr-en)
+  Source : Insee, Fichier des prénoms, édition 2025.
+    Licence Ouverte / Open Licence Etalab 2.0.
+    Extrait : prénoms dont l'effectif cumulé depuis 1925 atteint 1000 naissances.
+  Source : Insee, fichier des noms de famille (noms2008nat), naissances 1921-2000.
+    Licence Ouverte / Open Licence Etalab 2.0.
+    Extrait : noms dont l'effectif cumulé atteint 2000 naissances.
+  Source : Office fédéral de la statistique (OFS), STATPOP, prénoms de la
+    population selon le sexe, Suisse, 2025 (su-q-01.04.00.12), et noms de famille
+    de la population résidante permanente, Suisse, 2025 (su-q-01.04.00.13).
+    © OFS 2026. Utilisation libre, obligation d'indiquer la source.
+    Extraits : prénoms portés par au moins 200 personnes, noms par au moins 300.
+
+À compléter : modèle NER, motifs de détection repris de Presidio (https://github.com/data-privacy-stack/presidio, licence MIT,
 Copyright (c) Microsoft Corporation).

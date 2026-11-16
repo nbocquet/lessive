@@ -9,6 +9,8 @@
  *       Liste issue des fichiers officiels que vous avez téléchargés ET décompressés.
  *
  * Options :
+ *   --since AAAA     INSEE : ne compte que les naissances à partir de cette année
+ *   --no-handwritten ne pas compléter avec la liste rédigée (par défaut, elle complète les sources)
  *   --min-count N    effectif cumulé minimal par prénom (défaut : INSEE 1000, SSA 20000, OFS 100)
  *   --max-names N    nombre maximal de prénoms dans la règle (défaut 6000)
  *   --min-length N   longueur minimale d'un prénom (défaut 3)
@@ -129,7 +131,7 @@ export const CONTEXT_EN = [
   "my friend",
 ];
 
-const CONTEXT_FULL = { words: { any: TITLE_WORDS, fr: CONTEXT_FR, en: CONTEXT_EN } };
+export const CONTEXT_FULL = { words: { any: TITLE_WORDS, fr: CONTEXT_FR, en: CONTEXT_EN } };
 const CONTEXT_TITLES = { words: { any: TITLE_WORDS } };
 
 /* ------------------------------------------------------------------ */
@@ -197,10 +199,10 @@ const PATTERNS = [
 const words = (s) => s.split(/\s+/).filter(Boolean);
 
 /** Clé de comparaison : minuscules, sans accents. */
-const fold = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+export const fold = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /** « JEAN-LUC » → « Jean-Luc » ; « d'artagnan » n'est pas un cas visé. */
-function titleCase(name) {
+export function titleCase(name) {
   return name
     .toLocaleLowerCase("fr")
     .replace(/(^|[-' ])(\p{L})/gu, (_, sep, c) => sep + c.toLocaleUpperCase("fr"));
@@ -218,6 +220,8 @@ function parseArgs(argv) {
     if (a === "--insee") opts.insee = next();
     else if (a === "--ssa") opts.ssa = next();
     else if (a === "--ofs") opts.ofs = next();
+    else if (a === "--since") opts.since = Number(next());
+    else if (a === "--no-handwritten") opts.noHandwritten = true;
     else if (a === "--min-count") opts.minCount = Number(next());
     else if (a === "--max-names") opts.maxNames = Number(next());
     else if (a === "--min-length") opts.minLength = Number(next());
@@ -255,7 +259,7 @@ function splitCsvLine(line, delim) {
  * Lit un CSV avec en-tête (INSEE, OFS…) : détecte le séparateur, la colonne du prénom et celle de l'effectif.
  * Renvoie une Map prénom → effectif cumulé.
  */
-function readCsvCounts(path, label) {
+function readCsvCounts(path, label, since) {
   const text = readFileSync(path, "utf8").replace(/^\uFEFF/, "");
   const lines = text.split(/\r?\n/).filter((l) => l.trim() !== "");
   const header = lines.shift();
@@ -268,6 +272,10 @@ function readCsvCounts(path, label) {
   const countIdx = cols.findIndex((c) =>
     /^(nombre|valeur|count|number|anzahl|n|effectif|nombre_?de_?naissances?)$/.test(c),
   );
+  const yearIdx = cols.findIndex((c) => /^(periode|annais|annee|year|jahr|jahrgang)$/.test(c));
+  if (since !== undefined && yearIdx < 0) {
+    throw new Error(`${label} : --since demandé mais aucune colonne d'année dans « ${header} ».`);
+  }
   if (nameIdx < 0 || countIdx < 0) {
     throw new Error(
       `${label} : colonnes introuvables dans l'en-tête « ${header} ». ` +
@@ -280,6 +288,10 @@ function readCsvCounts(path, label) {
     const name = (f[nameIdx] ?? "").trim();
     const n = Number((f[countIdx] ?? "").trim().replace(/\s/g, ""));
     if (!name || name.startsWith("_") || !Number.isFinite(n)) continue; // _PRENOMS_RARES (INSEE)
+    if (since !== undefined) {
+      const year = Number((f[yearIdx] ?? "").trim());
+      if (!Number.isInteger(year) || year < since) continue; // « XXXX » = année inconnue (INSEE)
+    }
     counts.set(name, (counts.get(name) ?? 0) + n);
   }
   return counts;
@@ -327,7 +339,11 @@ function main() {
   let names;
   let provenance;
   const official = [
-    ["INSEE", opts.insee && (() => readCsvCounts(opts.insee, "INSEE")), opts.minCount ?? 1000],
+    [
+      "INSEE",
+      opts.insee && (() => readCsvCounts(opts.insee, "INSEE", opts.since)),
+      opts.minCount ?? 1000,
+    ],
     ["SSA", opts.ssa && (() => readSsaCounts(opts.ssa)), opts.minCount ?? 20000],
     ["OFS", opts.ofs && (() => readCsvCounts(opts.ofs, "OFS")), opts.minCount ?? 100],
   ].filter(([, load]) => load);
@@ -353,6 +369,19 @@ function main() {
       .slice(0, opts.maxNames)
       .map((x) => x.name);
     provenance = `sources officielles : ${official.map(([l]) => l).join(", ")}`;
+    if (!opts.noHandwritten) {
+      // Les sources officielles disponibles ne couvrent pas tout (prénoms anglais sans SSA,
+      // autres origines) : la liste rédigée complète, sans dépasser le plafond.
+      const have = new Set(names.map(fold));
+      for (const n of loadHandwritten().map(titleCase)) {
+        if (names.length >= opts.maxNames) break;
+        if (!have.has(fold(n))) {
+          have.add(fold(n));
+          names.push(n);
+        }
+      }
+      provenance += " + liste rédigée pour Lessive";
+    }
   }
 
   // Filtrage : caractères admis, longueur, ambiguïtés, doublons après pliage.
@@ -418,4 +447,5 @@ function main() {
   );
 }
 
-main();
+// Exécuté seulement en ligne de commande, pour que build-lastnames.mjs puisse importer les constantes.
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();

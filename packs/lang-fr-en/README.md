@@ -34,9 +34,40 @@ Choix et limites des motifs :
 
 ## Sources et licences des listes
 
-**État actuel : liste rédigée pour Lessive, Apache 2.0.** Les sites officiels (INSEE, data.gouv.fr, SSA) n'étaient pas joignables depuis l'environnement de développement (proxy en liste blanche), et aucune copie tierce n'a été utilisée : leur provenance et leur licence ne sont pas vérifiables. La liste (`tools/handwritten-names.json`, environ 600 prénoms) a donc été écrite à la main par l'auteur du pack, de mémoire, sans copier de fichier. Elle n'est PAS un extrait d'une source officielle et ne doit pas être présentée comme telle. Elle est publiée sous la licence du dépôt (Apache 2.0), sans exigence d'attribution tierce.
+**État actuel : sources officielles françaises et suisses, complétées par la liste rédigée pour Lessive.**
 
-### Sources officielles prévues (non intégrées, à vérifier au téléchargement)
+Prénoms (`rules/prenoms.json`, environ 5 200) :
+
+- **INSEE, Fichier des prénoms, édition 2025** (`prenoms-2025-nat.csv`) : naissances en France à partir de 1925 (`--since 1925`), effectif cumulé d'au moins 1000 ; `_PRENOMS_RARES` et années inconnues ignorés. Licence Ouverte Etalab 2.0.
+- **OFS, prénoms de la population résidante, Suisse, 2025** (STATPOP, tableau su-q-01.04.00.12, feuille 2025) : prénoms portés par au moins 200 personnes (féminin + masculin). Utilisation libre, obligation d'indiquer la source.
+- **Liste rédigée pour Lessive** (`tools/handwritten-names.json`, environ 600 prénoms, Apache 2.0) : complète pour les prénoms anglophones et d'autres origines (source SSA non intégrée).
+
+Noms de famille (`rules/noms-famille.json`, environ 6 300 + 1 100 ambigus) :
+
+- **OFS, noms de famille de la population résidante permanente, Suisse, 2025** (STATPOP, tableau su-q-01.04.00.13, feuille CH) : noms portés par au moins 300 personnes. Graphie d'origine conservée (Müller, Da Silva).
+- **INSEE, fichier des noms de famille** (`noms2008nat_txt.txt`, naissances par décennie) : décennies 1921-1930 à 1991-2000, au moins 2000 naissances. Noms en majuscules sans accents à la source, mis en casse de titre ; la recherche ignore les accents.
+- Les mots de contexte (titres, formules d'appel : « Bonjour », « Maître » sont aussi des noms en Suisse) sont retirés.
+
+Mots courants : prénoms et noms ont été recoupés avec des dictionnaires français et anglais (an-array-of-french-words, MIT ; hunspell en_US), utilisés seulement à la génération.
+
+- Prénoms qui sont aussi des mots fréquents (roman, franc, fleur, matin, mari, lui, can, even…) : `tools/ambiguous-names.json`, règle `prenoms-ambigus` (majuscule exacte, mot de contexte obligatoire). D'autres collisions jugées rares en texte (Louis, Robert, Martin…) restent dans la règle principale.
+- Noms qui sont aussi des mots (Blanc, Boulanger, Berger, Bouquet…) : `tools/ambiguous-lastnames.json`, règle `noms-famille-ambigus` (majuscule exacte, score 0,3) : retenus seulement accolés à un prénom (« Pierre Blanc »).
+
+Comment les règles se combinent :
+
+- prénom seul : 0,45, retenu avec un mot de contexte (titre, formule d'appel) ;
+- nom seul : 0,4, idem ;
+- prénom et nom adjacents (« Claire Müller ») : le moteur les réunit en une seule détection rehaussée de 0,35, donc un seul pseudonyme ;
+- titre + nom (« Mme Keller ») : motif dédié, 0,7, rehaussé par le titre.
+
+Commandes utilisées (les CSV OFS ont été exportés des classeurs Excel : colonnes `prenom;valeur` et `nom;valeur`) :
+
+```bash
+node packs/lang-fr-en/tools/build.mjs --insee prenoms-2025-nat.csv --since 1925 --ofs ofs-prenoms-2025-min200.csv
+node packs/lang-fr-en/tools/build-lastnames.mjs --ofs ofs-noms-2025.csv --insee noms2008nat_txt.txt
+```
+
+### Sources officielles (INSEE et OFS intégrées ; SSA prévue)
 
 | Source | Licence annoncée | Remarques |
 |---|---|---|
@@ -55,7 +86,7 @@ Prérequis : Node 22, aucune dépendance. Les fichiers sont téléchargés et d�
 
    ```bash
    node packs/lang-fr-en/tools/build.mjs --insee prenoms-nat.csv --ssa names/ [--ofs ofs.csv] \
-     [--min-count 1000] [--max-names 6000] [--exclude exclusions.txt]
+     [--since 1925] [--min-count 1000] [--max-names 6000] [--exclude exclusions.txt] [--no-handwritten]
    npx prettier --write packs/lang-fr-en
    npx vitest run packs -t lang-fr-en
    ```

@@ -1,9 +1,14 @@
 {
   "id": "lang-fr-en",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engineVersion": "0.1.0",
   "type": "language",
   "name": "Langues fr/en : prénoms et titres de civilité",
   "description": "Prénoms courants (Suisse romande, France, monde anglophone) et noms précédés d'un titre de civilité. Complète le NER, qui manque des noms.",
-  "rules": ["rules/prenoms.json", "rules/prenoms-ambigus.json", "rules/titres-nom.json"]
+  "rules": [
+    "rules/prenoms.json",
+    "rules/prenoms-ambigus.json",
+    "rules/titres-nom.json",
+    "rules/noms-famille.json"
+  ]
 }

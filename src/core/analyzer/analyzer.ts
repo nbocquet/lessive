@@ -19,6 +19,7 @@ import {
   type Rule,
 } from "../types/index.ts";
 import { getValidator } from "../validators/index.ts";
+import { mergeAdjacentPersons } from "./merge-persons.ts";
 
 export interface AnalyzeOptions {
   /** Langue principale du texte. Absente : tous les détecteurs s'appliquent. */
@@ -96,8 +97,9 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
       }
 
       const { detections: contextual, dropped } = applyContext(text, raw, rulesById, language);
+      const persons = mergeAdjacentPersons(text, contextual, ctx);
       const manualWithIds = manual.map((d) => ({ ...d, source: "manual" as const }));
-      const { kept, discarded } = resolveConflicts([...contextual, ...manualWithIds], {
+      const { kept, discarded } = resolveConflicts([...contextual, ...persons, ...manualWithIds], {
         ...(options.minScore !== undefined ? { minScore: options.minScore } : {}),
       });
 

@@ -10,40 +10,74 @@
       "id": "prenom-apres-bonjour",
       "language": "fr",
       "text": "Bonjour Léa, merci pour ton message.",
-      "expect": [{ "type": "PERSON", "value": "Léa" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Léa"
+        }
+      ]
     },
     {
       "id": "prenom-apres-cher",
       "language": "fr",
       "text": "Cher Julien, voici le dossier.",
-      "expect": [{ "type": "PERSON", "value": "Julien" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Julien"
+        }
+      ]
     },
     {
       "id": "prenom-apres-chere",
       "language": "fr",
       "text": "Chère Sophie, je t'écris au sujet du budget.",
-      "expect": [{ "type": "PERSON", "value": "Sophie" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Sophie"
+        }
+      ]
     },
     {
       "id": "prenom-je-suis",
       "language": "fr",
       "text": "Je suis Nathalie et je gère le service.",
-      "expect": [{ "type": "PERSON", "value": "Nathalie" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Nathalie"
+        }
+      ]
     },
     {
       "id": "prenom-signature-cordialement",
       "language": "fr",
       "text": "Merci d'avance. Cordialement, Mathieu",
-      "expect": [{ "type": "PERSON", "value": "Mathieu" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Mathieu"
+        }
+      ]
     },
     {
       "id": "prenoms-accentues",
       "language": "fr",
       "text": "Bonjour Zoé, Jérôme et Anaïs.",
       "expect": [
-        { "type": "PERSON", "value": "Zoé" },
-        { "type": "PERSON", "value": "Jérôme" },
-        { "type": "PERSON", "value": "Anaïs" }
+        {
+          "type": "PERSON",
+          "value": "Zoé"
+        },
+        {
+          "type": "PERSON",
+          "value": "Jérôme"
+        },
+        {
+          "type": "PERSON",
+          "value": "Anaïs"
+        }
       ]
     },
     {
@@ -51,8 +85,14 @@
       "language": "fr",
       "text": "Bonjour Jerome et Zoe.",
       "expect": [
-        { "type": "PERSON", "value": "Jerome" },
-        { "type": "PERSON", "value": "Zoe" }
+        {
+          "type": "PERSON",
+          "value": "Jerome"
+        },
+        {
+          "type": "PERSON",
+          "value": "Zoe"
+        }
       ]
     },
     {
@@ -60,8 +100,14 @@
       "language": "fr",
       "text": "Bonjour Jean-Luc, bonjour Marie-Claire.",
       "expect": [
-        { "type": "PERSON", "value": "Jean-Luc" },
-        { "type": "PERSON", "value": "Marie-Claire" }
+        {
+          "type": "PERSON",
+          "value": "Jean-Luc"
+        },
+        {
+          "type": "PERSON",
+          "value": "Marie-Claire"
+        }
       ]
     },
     {
@@ -74,19 +120,34 @@
       "id": "prenom-minuscule-avec-contexte",
       "language": "fr",
       "text": "bonjour camille, ça va ?",
-      "expect": [{ "type": "PERSON", "value": "camille" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "camille"
+        }
+      ]
     },
     {
       "id": "prenom-apres-mot-prenom",
       "language": "fr",
       "text": "Prénom : Lucas",
-      "expect": [{ "type": "PERSON", "value": "Lucas" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Lucas"
+        }
+      ]
     },
     {
       "id": "prenom-relation-fr",
       "language": "fr",
       "text": "Mon collègue Antoine part demain.",
-      "expect": [{ "type": "PERSON", "value": "Antoine" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Antoine"
+        }
+      ]
     },
     {
       "id": "prenom-seul-sans-contexte-en",
@@ -98,31 +159,56 @@
       "id": "prenom-hi-en",
       "language": "en",
       "text": "Hi Oliver, thanks for the update.",
-      "expect": [{ "type": "PERSON", "value": "Oliver" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Oliver"
+        }
+      ]
     },
     {
       "id": "prenom-dear-en",
       "language": "en",
       "text": "Dear Charlotte, please find the report attached.",
-      "expect": [{ "type": "PERSON", "value": "Charlotte" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Charlotte"
+        }
+      ]
     },
     {
       "id": "prenom-regards-en",
       "language": "en",
       "text": "Kind regards, Jennifer",
-      "expect": [{ "type": "PERSON", "value": "Jennifer" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Jennifer"
+        }
+      ]
     },
     {
       "id": "prenom-my-name-is-en",
       "language": "en",
       "text": "My name is Daniel and I work in finance.",
-      "expect": [{ "type": "PERSON", "value": "Daniel" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Daniel"
+        }
+      ]
     },
     {
       "id": "prenom-relation-en",
       "language": "en",
       "text": "My brother Thomas lives in Leeds.",
-      "expect": [{ "type": "PERSON", "value": "Thomas" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Thomas"
+        }
+      ]
     },
     {
       "id": "ambigu-nom-commun-rose",
@@ -136,12 +222,22 @@
       "text": "Bonjour, la rose est fanée.",
       "expect": []
     },
-    { "id": "ambigu-sans-contexte", "language": "fr", "text": "Rose a écrit hier.", "expect": [] },
+    {
+      "id": "ambigu-sans-contexte",
+      "language": "fr",
+      "text": "Rose a écrit hier.",
+      "expect": []
+    },
     {
       "id": "ambigu-avec-contexte",
       "language": "fr",
       "text": "Bonjour Rose, comment vas-tu ?",
-      "expect": [{ "type": "PERSON", "value": "Rose" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Rose"
+        }
+      ]
     },
     {
       "id": "ambigu-pierre-minuscule",
@@ -153,7 +249,12 @@
       "id": "ambigu-pierre-avec-contexte",
       "language": "fr",
       "text": "Cher Pierre, merci pour ton aide.",
-      "expect": [{ "type": "PERSON", "value": "Pierre" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Pierre"
+        }
+      ]
     },
     {
       "id": "ambigu-lieu-florence",
@@ -177,91 +278,166 @@
       "id": "ambigu-en-avec-contexte",
       "language": "en",
       "text": "Dear Grace, thank you for your help.",
-      "expect": [{ "type": "PERSON", "value": "Grace" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Grace"
+        }
+      ]
     },
     {
       "id": "ambigu-compose-contenant-jean",
       "language": "fr",
       "text": "Bonjour Jean-Pierre, voici le plan.",
-      "expect": [{ "type": "PERSON", "value": "Jean-Pierre" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Jean-Pierre"
+        }
+      ]
     },
     {
       "id": "titre-m-point",
       "language": "fr",
       "text": "Le dossier de M. Dupont est complet.",
-      "expect": [{ "type": "PERSON", "value": "Dupont" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Dupont"
+        }
+      ]
     },
     {
       "id": "titre-mme-compose",
       "language": "fr",
       "text": "Mme Martin-Favre a signé le contrat.",
-      "expect": [{ "type": "PERSON", "value": "Martin-Favre" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Martin-Favre"
+        }
+      ]
     },
     {
       "id": "titre-dr",
       "language": "fr",
       "text": "Rendez-vous avec le Dr Keller lundi.",
-      "expect": [{ "type": "PERSON", "value": "Keller" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Keller"
+        }
+      ]
     },
     {
       "id": "titre-dr-point",
       "language": "fr",
       "text": "Dr. Müller est absent.",
-      "expect": [{ "type": "PERSON", "value": "Müller" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Müller"
+        }
+      ]
     },
     {
       "id": "titre-maitre",
       "language": "fr",
       "text": "Nous avons mandaté Maître Rossi pour la plainte.",
-      "expect": [{ "type": "PERSON", "value": "Rossi" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Rossi"
+        }
+      ]
     },
     {
       "id": "titre-prenom-et-nom",
       "language": "fr",
       "text": "Madame Claire Dubois représente la société.",
-      "expect": [{ "type": "PERSON", "value": "Claire Dubois" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Claire Dubois"
+        }
+      ]
     },
     {
       "id": "titre-monsieur-particule",
       "language": "fr",
       "text": "Monsieur de Rougemont est arrivé.",
-      "expect": [{ "type": "PERSON", "value": "de Rougemont" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "de Rougemont"
+        }
+      ]
     },
     {
       "id": "titre-mme-de-la",
       "language": "fr",
       "text": "Mme de la Fontaine a confirmé.",
-      "expect": [{ "type": "PERSON", "value": "de la Fontaine" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "de la Fontaine"
+        }
+      ]
     },
     {
       "id": "titre-apostrophe",
       "language": "fr",
       "text": "M. O'Brien a répondu.",
-      "expect": [{ "type": "PERSON", "value": "O'Brien" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "O'Brien"
+        }
+      ]
     },
     {
       "id": "titre-mr-en",
       "language": "en",
       "text": "Please forward this to Mr Smith.",
-      "expect": [{ "type": "PERSON", "value": "Smith" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Smith"
+        }
+      ]
     },
     {
       "id": "titre-mrs-point-en",
       "language": "en",
       "text": "Mrs. Johnson will attend.",
-      "expect": [{ "type": "PERSON", "value": "Johnson" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Johnson"
+        }
+      ]
     },
     {
       "id": "titre-ms-en",
       "language": "en",
       "text": "We spoke with Ms Van Houten yesterday.",
-      "expect": [{ "type": "PERSON", "value": "Van Houten" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Van Houten"
+        }
+      ]
     },
     {
       "id": "titre-prenom-connu-apres-titre",
       "language": "fr",
       "text": "Mme Claire est absente.",
-      "expect": [{ "type": "PERSON", "value": "Claire" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Claire"
+        }
+      ]
     },
     {
       "id": "titre-sans-nom-fin-de-phrase",
@@ -273,13 +449,24 @@
       "id": "titre-sans-nom-fin-de-phrase-suite",
       "language": "fr",
       "text": "Merci de transmettre à Mme. Puis on verra.",
-      "expect": [{ "type": "PERSON", "value": "Puis" }]
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Puis"
+        }
+      ]
     },
     {
-      "id": "titre-nom-en-minuscule-ignore",
+      "id": "nom-connu-en-minuscule-detecte",
       "language": "fr",
       "text": "Le docteur dupont est absent.",
-      "expect": []
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "dupont"
+        }
+      ],
+      "note": "Le motif titre + nom ignore les minuscules, mais « dupont » figure dans les noms de famille (insensibles à la casse) et « docteur » est un mot de contexte."
     },
     {
       "id": "titre-pronom-apres-titre-abrege",
@@ -288,16 +475,119 @@
       "expect": []
     },
     {
-      "id": "titre-ne-franchit-pas-la-ligne",
+      "id": "nom-connu-apres-retour-ligne",
       "language": "fr",
       "text": "Contactez Mme\nDupont",
-      "expect": []
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Dupont"
+        }
+      ],
+      "note": "Détecté par la liste des noms de famille (contexte « Mme » dans la fenêtre), pas par le motif titre + nom."
     },
     {
       "id": "texte-sans-nom",
       "language": "fr",
       "text": "Le rapport trimestriel sera publié mardi à 14 h.",
       "expect": []
+    },
+    {
+      "id": "insee-prenom-rare-avec-contexte",
+      "language": "fr",
+      "text": "Bonjour Ghislaine, merci pour ton retour.",
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Ghislaine"
+        }
+      ]
+    },
+    {
+      "id": "insee-prenom-sans-contexte",
+      "language": "fr",
+      "text": "Le dossier Ghislaine est clos.",
+      "expect": []
+    },
+    {
+      "id": "ambigu-roman-nom-commun",
+      "language": "fr",
+      "text": "Bonjour, j'ai lu un roman et payé en franc suisse.",
+      "expect": []
+    },
+    {
+      "id": "ambigu-roman-prenom",
+      "language": "fr",
+      "text": "Bonjour Roman, voici le compte rendu.",
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Roman"
+        }
+      ]
+    },
+    {
+      "id": "ambigu-even-anglais",
+      "language": "en",
+      "text": "Hi team, even the line manager agreed.",
+      "expect": []
+    },
+    {
+      "id": "titre-nom-inconnu-en-minuscule-ignore",
+      "language": "fr",
+      "text": "Le docteur zorglubian est absent.",
+      "expect": []
+    },
+    {
+      "id": "titre-ne-franchit-pas-la-ligne",
+      "language": "fr",
+      "text": "Contactez Mme\nZorglubian",
+      "expect": []
+    },
+    {
+      "id": "prenom-nom-adjacents",
+      "language": "fr",
+      "text": "Le rapport de Claire Müller est arrivé.",
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Claire Müller"
+        }
+      ]
+    },
+    {
+      "id": "prenom-nom-ambigu-adjacents",
+      "language": "fr",
+      "text": "Le dossier de Pierre Boulanger est complet.",
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Pierre Boulanger"
+        }
+      ]
+    },
+    {
+      "id": "nom-ambigu-seul-ignore",
+      "language": "fr",
+      "text": "Le boulanger ouvre à 7 heures. Blanc ou noir ?",
+      "expect": []
+    },
+    {
+      "id": "nom-seul-sans-contexte-ignore",
+      "language": "fr",
+      "text": "Le dossier Müller est clos.",
+      "expect": []
+    },
+    {
+      "id": "nom-seul-avec-titre-en",
+      "language": "en",
+      "text": "Please call Ms Keller tomorrow.",
+      "expect": [
+        {
+          "type": "PERSON",
+          "value": "Keller"
+        }
+      ]
     }
   ]
 }
