@@ -166,7 +166,7 @@ interface Entity {            // une personne, un lieu… réel, indépendant de
 
 **Scores.** Chaque motif porte un score de base. Un validateur réussi porte le score à 1,0 ; un validateur échoué supprime la détection. Un mot de contexte dans une fenêtre de 5 mots avant ou après ajoute 0,35, plafonné à 1,0. Seuil par défaut : 0,5.
 
-**Conflits**, dans l'ordre : (1) manuel, (2) validé algorithmiquement, (3) l'intervalle qui contient l'autre si son score est au moins égal, (4) score le plus élevé, (5) priorité du type d'entité, (6) ordre alphabétique de `recognizerId`. Les perdantes sont conservées avec `supersededBy` pour l'affichage.
+**Conflits**, dans l'ordre : (1) manuel, (2) validé algorithmiquement, (3) l'intervalle qui contient l'autre si son score est au moins égal, (4) score le plus élevé, (5) priorité du type d'entité, (6) intervalle le plus long, (7) ordre alphabétique de `recognizerId`, puis `id`. Les perdantes sont conservées avec `supersededBy` pour l'affichage.
 
 **Résolution d'entités** (PERSON) : normalisation de la casse, des accents et des titres (M., Mme, Dr, Me…). Forme identique → même entité. Forme partielle (un seul mot) égale au prénom ou au nom d'une seule entité connue → rattachée, avec `needsReview`. Forme partielle correspondant à plusieurs entités → nouvelle entité, avec `needsReview`. L'utilisateur peut fusionner et scinder.
 

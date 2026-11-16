@@ -1,0 +1,343 @@
+import { describe, expect, it } from "vitest";
+import type { Detection, EntityType } from "../types/index.ts";
+import { resolveConflicts } from "./index.ts";
+
+let counter = 0;
+function det(start: number, end: number, extra: Partial<Detection> = {}): Detection {
+  counter += 1;
+  return {
+    id: `d${counter}`,
+    start,
+    end,
+    entityType: "PERSON",
+    score: 0.8,
+    recognizerId: "test/rec",
+    packId: "test",
+    source: "pattern",
+    explanation: [`motif (score ${extra.score ?? 0.8})`],
+    ...extra,
+  };
+}
+
+const ids = (ds: Detection[]) => ds.map((d) => d.id);
+
+/** Générateur pseudo-aléatoire mulberry32 (graine fixe, pas de Math.random). */
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffle<T>(items: readonly T[], rnd: () => number): T[] {
+  const a = [...items];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j]!, a[i]!];
+  }
+  return a;
+}
+
+function permutations<T>(items: readonly T[]): T[][] {
+  if (items.length <= 1) return [[...items]];
+  return items.flatMap((x, i) =>
+    permutations([...items.slice(0, i), ...items.slice(i + 1)]).map((p) => [x, ...p]),
+  );
+}
+
+describe("resolveConflicts : cas de base", () => {
+  it("garde tout sans conflit et trie par start", () => {
+    const a = det(10, 15);
+    const b = det(0, 5);
+    const { kept, discarded } = resolveConflicts([a, b]);
+    expect(ids(kept)).toEqual([b.id, a.id]);
+    expect(discarded).toEqual([]);
+  });
+
+  it("des intervalles adjacents ne sont pas en conflit", () => {
+    const a = det(0, 5);
+    const b = det(5, 8);
+    const { kept, discarded } = resolveConflicts([b, a]);
+    expect(ids(kept)).toEqual([a.id, b.id]);
+    expect(discarded).toEqual([]);
+  });
+
+  it("un seul caractère commun suffit pour un conflit", () => {
+    const a = det(0, 6, { score: 0.9 });
+    const b = det(5, 8, { score: 0.6 });
+    const { kept, discarded } = resolveConflicts([a, b]);
+    expect(ids(kept)).toEqual([a.id]);
+    expect(ids(discarded)).toEqual([b.id]);
+  });
+
+  it("chevauchement partiel : le score le plus élevé gagne", () => {
+    const a = det(0, 10, { score: 0.6 });
+    const b = det(5, 15, { score: 0.9 });
+    const { kept, discarded } = resolveConflicts([a, b]);
+    expect(ids(kept)).toEqual([b.id]);
+    expect(discarded[0]?.supersededBy).toBe(b.id);
+    expect(discarded[0]?.explanation.at(-1)).toBe(
+      "écartée au profit d'une détection PERSON : score plus élevé (0,90 contre 0,60)",
+    );
+  });
+
+  it("inclusion : la plus large gagne si son score est au moins égal", () => {
+    const large = det(0, 20, { score: 0.7, entityType: "LOCATION" });
+    const small = det(5, 10, { score: 0.7, entityType: "EMAIL" }); // EMAIL a pourtant la priorité de type
+    const { kept } = resolveConflicts([small, large]);
+    expect(ids(kept)).toEqual([large.id]);
+  });
+
+  it("inclusion : la plus large perd si son score est inférieur", () => {
+    const large = det(0, 20, { score: 0.6 });
+    const small = det(5, 10, { score: 0.9 });
+    const { kept, discarded } = resolveConflicts([large, small]);
+    expect(ids(kept)).toEqual([small.id]);
+    expect(ids(discarded)).toEqual([large.id]);
+  });
+
+  it("inclusion avec bornes communes (strictement plus large)", () => {
+    const large = det(0, 10, { score: 0.7 });
+    const small = det(0, 6, { score: 0.7, entityType: "EMAIL" });
+    expect(ids(resolveConflicts([small, large]).kept)).toEqual([large.id]);
+  });
+
+  it("égalité parfaite : priorité du type d'entité", () => {
+    const person = det(0, 10, { entityType: "PERSON" });
+    const org = det(0, 10, { entityType: "ORGANIZATION" });
+    expect(ids(resolveConflicts([org, person]).kept)).toEqual([person.id]);
+  });
+
+  it("égalité de score et de type : intervalle le plus long", () => {
+    const longer = det(0, 10, { entityType: "DATE" });
+    const shorter = det(3, 12, { entityType: "DATE", score: 0.8 });
+    // 10 contre 9 unités, aucune ne contient l'autre
+    expect(ids(resolveConflicts([shorter, longer]).kept)).toEqual([longer.id]);
+  });
+
+  it("égalité totale : recognizerId alphabétique puis id", () => {
+    const x = det(0, 5, { recognizerId: "b/rec", id: "z" });
+    const y = det(0, 5, { recognizerId: "a/rec", id: "y" });
+    expect(ids(resolveConflicts([x, y]).kept)).toEqual(["y"]);
+    const p = det(0, 5, { id: "p" });
+    const q = det(0, 5, { id: "q" });
+    expect(ids(resolveConflicts([q, p]).kept)).toEqual(["p"]);
+  });
+});
+
+describe("resolveConflicts : manuel, validé", () => {
+  it("manuel contre validé : le manuel gagne", () => {
+    const manual = det(0, 5, { source: "manual", score: 0.5, packId: "manual" });
+    const valid = det(0, 5, { validated: true, score: 1, entityType: "CH_AVS" });
+    const { kept, discarded } = resolveConflicts([valid, manual]);
+    expect(ids(kept)).toEqual([manual.id]);
+    expect(discarded[0]?.explanation.at(-1)).toContain("ajout manuel prioritaire");
+  });
+
+  it("validé contre score plus haut : le validé gagne", () => {
+    const valid = det(0, 10, { validated: true, score: 0.6 });
+    const high = det(5, 15, { score: 0.95 });
+    const { kept } = resolveConflicts([high, valid]);
+    expect(ids(kept)).toEqual([valid.id]);
+  });
+
+  it("validé contre inclusion plus large : le validé gagne (règle 2 avant 3)", () => {
+    const valid = det(5, 10, { validated: true, score: 0.6 });
+    const large = det(0, 20, { score: 0.9 });
+    expect(ids(resolveConflicts([large, valid]).kept)).toEqual([valid.id]);
+  });
+});
+
+describe("resolveConflicts : chaînes de chevauchements", () => {
+  // A [0,6) chevauche B [4,10), B chevauche C [8,14), A ne chevauche pas C.
+  it("B le meilleur : A et C sont toutes deux écartées au profit de B", () => {
+    const a = det(0, 6, { score: 0.7 });
+    const b = det(4, 10, { score: 0.9 });
+    const c = det(8, 14, { score: 0.7 });
+    const { kept, discarded } = resolveConflicts([c, a, b]);
+    expect(ids(kept)).toEqual([b.id]);
+    expect(discarded.map((d) => [d.id, d.supersededBy])).toEqual([
+      [a.id, b.id],
+      [c.id, b.id],
+    ]);
+  });
+
+  it("A le meilleur : B est écartée, donc C (qui ne gêne pas A) est gardée", () => {
+    // Le perdant n'exclut personne : B est battue par A, et C n'entre en conflit
+    // qu'avec B, qui n'est pas retenue. Résultat attendu : A et C.
+    const a = det(0, 6, { score: 0.9 });
+    const b = det(4, 10, { score: 0.8 });
+    const c = det(8, 14, { score: 0.7 });
+    const { kept, discarded } = resolveConflicts([b, c, a]);
+    expect(ids(kept)).toEqual([a.id, c.id]);
+    expect(discarded.map((d) => [d.id, d.supersededBy])).toEqual([[b.id, a.id]]);
+  });
+
+  it("supersededBy désigne la première gardée dans l'ordre du texte", () => {
+    const left = det(0, 5, { score: 0.9 });
+    const right = det(6, 11, { score: 0.9 });
+    const wide = det(3, 9, { score: 0.6 }); // chevauche les deux, perd contre les deux
+    const { discarded } = resolveConflicts([wide, right, left]);
+    expect(discarded[0]?.supersededBy).toBe(left.id);
+  });
+});
+
+describe("resolveConflicts : doublons, seuil, pureté", () => {
+  it("doublon exact de détecteurs différents : un seul gardé, confirmation signalée", () => {
+    const a = det(0, 10, { recognizerId: "pack/a", score: 0.9, entityType: "EMAIL" });
+    const b = det(0, 10, { recognizerId: "pack/b", score: 0.8, entityType: "EMAIL" });
+    const { kept, discarded } = resolveConflicts([b, a]);
+    expect(ids(kept)).toEqual([a.id]);
+    expect(kept[0]?.explanation.at(-1)).toBe("confirmée par un autre détecteur : pack/b");
+    expect(ids(discarded)).toEqual([b.id]);
+  });
+
+  it("pas de mention de confirmation pour un autre type ou le même détecteur", () => {
+    const a = det(0, 10, { recognizerId: "pack/a", entityType: "EMAIL" });
+    const b = det(0, 10, { recognizerId: "pack/b", entityType: "URL", score: 0.7 });
+    const c = det(0, 10, { recognizerId: "pack/a", entityType: "EMAIL", score: 0.7 });
+    const { kept } = resolveConflicts([a, b, c]);
+    expect(kept[0]?.explanation.join("|")).not.toContain("confirmée");
+  });
+
+  it("seuil : sous minScore écarté avant résolution, sauf manuel", () => {
+    const low = det(0, 5, { score: 0.4 });
+    const manual = det(10, 15, { score: 0.1, source: "manual" });
+    const ok = det(20, 25, { score: 0.5 });
+    const { kept, discarded } = resolveConflicts([low, manual, ok]);
+    expect(ids(kept)).toEqual([manual.id, ok.id]);
+    expect(ids(discarded)).toEqual([low.id]);
+    expect(discarded[0]?.explanation.at(-1)).toContain("sous le seuil");
+    expect(discarded[0]?.supersededBy).toBeUndefined();
+  });
+
+  it("un candidat sous le seuil n'écarte personne et n'est pas une confirmation", () => {
+    const low = det(0, 10, { score: 0.45, recognizerId: "pack/b" });
+    const ok = det(5, 12, { score: 0.5 });
+    const { kept } = resolveConflicts([low, ok]);
+    expect(ids(kept)).toEqual([ok.id]);
+    expect(kept[0]?.explanation.join("|")).not.toContain("confirmée");
+  });
+
+  it("minScore personnalisé", () => {
+    const a = det(0, 5, { score: 0.6 });
+    expect(resolveConflicts([a], { minScore: 0.7 }).kept).toEqual([]);
+    expect(resolveConflicts([a], { minScore: 0.6 }).kept).toHaveLength(1);
+  });
+
+  it("intervalle vide ou invalide : écarté sans casser le reste", () => {
+    const empty = det(3, 3);
+    const big = det(0, 10);
+    const { kept, discarded } = resolveConflicts([empty, big]);
+    expect(ids(kept)).toEqual([big.id]);
+    expect(ids(discarded)).toEqual([empty.id]);
+  });
+
+  it("ne mute pas les entrées et renvoie des copies", () => {
+    const a = det(0, 10, { score: 0.9 });
+    const b = det(5, 15, { score: 0.6 });
+    const c = det(20, 25);
+    const input = [a, b, c];
+    const snapshot = structuredClone(input);
+    const { kept, discarded } = resolveConflicts(input);
+    expect(input).toEqual(snapshot);
+    expect(kept.every((k) => !input.includes(k))).toBe(true);
+    expect(discarded.every((k) => !input.includes(k))).toBe(true);
+    expect(b.supersededBy).toBeUndefined();
+    expect(discarded[0]?.explanation).toHaveLength(b.explanation.length + 1);
+  });
+
+  it("l'explication ne contient pas de valeur et se termine par la raison", () => {
+    const a = det(0, 10, { score: 0.9, entityType: "IBAN" });
+    const b = det(5, 15, { score: 0.6 });
+    const line = resolveConflicts([a, b]).discarded[0]?.explanation.at(-1);
+    expect(line).toMatch(/^écartée au profit d'une détection IBAN : /);
+  });
+});
+
+describe("resolveConflicts : déterminisme", () => {
+  /** Empreinte complète du résultat (ids, supersededBy, explications). */
+  const fingerprint = (input: Detection[]) => JSON.stringify(resolveConflicts(input));
+
+  it("identique pour les 720 permutations de 6 détections (dont un cycle non transitif)", () => {
+    // Cycle par paires : A contient B à score égal (A gagne), B bat C par priorité
+    // de type, C bat A par priorité de type. Un tri naïf dépendrait de l'ordre.
+    const A = det(0, 10, { entityType: "LOCATION", score: 0.7, id: "A" });
+    const B = det(2, 6, { entityType: "EMAIL", score: 0.7, id: "B" });
+    const C = det(5, 12, { entityType: "PERSON", score: 0.7, id: "C" });
+    const D = det(11, 16, { entityType: "DATE", score: 0.7, id: "D" });
+    const E = det(11, 16, { entityType: "DATE", score: 0.7, id: "E", recognizerId: "test/other" });
+    const F = det(20, 25, { entityType: "PHONE", score: 0.9, id: "F", validated: true });
+    const base = [A, B, C, D, E, F];
+    const expected = fingerprint(base);
+    const perms = permutations(base);
+    expect(perms).toHaveLength(720);
+    for (const p of perms) expect(fingerprint(p)).toBe(expected);
+  });
+
+  it("identique pour des ordres aléatoires sur de grands ensembles (graine fixe)", () => {
+    const types: EntityType[] = ["PERSON", "EMAIL", "DATE", "LOCATION", "PHONE", "IBAN"];
+    for (const seed of [1, 2, 3]) {
+      const rnd = mulberry32(seed);
+      const set: Detection[] = [];
+      for (let i = 0; i < 300; i++) {
+        const start = Math.floor(rnd() * 400);
+        const len = 1 + Math.floor(rnd() * 12);
+        set.push(
+          det(start, start + len, {
+            id: `s${seed}-${i}`,
+            entityType: types[Math.floor(rnd() * types.length)]!,
+            score: [0.5, 0.7, 0.9][Math.floor(rnd() * 3)]!, // peu de valeurs : beaucoup d'égalités
+            validated: rnd() < 0.1 ? true : undefined,
+            recognizerId: `r/${Math.floor(rnd() * 3)}`,
+          }),
+        );
+      }
+      const expected = fingerprint(set);
+      for (let k = 0; k < 40; k++) expect(fingerprint(shuffle(set, rnd))).toBe(expected);
+    }
+  });
+
+  it("le résultat est cohérent : gardées disjointes et triées, tout écart justifié", () => {
+    const rnd = mulberry32(42);
+    const set = Array.from({ length: 500 }, (_, i) => {
+      const start = Math.floor(rnd() * 600);
+      return det(start, start + 1 + Math.floor(rnd() * 10), {
+        id: `c${i}`,
+        score: 0.5 + rnd() / 2,
+      });
+    });
+    const { kept, discarded } = resolveConflicts(set);
+    expect(kept.length + discarded.length).toBe(set.length);
+    for (let i = 1; i < kept.length; i++)
+      expect(kept[i]!.start).toBeGreaterThanOrEqual(kept[i - 1]!.end);
+    const keptIds = new Set(ids(kept));
+    for (const d of discarded) {
+      expect(keptIds.has(d.supersededBy!)).toBe(true);
+      const w = kept.find((k) => k.id === d.supersededBy)!;
+      expect(w.start < d.end && d.start < w.end).toBe(true);
+    }
+  });
+});
+
+describe("resolveConflicts : performance", () => {
+  it("traite 10 000 détections aléatoires en moins d'une seconde", () => {
+    const rnd = mulberry32(2024);
+    const set = Array.from({ length: 10_000 }, (_, i) => {
+      const start = Math.floor(rnd() * 100_000);
+      return det(start, start + 1 + Math.floor(rnd() * 30), {
+        id: `p${i}`,
+        score: 0.5 + rnd() / 2,
+      });
+    });
+    const t0 = performance.now();
+    const { kept, discarded } = resolveConflicts(set);
+    const elapsed = performance.now() - t0;
+    expect(kept.length + discarded.length).toBe(10_000);
+    expect(elapsed).toBeLessThan(1000);
+  });
+});
