@@ -1,0 +1,35 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "fr-postal-code-commune",
+      "entityType": "LOCATION",
+      "score": 0.5,
+      "pattern": "(?<![A-Za-z0-9])(?!00|96|99)[0-9]{5}[ \\u00a0][A-ZÀ-ÖØ-ÞŒ]{2,30}(?:[ '’\\-][A-ZÀ-ÖØ-ÞŒ]{1,30}){0,8}(?![A-Za-zÀ-ÖØ-öø-ÿ0-9])",
+      "context": {
+        "required": true,
+        "words": {
+          "fr": [
+            "code postal",
+            "cp",
+            "adresse",
+            "domicile",
+            "rue",
+            "avenue",
+            "boulevard",
+            "chemin",
+            "impasse",
+            "allée",
+            "place",
+            "route",
+            "résidence",
+            "cedex",
+            "bp"
+          ],
+          "en": ["postal code", "zip", "address", "street", "avenue", "road", "boulevard"]
+        }
+      },
+      "description": "Code postal (01000 à 98999, Corse 20xxx comprise) suivi d'un nom de commune en majuscules, ex. « 74160 SAINT-JULIEN-EN-GENEVOIS ». Mot de contexte obligatoire. La détection couvre le code et la commune."
+    }
+  ]
+}

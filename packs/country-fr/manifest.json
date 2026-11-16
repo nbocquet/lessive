@@ -1,0 +1,9 @@
+{
+  "id": "country-fr",
+  "version": "0.1.0",
+  "engineVersion": "0.1.0",
+  "type": "country",
+  "name": "France",
+  "description": "Identifiants français : NIR (sécurité sociale), SIREN, SIRET, téléphones, codes postaux suivis d'une commune. Pas de règle IBAN : le pack global détecte tous les IBAN.",
+  "rules": ["rules/identifiers.json", "rules/phones.json", "rules/postal.json"]
+}

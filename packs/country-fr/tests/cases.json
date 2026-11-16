@@ -1,0 +1,324 @@
+{
+  "cases": [
+    {
+      "id": "nir-espaces-avec-contexte",
+      "language": "fr",
+      "text": "Mon numéro de sécurité sociale est le 1 85 05 78 006 084 91.",
+      "expect": [{ "type": "FR_NIR", "value": "1 85 05 78 006 084 91" }]
+    },
+    {
+      "id": "nir-compact-texte-anglais",
+      "language": "en",
+      "text": "The French social security number is 185057800608491 on the form.",
+      "expect": [{ "type": "FR_NIR", "value": "185057800608491" }]
+    },
+    {
+      "id": "nir-sans-contexte-valide-par-la-cle",
+      "language": "fr",
+      "text": "Dossier reçu : 290047512345653, à traiter.",
+      "expect": [{ "type": "FR_NIR", "value": "290047512345653" }]
+    },
+    {
+      "id": "nir-cle-fausse",
+      "language": "fr",
+      "text": "Sécurité sociale : 1 85 05 78 006 084 36.",
+      "expect": []
+    },
+    {
+      "id": "nir-corse-2a",
+      "language": "fr",
+      "text": "NIR : 2 85 10 2A 004 123 86",
+      "expect": [{ "type": "FR_NIR", "value": "2 85 10 2A 004 123 86" }]
+    },
+    {
+      "id": "nir-corse-2b-compact",
+      "language": "fr",
+      "text": "Assuré né en Haute-Corse, NIR 192052B03304515.",
+      "expect": [{ "type": "FR_NIR", "value": "192052B03304515" }]
+    },
+    {
+      "id": "nir-corse-cle-fausse",
+      "language": "fr",
+      "text": "NIR : 2 85 10 2A 004 123 85",
+      "expect": []
+    },
+    {
+      "id": "nir-outre-mer",
+      "language": "fr",
+      "text": "Carte Vitale : 1 90 12 971 06 045 73",
+      "expect": [{ "type": "FR_NIR", "value": "1 90 12 971 06 045 73" }]
+    },
+    {
+      "id": "nir-mois-special-31",
+      "language": "fr",
+      "text": "Numéro INSEE : 1 85 31 78 006 084 22",
+      "expect": [{ "type": "FR_NIR", "value": "1 85 31 78 006 084 22" }]
+    },
+    {
+      "id": "nir-mois-impossible-13",
+      "language": "fr",
+      "text": "Sécurité sociale : 1 85 13 78 006 084 11",
+      "expect": []
+    },
+    {
+      "id": "nir-pas-un-telephone-ni-un-siren",
+      "language": "fr",
+      "text": "Sécu 185057800608491, SIREN 123 456 782.",
+      "expect": [
+        { "type": "FR_NIR", "value": "185057800608491" },
+        { "type": "FR_SIREN", "value": "123 456 782" }
+      ]
+    },
+    {
+      "id": "siret-espaces",
+      "language": "fr",
+      "text": "Le SIRET de l'établissement est 123 456 782 00010.",
+      "expect": [{ "type": "FR_SIRET", "value": "123 456 782 00010" }]
+    },
+    {
+      "id": "siret-compact-texte-anglais",
+      "language": "en",
+      "text": "Our SIRET is 98765432400423, please keep it.",
+      "expect": [{ "type": "FR_SIRET", "value": "98765432400423" }]
+    },
+    {
+      "id": "siret-contient-siren-le-siret-l-emporte",
+      "language": "fr",
+      "text": "L'entreprise immatriculée sous le SIREN 123 456 782 exploite l'établissement 123 456 782 00010.",
+      "expect": [
+        { "type": "FR_SIREN", "value": "123 456 782" },
+        { "type": "FR_SIRET", "value": "123 456 782 00010" }
+      ]
+    },
+    {
+      "id": "siret-cle-fausse-pas-de-siren-dedans",
+      "language": "fr",
+      "text": "L'entreprise a pour SIRET 123 456 782 00011.",
+      "expect": []
+    },
+    {
+      "id": "siret-compact-cle-fausse-pas-de-siren-dedans",
+      "language": "fr",
+      "text": "Société, SIRET 12345678200011.",
+      "expect": []
+    },
+    {
+      "id": "siren-avec-rcs",
+      "language": "fr",
+      "text": "Dupont Conseil SAS, RCS Annecy 123 456 782.",
+      "expect": [{ "type": "FR_SIREN", "value": "123 456 782" }]
+    },
+    {
+      "id": "siren-texte-anglais",
+      "language": "en",
+      "text": "The company number is 987654324.",
+      "expect": [{ "type": "FR_SIREN", "value": "987654324" }]
+    },
+    {
+      "id": "siren-points",
+      "language": "fr",
+      "text": "Société immatriculée sous le numéro 123.456.782.",
+      "expect": [{ "type": "FR_SIREN", "value": "123.456.782" }]
+    },
+    {
+      "id": "siren-sans-contexte",
+      "language": "fr",
+      "text": "Référence du colis : 123 456 782, merci.",
+      "expect": []
+    },
+    {
+      "id": "siren-luhn-faux-avec-contexte",
+      "language": "fr",
+      "text": "SIREN 123 456 783 de la société.",
+      "expect": []
+    },
+    {
+      "id": "siren-contexte-trop-loin",
+      "language": "fr",
+      "text": "La société a déménagé. Après de longs mois de travaux et de déménagement le numéro de dossier restait 123 456 782.",
+      "expect": []
+    },
+    {
+      "id": "telephone-fixe-espaces",
+      "language": "fr",
+      "text": "Tél : 01 99 00 12 34",
+      "expect": [{ "type": "PHONE", "value": "01 99 00 12 34" }]
+    },
+    {
+      "id": "telephone-points",
+      "language": "fr",
+      "text": "Portable 06.39.98.12.34, merci de rappeler.",
+      "expect": [{ "type": "PHONE", "value": "06.39.98.12.34" }]
+    },
+    {
+      "id": "telephone-tirets",
+      "language": "fr",
+      "text": "Mobile : 07-38-76-12-34",
+      "expect": [{ "type": "PHONE", "value": "07-38-76-12-34" }]
+    },
+    {
+      "id": "telephone-compact-sans-contexte",
+      "language": "fr",
+      "text": "Rappelez-moi au 0639981234 dès que possible.",
+      "expect": [{ "type": "PHONE", "value": "0639981234" }]
+    },
+    {
+      "id": "telephone-international-plus33",
+      "language": "fr",
+      "text": "Joignable au +33 6 39 98 12 34 toute la semaine.",
+      "expect": [{ "type": "PHONE", "value": "+33 6 39 98 12 34" }]
+    },
+    {
+      "id": "telephone-international-zero-entre-parentheses",
+      "language": "en",
+      "text": "Call me on +33 (0)1 99 00 12 34 tomorrow.",
+      "expect": [{ "type": "PHONE", "value": "+33 (0)1 99 00 12 34" }]
+    },
+    {
+      "id": "telephone-international-0033",
+      "language": "fr",
+      "text": "Fax 0033 4 65 71 12 34",
+      "expect": [{ "type": "PHONE", "value": "0033 4 65 71 12 34" }]
+    },
+    {
+      "id": "telephone-international-compact",
+      "language": "en",
+      "text": "My phone: +33639981234.",
+      "expect": [{ "type": "PHONE", "value": "+33639981234" }]
+    },
+    {
+      "id": "telephones-deux-dans-une-liste",
+      "language": "fr",
+      "text": "Contacts : 06 39 98 12 34, 07 38 76 12 34.",
+      "expect": [
+        { "type": "PHONE", "value": "06 39 98 12 34" },
+        { "type": "PHONE", "value": "07 38 76 12 34" }
+      ]
+    },
+    {
+      "id": "numero-vert-08-exclu",
+      "language": "fr",
+      "text": "Service client : 08 05 12 34 56 (appel gratuit).",
+      "expect": []
+    },
+    {
+      "id": "numero-surtaxe-08-exclu",
+      "language": "fr",
+      "text": "Tél 08 92 12 34 56 pour le serveur vocal.",
+      "expect": []
+    },
+    {
+      "id": "numeros-courts-exclus",
+      "language": "fr",
+      "text": "En cas d'urgence appelez le 112, le 15 ou le 3949 ; renseignements au 118 218.",
+      "expect": []
+    },
+    {
+      "id": "dix-chiffres-ne-commencant-pas-par-zero",
+      "language": "fr",
+      "text": "Tél 12 34 56 78 90 (numéro de lot).",
+      "expect": []
+    },
+    {
+      "id": "trop-de-chiffres-pour-un-telephone",
+      "language": "fr",
+      "text": "Code article 0612345678901 en stock.",
+      "expect": []
+    },
+    {
+      "id": "date-et-montant-pas-un-telephone",
+      "language": "fr",
+      "text": "Facture du 2026-11-16 de 1 234 567,89 EUR, échéance 16.11.2026.",
+      "expect": []
+    },
+    {
+      "id": "isbn-pas-un-telephone",
+      "language": "en",
+      "text": "ISBN 978-2-0123-4567-8, phone books section.",
+      "expect": []
+    },
+    {
+      "id": "iban-pas-un-telephone-ni-un-siren",
+      "language": "fr",
+      "text": "IBAN FR76 3000 6000 0112 3456 7890 189 pour la société.",
+      "expect": []
+    },
+    {
+      "id": "code-postal-adresse-complete",
+      "language": "fr",
+      "text": "Adresse : 12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS",
+      "expect": [{ "type": "LOCATION", "value": "74160 SAINT-JULIEN-EN-GENEVOIS" }]
+    },
+    {
+      "id": "code-postal-corse",
+      "language": "fr",
+      "text": "Code postal 20000 AJACCIO.",
+      "expect": [{ "type": "LOCATION", "value": "20000 AJACCIO" }]
+    },
+    {
+      "id": "code-postal-commune-accentuee",
+      "language": "fr",
+      "text": "Livraison au 13 avenue Victor Hugo, 42000 SAINT-ÉTIENNE.",
+      "expect": [{ "type": "LOCATION", "value": "42000 SAINT-ÉTIENNE" }]
+    },
+    {
+      "id": "code-postal-texte-anglais",
+      "language": "en",
+      "text": "Postal code 69002 LYON is on the label.",
+      "expect": [{ "type": "LOCATION", "value": "69002 LYON" }]
+    },
+    {
+      "id": "code-postal-sans-contexte",
+      "language": "fr",
+      "text": "Le tableau liste 75008 PARIS parmi les résultats.",
+      "expect": []
+    },
+    {
+      "id": "code-postal-commune-en-minuscules",
+      "language": "fr",
+      "text": "Adresse : 12 rue de la Paix, 75002 Paris",
+      "expect": []
+    },
+    {
+      "id": "code-postal-inexistant",
+      "language": "fr",
+      "text": "Adresse : 00123 PARIS ou 99999 PARIS",
+      "expect": []
+    },
+    {
+      "id": "melange-realiste",
+      "language": "fr",
+      "text": "Mme Test, tél. 06 39 98 12 34, sécu 185057800608491, société SIRET 123 456 782 00010, 12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS.",
+      "expect": [
+        { "type": "PHONE", "value": "06 39 98 12 34" },
+        { "type": "FR_NIR", "value": "185057800608491" },
+        { "type": "FR_SIRET", "value": "123 456 782 00010" },
+        { "type": "LOCATION", "value": "74160 SAINT-JULIEN-EN-GENEVOIS" }
+      ]
+    },
+    {
+      "id": "siret-siren-colle-au-nic",
+      "language": "fr",
+      "text": "SIRET : 123456782 00010",
+      "expect": [{ "type": "FR_SIRET", "value": "123456782 00010" }]
+    },
+    {
+      "id": "nir-cle-separee",
+      "language": "fr",
+      "text": "NIR 1850578006084 91",
+      "expect": [{ "type": "FR_NIR", "value": "1850578006084 91" }]
+    },
+    {
+      "id": "telephone-colle-a-des-lettres",
+      "language": "fr",
+      "text": "Référence NWBK0612345678 du virement.",
+      "expect": []
+    },
+    {
+      "id": "iban-gb-compact-rien",
+      "language": "en",
+      "text": "Account GB29NWBK60161331926819 at the bank.",
+      "expect": []
+    }
+  ]
+}
