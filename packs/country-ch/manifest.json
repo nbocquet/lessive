@@ -1,0 +1,9 @@
+{
+  "id": "country-ch",
+  "version": "0.1.0",
+  "engineVersion": "0.1.0",
+  "type": "country",
+  "name": "Suisse",
+  "description": "Identifiants et coordonnées suisses : numéro AVS, IDE, téléphones, codes postaux.",
+  "rules": ["rules/identifiers.json", "rules/phones.json", "rules/postal.json"]
+}

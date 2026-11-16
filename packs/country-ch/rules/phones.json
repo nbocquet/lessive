@@ -1,0 +1,68 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "phone-intl",
+      "entityType": "PHONE",
+      "score": 0.75,
+      "pattern": "(?<![\\w+])(?<!\\d[ .\\-/])\\+41[ .\\-]?(?:\\(0\\)[ .\\-]?)?[1-9]\\d[ .\\-]?\\d{3}[ .\\-]?\\d{2}[ .\\-]?\\d{2}(?!\\d)",
+      "languages": "any",
+      "context": {
+        "words": {
+          "fr": ["tél", "tel", "téléphone", "natel", "mobile", "portable", "fixe", "fax"],
+          "en": ["phone", "tel", "telephone", "mobile", "cell", "call", "fax"],
+          "any": ["Telefon", "Handy", "Natel", "Mobil", "Tel", "cellulare", "telefono"]
+        }
+      },
+      "description": "Numéro suisse au format international : +41 79 123 45 67, +41 (0)79 123 45 67."
+    },
+    {
+      "kind": "pattern",
+      "id": "phone-intl-00",
+      "entityType": "PHONE",
+      "score": 0.75,
+      "pattern": "(?<![\\w+])(?<!\\d[ .\\-/])0041[ .\\-]?[1-9]\\d[ .\\-]?\\d{3}[ .\\-]?\\d{2}[ .\\-]?\\d{2}(?!\\d)",
+      "languages": "any",
+      "context": {
+        "words": {
+          "fr": ["tél", "tel", "téléphone", "natel", "mobile", "portable", "fixe", "fax"],
+          "en": ["phone", "tel", "telephone", "mobile", "cell", "call", "fax"],
+          "any": ["Telefon", "Handy", "Natel", "Mobil", "Tel", "cellulare", "telefono"]
+        }
+      },
+      "description": "Numéro suisse avec préfixe international 0041 : 0041 22 123 45 67."
+    },
+    {
+      "kind": "pattern",
+      "id": "phone-national",
+      "entityType": "PHONE",
+      "score": 0.6,
+      "pattern": "(?<![\\w+])(?<!\\d[ .\\-/])(?:0[1-9]\\d[ .\\-/]\\d{3}[ .\\-]?\\d{2}[ .\\-]?\\d{2}|0[89]00[ .\\-]\\d{3}[ .\\-]?\\d{3})(?!\\d)",
+      "languages": "any",
+      "context": {
+        "words": {
+          "fr": ["tél", "tel", "téléphone", "natel", "mobile", "portable", "fixe", "fax"],
+          "en": ["phone", "tel", "telephone", "mobile", "cell", "call", "fax"],
+          "any": ["Telefon", "Handy", "Natel", "Mobil", "Tel", "cellulare", "telefono"]
+        }
+      },
+      "description": "Numéro suisse au format national groupé : 079 123 45 67, 022 123 45 67, 058 123 45 67, 0800 123 456."
+    },
+    {
+      "kind": "pattern",
+      "id": "phone-national-compact",
+      "entityType": "PHONE",
+      "score": 0.4,
+      "pattern": "(?<![\\w+.\\-/])(?<!\\d[ .\\-/])0[1-9]\\d{8}(?!\\d)",
+      "languages": "any",
+      "context": {
+        "words": {
+          "fr": ["tél", "tel", "téléphone", "natel", "mobile", "portable", "fixe", "fax"],
+          "en": ["phone", "tel", "telephone", "mobile", "cell", "call", "fax"],
+          "any": ["Telefon", "Handy", "Natel", "Mobil", "Tel", "cellulare", "telefono"]
+        }
+      },
+      "description": "Numéro national à 10 chiffres collés (0791234567). Score sous le seuil : retenu seulement avec un mot de contexte."
+    }
+  ]
+}

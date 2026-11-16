@@ -1,0 +1,425 @@
+{
+  "cases": [
+    {
+      "id": "avs-points-fr",
+      "language": "fr",
+      "text": "Mon numéro AVS est 756.1234.5678.97.",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "756.1234.5678.97"
+        }
+      ]
+    },
+    {
+      "id": "avs-dans-un-texte-anglais",
+      "language": "en",
+      "text": "My AHV number is 756.9876.5432.17.",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "756.9876.5432.17"
+        }
+      ]
+    },
+    {
+      "id": "avs-allemand",
+      "text": "Meine AHV-Nummer lautet 756.5555.0000.19.",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "756.5555.0000.19"
+        }
+      ]
+    },
+    {
+      "id": "avs-points-sans-contexte",
+      "language": "fr",
+      "text": "Référence : 756.2468.1357.91 à conserver.",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "756.2468.1357.91"
+        }
+      ]
+    },
+    {
+      "id": "avs-espaces",
+      "language": "fr",
+      "text": "N° AVS : 756 1234 5678 97",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "756 1234 5678 97"
+        }
+      ]
+    },
+    {
+      "id": "avs-compact-avec-contexte",
+      "language": "fr",
+      "text": "AVS 7561234567897 pour le dossier.",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "7561234567897"
+        }
+      ]
+    },
+    {
+      "id": "avs-compact-sans-contexte-code-barres",
+      "language": "fr",
+      "text": "Code produit 7561234567897 en rayon.",
+      "expect": []
+    },
+    {
+      "id": "avs-cle-fausse",
+      "language": "fr",
+      "text": "Numéro AVS 756.1234.5678.98",
+      "expect": []
+    },
+    {
+      "id": "avs-compact-cle-fausse",
+      "language": "en",
+      "text": "Social security 7561234567898 on file.",
+      "expect": []
+    },
+    {
+      "id": "avs-deux-numeros",
+      "language": "fr",
+      "text": "Parents : 756.0000.1111.28 et 756.9876.5432.17 (AVS).",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "756.0000.1111.28"
+        },
+        {
+          "type": "CH_AVS",
+          "value": "756.9876.5432.17"
+        }
+      ]
+    },
+    {
+      "id": "ide-points",
+      "language": "fr",
+      "text": "IDE : CHE-100.000.006",
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE-100.000.006"
+        }
+      ]
+    },
+    {
+      "id": "ide-suffixe-tva",
+      "language": "fr",
+      "text": "N° de TVA : CHE-123.456.788 TVA",
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE-123.456.788 TVA"
+        }
+      ]
+    },
+    {
+      "id": "ide-suffixe-mwst-allemand",
+      "text": "Firma Muster AG, UID CHE-109.876.542 MWST",
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE-109.876.542 MWST"
+        }
+      ]
+    },
+    {
+      "id": "ide-compact",
+      "language": "fr",
+      "text": "Société inscrite sous CHE112233445.",
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE112233445"
+        }
+      ]
+    },
+    {
+      "id": "ide-suffixe-iva",
+      "text": "Partita IVA: CHE-200.000.018 IVA",
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE-200.000.018 IVA"
+        }
+      ]
+    },
+    {
+      "id": "ide-texte-anglais",
+      "language": "en",
+      "text": "Our UID is CHE-111.111.118.",
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE-111.111.118"
+        }
+      ]
+    },
+    {
+      "id": "ide-cle-fausse",
+      "language": "fr",
+      "text": "IDE : CHE-123.456.789",
+      "expect": []
+    },
+    {
+      "id": "ide-sans-prefixe-che",
+      "language": "fr",
+      "text": "Numéro 123.456.788 à vérifier.",
+      "expect": []
+    },
+    {
+      "id": "tel-mobile-national",
+      "language": "fr",
+      "text": "Tél. 079 123 45 67",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "079 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "tel-international-en",
+      "language": "en",
+      "text": "Call me on +41 79 123 45 67 tomorrow.",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+41 79 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "tel-0041",
+      "language": "fr",
+      "text": "Joignable au 0041 22 123 45 67.",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0041 22 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "tel-plus41-zero-parentheses",
+      "language": "fr",
+      "text": "Natel : +41 (0)79 123 45 67",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+41 (0)79 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "tel-fixe-geneve",
+      "language": "fr",
+      "text": "Standard : 022 123 45 67",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "022 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "tel-gratuit-0800",
+      "language": "fr",
+      "text": "Numéro gratuit 0800 123 456",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0800 123 456"
+        }
+      ]
+    },
+    {
+      "id": "tel-058",
+      "language": "fr",
+      "text": "Contact entreprise 058 123 45 67",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "058 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "tel-points",
+      "language": "fr",
+      "text": "Mobile 079.123.45.67",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "079.123.45.67"
+        }
+      ]
+    },
+    {
+      "id": "tel-allemand",
+      "text": "Meine Handynummer ist 078 123 45 67.",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "078 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "tel-compact-avec-contexte",
+      "language": "fr",
+      "text": "Natel 0791234567",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0791234567"
+        }
+      ]
+    },
+    {
+      "id": "tel-compact-sans-contexte",
+      "language": "fr",
+      "text": "Commande 0791234567 expédiée.",
+      "expect": []
+    },
+    {
+      "id": "tel-francais-ignore",
+      "language": "fr",
+      "text": "Tél. 04 50 12 34 56 ou +33 4 50 12 34 56",
+      "expect": []
+    },
+    {
+      "id": "tel-montant",
+      "language": "fr",
+      "text": "Total : 1'234.50 CHF, TVA 8,1 %",
+      "expect": []
+    },
+    {
+      "id": "tel-date-numerique",
+      "language": "fr",
+      "text": "Le 01.02.2024 à 10:30, salle 0123.",
+      "expect": []
+    },
+    {
+      "id": "tel-date-iso",
+      "language": "en",
+      "text": "Meeting 2024-03-15, 12 seats left.",
+      "expect": []
+    },
+    {
+      "id": "tel-iban-ch-espaces",
+      "language": "fr",
+      "text": "IBAN CH93 0076 2011 6238 5295 7",
+      "expect": []
+    },
+    {
+      "id": "tel-iban-ch-compact",
+      "language": "en",
+      "text": "IBAN CH9300762011623852957",
+      "expect": []
+    },
+    {
+      "id": "tel-numero-facture",
+      "language": "fr",
+      "text": "Facture 1234567890 du mois.",
+      "expect": []
+    },
+    {
+      "id": "npa-avec-contexte",
+      "language": "fr",
+      "text": "Rue du Rhône 12, 1204 Genève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "1204"
+        }
+      ]
+    },
+    {
+      "id": "npa-prefixe-ch",
+      "language": "fr",
+      "text": "Adresse : CH-1003 Lausanne",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "CH-1003"
+        }
+      ]
+    },
+    {
+      "id": "npa-sans-contexte",
+      "language": "fr",
+      "text": "Il habite à 1204 Genève depuis longtemps.",
+      "expect": []
+    },
+    {
+      "id": "npa-montant-majuscule",
+      "language": "fr",
+      "text": "Prix : 1500 Francs, payable à la livraison.",
+      "expect": []
+    },
+    {
+      "id": "npa-en",
+      "language": "en",
+      "text": "Address: 12 High Street, 8001 Zürich",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "8001"
+        }
+      ]
+    },
+    {
+      "id": "npa-allemand",
+      "text": "PLZ 3011 Bern",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "3011"
+        }
+      ]
+    },
+    {
+      "id": "npa-localite-minuscule",
+      "language": "fr",
+      "text": "adresse : 1204 genève",
+      "expect": []
+    },
+    {
+      "id": "npa-hors-plage",
+      "language": "fr",
+      "text": "NPA 9800 Ville",
+      "expect": []
+    },
+    {
+      "id": "fiche-complete-fr",
+      "language": "fr",
+      "text": "Adresse : chemin des Roses 4, 1950 Sion. Tél. 027 123 45 67. AVS 756.1234.5678.97, IDE CHE-100.000.006.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "1950"
+        },
+        {
+          "type": "PHONE",
+          "value": "027 123 45 67"
+        },
+        {
+          "type": "CH_AVS",
+          "value": "756.1234.5678.97"
+        },
+        {
+          "type": "CH_UID",
+          "value": "CHE-100.000.006"
+        }
+      ]
+    }
+  ]
+}

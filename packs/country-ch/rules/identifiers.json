@@ -1,0 +1,52 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "avs",
+      "entityType": "CH_AVS",
+      "score": 0.7,
+      "pattern": "(?<!\\d)(?<!\\d[ .\\u00a0\\u202f])756[ .\\u00a0\\u202f]\\d{4}[ .\\u00a0\\u202f]\\d{4}[ .\\u00a0\\u202f]\\d{2}(?!\\d)",
+      "validator": "ean13",
+      "languages": "any",
+      "description": "Numéro AVS à 13 chiffres présenté avec points ou espaces (756.1234.5678.97), clé EAN-13 vérifiée."
+    },
+    {
+      "kind": "pattern",
+      "id": "avs-compact",
+      "entityType": "CH_AVS",
+      "score": 0.5,
+      "pattern": "(?<![\\d.])756\\d{10}(?!\\d)",
+      "validator": "ean13",
+      "languages": "any",
+      "context": {
+        "words": {
+          "fr": ["AVS", "NAVS", "numéro AVS", "n° AVS", "no AVS", "assuré", "assurance sociale"],
+          "en": ["AVS", "AHV", "OASI", "social security", "insurance number"],
+          "any": [
+            "AHV",
+            "AHV-Nummer",
+            "AVS",
+            "NAVS",
+            "NAVS13",
+            "Sozialversicherungsnummer",
+            "Versichertennummer",
+            "numero AVS"
+          ]
+        },
+        "required": true
+      },
+      "description": "Numéro AVS compact (13 chiffres collés). Un mot de contexte est exigé : les codes-barres EAN-13 suisses commencent aussi par 756."
+    },
+    {
+      "kind": "pattern",
+      "id": "uid",
+      "entityType": "CH_UID",
+      "score": 0.7,
+      "pattern": "\\bCHE[-. ]?\\d{3}[. ]?\\d{3}[. ]?\\d{3}(?:[ \\u00a0]?(?:TVA|MWST|IVA))?\\b",
+      "flags": "i",
+      "validator": "ch_uid_mod11",
+      "languages": "any",
+      "description": "Numéro IDE (CHE-123.456.789), suffixe TVA, MWST ou IVA facultatif, clé modulo 11 vérifiée. Le préfixe CHE est obligatoire."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "postal-code",
+      "entityType": "LOCATION",
+      "score": 0.5,
+      "pattern": "(?:\\bCH-(?:[1-8]\\d{3}|9[0-6]\\d{2})(?!\\d)|(?<![\\w.,'’/-])(?:[1-8]\\d{3}|9[0-6]\\d{2})(?=[ \\u00a0]\\p{Lu}))",
+      "flags": "u",
+      "languages": "any",
+      "context": {
+        "words": {
+          "fr": [
+            "NPA",
+            "code postal",
+            "case postale",
+            "CP",
+            "adresse",
+            "rue",
+            "route",
+            "chemin",
+            "avenue",
+            "domicile",
+            "localité"
+          ],
+          "en": ["postcode", "postal code", "zip", "address", "street", "road", "avenue", "PO box"],
+          "any": [
+            "PLZ",
+            "Postleitzahl",
+            "Postfach",
+            "Adresse",
+            "Strasse",
+            "Weg",
+            "Gasse",
+            "Wohnort",
+            "indirizzo",
+            "via",
+            "CAP"
+          ]
+        },
+        "required": true
+      },
+      "description": "Code postal suisse (1000-9699) suivi d'une majuscule ou précédé de CH-, avec mot de contexte obligatoire."
+    }
+  ]
+}
