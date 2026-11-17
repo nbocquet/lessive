@@ -59,7 +59,7 @@ Ces données ont une forme précise, donc Lessive les trouve mieux, mais avec de
 
 - **Les fichiers** : Lessive traite du **texte** collé, ou un fichier `.txt` ou `.md`. Pas de PDF, de document Word, de tableur, d'image, ni de photo de document. Le texte caché dans un fichier (propriétés, métadonnées, commentaires) n'est pas lu non plus.
 - **Les textes très longs** : le texte est limité à 200 000 caractères. Au-delà de quelques pages, l'analyse prend plus de temps ; la durée dans un navigateur n'a pas encore été mesurée (voir [docs/performances.md](performances.md)).
-- **Le sens du texte** : Lessive ne comprend pas ce qu'il lit. Il ne détecte pas une information sensible exprimée en mots ordinaires (« elle est en arrêt maladie », « il a été licencié »), ni un secret professionnel. Il n'est **pas validé pour des données de santé** ni pour des informations couvertes par un secret professionnel. Il ne remplace pas l'avis de votre responsable de la protection des données, ni les règles de votre organisation.
+- **Le sens du texte** : Lessive ne comprend pas ce qu'il lit. Il ne détecte pas une information sensible exprimée en mots ordinaires (« elle est en arrêt maladie », « il a été licencié »), ni un secret professionnel. Les **données sensibles** au sens de la loi (santé, religion, opinions politiques ou syndicales, vie sexuelle, procédures pénales, aide sociale) ne sont pas repérées : « absente pour raisons médicales » reste en clair, à vous de le reformuler. Il n'est **pas validé pour des données de santé** ni pour des informations couvertes par un secret professionnel. Il ne remplace pas l'avis de votre responsable de la protection des données, ni les règles de votre organisation.
 
 ## 4. L'aller-retour avec l'assistant
 

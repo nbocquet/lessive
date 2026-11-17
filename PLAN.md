@@ -372,3 +372,14 @@ Après chaque vague, un agent de relecture distinct, sans accès aux échanges d
 | Licence d'un modèle ou d'une liste incompatible | Vérification en S1 et T2.4, contrôle en CI |
 | Dérive du périmètre par les agents | Liste « hors MVP », R11, relecture par vague |
 | Identification indirecte (fonction + lieu + date) | Non traitée par le MVP : affichée comme limite connue dans l'interface et la documentation |
+
+---
+
+## 10. Évolutions après le MVP (retours de test)
+
+| Sujet | Origine | Décision |
+|---|---|---|
+| Données sensibles (santé, religion, opinions, vie sexuelle, pénal, aide sociale) | Test de Nico, 17 novembre 2026 : « absente pour raisons médicales » resté en clair | Hors MVP (décision de Nico). Piste : signaler sans remplacer, par listes d'expressions par catégorie. Documenté dans docs/limites.md. |
+| Propagation des noms détectés (prénom seul, identifiants dérivés type CMARTIN) | Même test | En cours (src/core/analyzer/propagate-names.ts). |
+| Adresses postales FR et CH | Même test (adresse privée restée en clair) | En cours (packs country-fr et country-ch). |
+
