@@ -1,12 +1,12 @@
 # Performances (T6.3)
 
-Ce document rapporte des mesures faites **sous Node**, sur le moteur seul, et dit clairement ce qu'elles ne couvrent pas : **aucune mesure n'a encore été faite dans un navigateur**. La procédure pour la faire est plus bas ; les tableaux à remplir sont prêts.
+Ce document rapporte des mesures faites **sous Node**, sur le moteur seul, et dit clairement ce qu'elles ne couvrent pas : les mesures dans le navigateur sont **qualitatives** : le 17 novembre 2026, Nico a constaté sur sa machine que l'analyse du texte de 5 000 caractères (`docs/fixtures/texte-5000.txt`), modèle chargé, reste dans la cible dans **Firefox et Safari**, sans relever de chiffres. La procédure pour des mesures chiffrées est plus bas ; les tableaux à remplir sont prêts.
 
 ## En bref
 
 | Cible (PLAN.md, T6.3) | Résultat | Verdict |
 |---|---|---|
-| Analyse de 5 000 caractères en 5 s au plus, modèle chargé | 0,33 s sous Node (règles et NER), soit environ 15 fois sous la cible. Le navigateur, plus lent que Node, n'est pas mesuré. | **Non établi** : marge confortable sous Node, à confirmer dans le navigateur |
+| Analyse de 5 000 caractères en 5 s au plus, modèle chargé | 0,33 s sous Node (règles et NER) ; ≈ 3,1 s dans Chrome headless (recette) ; conforme dans Firefox et Safari selon l'essai de Nico du 17 novembre 2026 (chiffres non relevés). | **Atteint** (constat qualitatif dans les navigateurs) |
 | Interface jamais bloquée plus de 100 ms | L'analyse (règles et NER) tourne dans un worker, donc hors du fil principal. Le travail restant sur la page reste sous 30 ms jusqu'à 20 000 caractères. À 100 000 caractères, la transformation seule prend environ 150 ms. Le rendu de la page n'est pas mesuré. | **Atteint par conception jusqu'à 20 000 caractères sous Node, non mesuré dans le navigateur, dépassé à 100 000 caractères** |
 
 ## Ce qui est mesuré, et ce qui ne l'est pas
