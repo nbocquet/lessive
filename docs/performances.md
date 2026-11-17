@@ -181,7 +181,7 @@ Le modèle est cherché dans `models/` puis dans `/mnt/user-data/uploads/lessive
    ```
 
    Ouvrir l'adresse affichée dans un navigateur à profil neuf (aucune extension : elles faussent les mesures), avec un seul onglet ouvert.
-2. **Générer les textes d'essai** (rapide, sans NER), puis les ouvrir dans un éditeur pour les copier :
+2. **Texte de 5 000 caractères prêt à coller** : `docs/fixtures/texte-5000.txt` (compte rendu fictif : 46 personnes, adresses, téléphones, courriels, IBAN et AVS à clés valides ; 72 détections par les règles seules). Pour les autres tailles, **générer les textes d'essai** (rapide, sans NER), puis les ouvrir dans un éditeur pour les copier :
 
    ```bash
    node --experimental-transform-types --disable-warning=ExperimentalWarning \

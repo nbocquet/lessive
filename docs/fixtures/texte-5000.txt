@@ -1,0 +1,53 @@
+Compte rendu — Comité de pilotage du projet « Horizon numérique »
+Réunion du jeudi 12 novembre 2026, salle du conseil, Lausanne
+
+Présents : Mme Aurélie Vionnet (présidente du comité), M. Julien Perrenoud (chef de projet), Mme Sabine Kohler (responsable financière), M. Mathieu Dubois-Rey (architecte des systèmes), Mme Inès Haddad (juriste), M. Thomas Girardin (représentant du personnel).
+Excusés : M. Laurent Bettex, Mme Chloé Rossier.
+
+1. Ouverture de la séance
+
+Aurélie Vionnet ouvre la séance à 14 h 05 et rappelle l'ordre du jour. Elle remercie Julien Perrenoud pour la préparation des documents envoyés le 9 novembre. Le procès-verbal de la séance du 15 octobre est approuvé sans modification.
+
+2. Avancement du projet
+
+Julien présente l'état d'avancement. La migration des postes du site de Renens est terminée ; celle du site de Morges commencera le 1er décembre 2026. Mathieu Dubois-Rey signale un retard sur l'installation du nouveau serveur de fichiers, livré par la société Altavia Systèmes SA, Rue de la Gare 14, 1110 Morges. Le contact technique chez le fournisseur est M. Frédéric Zbinden, joignable au +41 21 802 14 37 ou à l'adresse f.zbinden@altavia-systemes.example.ch.
+
+Mathieu précise que les tests de charge ont été menés avec Élodie Marchand, ingénieure réseau, qui a identifié une saturation du lien entre les deux bâtiments. Élodie propose de doubler la liaison avant la fin de l'année. Le comité approuve le principe et charge Julien de demander une offre.
+
+3. Budget
+
+Sabine Kohler présente la situation financière. Le budget engagé s'élève à 412 300 CHF sur un total voté de 520 000 CHF. Une facture de 38 750 CHF de la société Altavia Systèmes SA est en attente de validation. Sabine rappelle que les paiements au fournisseur se font sur le compte IBAN CH93 0076 2011 6238 5295 7, au nom d'Altavia Systèmes SA, auprès de la Banque Cantonale Vaudoise.
+
+Pour la filiale française du fournisseur, établie au 27 boulevard Carnot, 74000 Annecy, le règlement des prestations d'assistance se fait sur le compte FR76 3000 6000 0112 3456 7890 189. Inès Haddad demande que le contrat de sous-traitance soit relu avant le prochain paiement.
+
+4. Ressources humaines
+
+Thomas Girardin fait part des inquiétudes de l'équipe support, très sollicitée depuis septembre. Deux techniciens, Kevin Moser et Laura Pittet, ont accumulé de nombreuses heures supplémentaires. Thomas demande un renfort temporaire. Aurélie Vionnet répond qu'un poste d'auxiliaire peut être ouvert pour six mois.
+
+Le dossier de M. Kevin Moser, né le 3 avril 1991, doit être complété pour le versement de ses heures supplémentaires : son numéro AVS 756.1234.5678.97 figure déjà dans le système de paie. Pour Mme Laura Pittet, le service du personnel attend encore la copie de son attestation ; son numéro AVS est le 756.9876.5432.17.
+
+Inès Haddad rappelle que ces informations ne doivent pas circuler par courriel non chiffré. Elle propose de transmettre les pièces par la plateforme sécurisée du service.
+
+5. Sécurité et protection des données
+
+Inès présente le registre des activités de traitement mis à jour. Trois traitements restent à documenter. Elle a rencontré le préposé cantonal à la protection des données le 4 novembre ; une recommandation écrite est attendue. Mathieu signale un incident mineur : un poste du site de Renens (adresse IP 10.20.4.117) a été infecté par un logiciel publicitaire, isolé puis réinstallé le jour même par Kevin.
+
+Inès demande que les comptes des anciens collaborateurs soient désactivés sous 48 heures. La liste a été transmise à Julien, qui confirme que les comptes jdupasquier, mfavre et cbonvin seront fermés vendredi.
+
+6. Communication
+
+Aurélie souhaite qu'une note d'information soit adressée au personnel avant la migration de Morges. Chloé Rossier, absente aujourd'hui, en sera chargée à son retour. Les questions du personnel pourront être envoyées à l'adresse horizon@lausanne-services.example.ch ou au +41 21 315 22 90 (permanence du mardi au jeudi, de 9 h à 12 h).
+
+Julien rappelle que la séance d'information publique aura lieu le 25 novembre 2026 à 18 h 30, à la salle polyvalente, Chemin des Roses 8, 1004 Lausanne. Les inscriptions se font auprès de Mme Nadia Ferreira, assistante de direction, au 021 315 22 91.
+
+7. Divers
+
+Thomas Girardin signale que M. Laurent Bettex, excusé, prendra sa retraite le 31 janvier 2027. Le comité le remercie pour son engagement. Une petite réception sera organisée ; Sabine Kohler se charge de la collecte.
+
+Mathieu Dubois-Rey indique qu'il sera absent du 7 au 18 décembre. Élodie Marchand assurera son remplacement pour les questions techniques ; elle est joignable au +41 79 412 63 08.
+
+Inès Haddad rappelle enfin que la convention de confidentialité signée avec Altavia Systèmes SA arrive à échéance le 30 juin 2027 ; elle proposera un avenant lors d'une prochaine séance, après consultation de Me Patrick Sauthier, avocat à Genève.
+
+La prochaine séance est fixée au jeudi 10 décembre 2026 à 14 h. Aurélie Vionnet lève la séance à 16 h 20.
+
+Pour le procès-verbal : Nadia Ferreira, le 13 novembre 2026.
