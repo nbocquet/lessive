@@ -12,6 +12,7 @@
  */
 import { LocalModelMissingError, type LocalModelFileSource } from "../ner/local-files.ts";
 import { mapLabel, stripPrefix } from "../ner/postprocess.ts";
+import { checkModelSizes } from "./model-limits.ts";
 
 export const MODEL_CACHE_NAME = "lessive-models-v1";
 /** Fiche descriptive stockée à côté des fichiers du modèle. */
@@ -274,7 +275,7 @@ export interface PreparedModel {
   blobs: Map<string, Blob>;
 }
 
-/** Sélection → validation → fichiers prêts à stocker. Ne lit en entier que les petits fichiers JSON. */
+/** Sélection → plafonds de taille → validation → fichiers prêts à stocker. */
 export async function prepareModel(picked: readonly PickedFile[]): Promise<Result<PreparedModel>> {
   const byPath = new Map<string, PickedFile>();
   for (const f of picked) byPath.set(normalizePath(f.webkitRelativePath || f.name), f);
@@ -290,6 +291,8 @@ export async function prepareModel(picked: readonly PickedFile[]): Promise<Resul
     blobs.set(name, f);
     total += f.size;
   }
+  const sizeError = checkModelSizes([...blobs].map(([name, blob]) => ({ name, size: blob.size })));
+  if (sizeError) return { ok: false, error: sizeError };
   const text = (name: string) => blobs.get(name)?.text() ?? Promise.resolve("");
   const onnx = blobs.get(dtype === "q8" ? ONNX_Q8 : ONNX_FP32);
   const validated = validateModel({

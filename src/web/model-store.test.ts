@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { modelFileLimit } from "./model-limits.ts";
 import { LocalModelMissingError } from "../ner/local-files.ts";
 import {
   MODEL_CACHE_NAME,
@@ -196,6 +197,23 @@ const syntheticFiles = (): PickedFile[] => [
   picked("tokenizer_config.json", "m/tokenizer_config.json", "{}"),
   picked("model_quantized.onnx", "m/onnx/model_quantized.onnx", new Uint8Array(2048)),
 ];
+
+describe("plafonds avant lecture locale", () => {
+  it.each(FULL)("refuse %s trop volumineux avant toute lecture", async (name) => {
+    const files = syntheticFiles();
+    if (name === "special_tokens_map.json") {
+      files.push(picked(name, `m/${name}`, "{}"));
+    }
+    const target = files.find((f) => f.webkitRelativePath === `m/${name}`)!;
+    // Métadonnées seules : aucun gros tampon n'est alloué pour ce test.
+    Object.defineProperty(target, "size", { value: modelFileLimit(name)! + 1 });
+    const reads = files.map((f) => vi.spyOn(f, "text"));
+    const result = await prepareModel(files);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("trop volumineux");
+    for (const read of reads) expect(read).not.toHaveBeenCalled();
+  });
+});
 
 describe("stockage dans Cache Storage", () => {
   it("copie, relit et oublie le modèle, uniquement sous des URL synthétiques de même origine", async () => {

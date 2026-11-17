@@ -104,6 +104,8 @@ Points à examiner : une phrase de passe courte reste vulnérable à une attaque
 
 ## Chargement du modèle par l'utilisateur
 
+Les fichiers retenus sont contrôlés avant toute lecture JSON et avant stockage : 1 Mio par fichier de configuration JSON, 32 Mio pour `tokenizer.json`, 512 Mio par fichier ONNX et 550 Mio au total. Ces mêmes plafonds s'appliquent au modèle fourni par le site : sa fiche est limitée à 64 Kio, les noms de fichiers sont en liste fermée, les doublons sont refusés, et les flux sont annulés dès que les octets reçus dépassent la taille annoncée déjà validée, indépendamment de `Content-Length`. Ces limites bornent les fichiers importés, pas la mémoire de travail nécessaire à l'exécution du graphe ONNX.
+
 Le modèle est un ensemble de fichiers que l'utilisateur choisit (ADR [0003](docs/adr/0003-modele-charge-par-l-utilisateur.md)). L'application valide la forme (fichiers présents, JSON valides, étiquettes d'entités, taille) mais **pas l'origine** : la confiance dans la source du modèle revient à l'utilisateur. Un fichier ONNX est un graphe de calcul exécuté par ONNX Runtime Web, pas du code exécuté par la page, et il ne modifie pas la CSP ; une vulnérabilité de l'exécuteur ONNX dans un fichier piégé reste dans le périmètre. Les fichiers sont gardés dans le cache `lessive-models-v1`, qui ne contient jamais de texte de l'utilisateur.
 
 ## Dépendances

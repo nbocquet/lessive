@@ -6,6 +6,7 @@ import {
   probeBundledModel,
   type BundledManifest,
 } from "./bundled-model.ts";
+import { MAX_MODEL_JSON_BYTES } from "./model-limits.ts";
 
 const ROOT = "https://lessive.test/app/";
 
@@ -63,6 +64,15 @@ afterEach(() => {
 });
 
 describe("parseManifest", () => {
+  it("refuse une fiche avec un fichier trop gros, inconnu ou en double", () => {
+    for (const file of [
+      { name: "config.json", size: MAX_MODEL_JSON_BYTES + 1 },
+      { name: "extra.json", size: 10 },
+      manifest().files[0]!,
+    ]) {
+      expect(parseManifest(manifest({ files: [...manifest().files, file] }))).toBeUndefined();
+    }
+  });
   it("accepte une fiche complète", () => {
     expect(parseManifest(manifest())).toEqual(manifest());
   });
@@ -96,6 +106,18 @@ describe("parseManifest", () => {
 });
 
 describe("probeBundledModel", () => {
+  it("borne aussi la lecture de la fiche avant de la parser", async () => {
+    const cancel = vi.fn();
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array(64 * 1024 + 1));
+      },
+      cancel,
+    });
+    serve({ "bundle.json": new Response(body) });
+    expect(await probeBundledModel(ROOT)).toBeUndefined();
+    expect(cancel).toHaveBeenCalledOnce();
+  });
   it("lit bundle.json à la racine de l'application, sur la même origine", async () => {
     const seen = serve({ "bundle.json": JSON.stringify(manifest()) });
     expect(await probeBundledModel(ROOT)).toEqual(manifest());
@@ -113,6 +135,45 @@ describe("probeBundledModel", () => {
 });
 
 describe("fetchBundledModel", () => {
+  it("refuse les métadonnées hors plafond avant la première requête", async () => {
+    const seen = serve(CONTENT);
+    const m = manifest();
+    m.files[0]!.size = MAX_MODEL_JSON_BYTES + 1;
+    expect((await fetchBundledModel(ROOT, m)).ok).toBe(false);
+    expect(seen).toEqual([]);
+  });
+
+  it.each([undefined, "1"])(
+    "annule un flux qui dépasse la taille annoncée, Content-Length=%s",
+    async (contentLength) => {
+      const cancel = vi.fn();
+      const body = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(CONFIG));
+          controller.enqueue(new Uint8Array(1));
+        },
+        cancel,
+      });
+      const headers: Record<string, string> =
+        contentLength === undefined ? {} : { "Content-Length": contentLength };
+      const seen = serve({ ...CONTENT, "config.json": new Response(body, { headers }) });
+      const result = await fetchBundledModel(ROOT, manifest());
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toContain("interrompu");
+      expect(cancel).toHaveBeenCalledOnce();
+      expect(seen).toEqual([`${ROOT}models/bundled/config.json`]);
+    },
+  );
+
+  it("renvoie une erreur contrôlée si le flux échoue", async () => {
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.error(new Error("échec synthétique"));
+      },
+    });
+    serve({ ...CONTENT, "config.json": new Response(body) });
+    expect((await fetchBundledModel(ROOT, manifest())).ok).toBe(false);
+  });
   it("télécharge, valide et nomme le modèle d'après la fiche", async () => {
     const seen = serve(CONTENT);
     const progress: number[] = [];

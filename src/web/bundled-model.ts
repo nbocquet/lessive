@@ -12,6 +12,7 @@
  * toujours une URL relative à la racine de l'application, jamais une autre origine.
  */
 import { validateModel, type PreparedModel, type Result } from "./model-store.ts";
+import { checkModelSizes } from "./model-limits.ts";
 
 /** Dossier du modèle fourni, relatif à la racine de l'application. */
 export const BUNDLED_DIR = "models/bundled/";
@@ -62,6 +63,7 @@ export function parseManifest(value: unknown): BundledManifest | undefined {
     files.push({ name: fname, size });
   }
   const names = new Set(files.map((f) => f.name));
+  if (checkModelSizes(files)) return undefined;
   if (![...REQUIRED, ONNX_Q8].every((n) => names.has(n))) return undefined;
   return { name, license, attribution, licenseFile, files };
 }
@@ -80,26 +82,38 @@ export async function probeBundledModel(
   try {
     const res = await fetch(new URL(`${BUNDLED_DIR}${BUNDLED_MANIFEST}`, appRoot));
     if (!res.ok || isHtml(res)) return undefined;
-    return parseManifest(await res.json());
+    // La fiche elle-même est non fiable : borner sa lecture avant JSON.parse.
+    const blob = await readAll(res, 64 * 1024);
+    return parseManifest(JSON.parse(await blob.text()));
   } catch {
     return undefined;
   }
 }
 
-/** Lit une réponse en entier en signalant les octets reçus. */
-async function readAll(res: Response, onBytes: (n: number) => void): Promise<Blob> {
+/** Compte les octets réels et annule le flux avant de conserver un bloc qui dépasse le plafond. */
+async function readAll(
+  res: Response,
+  maxBytes: number,
+  onBytes: (n: number) => void = () => undefined,
+): Promise<Blob> {
   const reader = res.body?.getReader();
-  if (!reader) {
-    const blob = await res.blob();
-    onBytes(blob.size);
-    return blob;
-  }
+  if (!reader) return new Blob([]);
   const chunks: BlobPart[] = [];
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    onBytes(value.byteLength);
+  let received = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      received += value.byteLength;
+      if (received > maxBytes) throw new Error("Taille de téléchargement dépassée.");
+      chunks.push(value);
+      onBytes(value.byteLength);
+    }
+  } catch (error) {
+    await reader.cancel().catch(() => undefined);
+    throw error;
+  } finally {
+    reader.releaseLock();
   }
   return new Blob(chunks);
 }
@@ -113,6 +127,8 @@ export async function fetchBundledModel(
   manifest: BundledManifest,
   onProgress: (progress: number) => void = () => undefined,
 ): Promise<Result<PreparedModel>> {
+  const sizeError = checkModelSizes(manifest.files);
+  if (sizeError) return { ok: false, error: sizeError };
   const total = bundledSize(manifest);
   let received = 0;
   const blobs = new Map<string, Blob>();
@@ -126,10 +142,19 @@ export async function fetchBundledModel(
     if (!res.ok || isHtml(res)) {
       return { ok: false, error: `Fichier du modèle fourni introuvable : ${file.name}.` };
     }
-    const blob = await readAll(res, (n) => {
-      received += n;
-      onProgress(Math.min(1, received / total));
-    });
+    let blob: Blob;
+    try {
+      // Les tailles annoncées sont déjà bornées ; le flux doit aussi les respecter.
+      blob = await readAll(res, file.size, (n) => {
+        received += n;
+        onProgress(Math.min(1, received / total));
+      });
+    } catch {
+      return {
+        ok: false,
+        error: "Téléchargement du modèle interrompu : taille dépassée ou lecture impossible.",
+      };
+    }
     if (blob.size !== file.size) {
       return { ok: false, error: `Fichier du modèle fourni incomplet : ${file.name}.` };
     }
