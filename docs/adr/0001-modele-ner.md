@@ -1,6 +1,6 @@
 # ADR 0001 — Modèle NER
 
-- **Statut : Proposé — mesures Node faites, recommandation : n° 1 ; licence et mesure navigateur à trancher par Nico (porte G0)**
+- **Statut : Accepté le 2026-11-17 par Nico — modèle recommandé : `Xenova/distilbert-base-multilingual-cased-ner-hrl` (q8). Mesure de vitesse dans le navigateur encore à faire (docs/performances.md).**
 - Date de rédaction : 2026-11-16
 - Décideur : Nico (porte G0)
 - Tâche : S1 (PLAN.md, phase 0). Bloque la phase 3 (NER) et la tâche T4.4.
@@ -133,7 +133,13 @@ Navigateur et version : ______ · Machine (CPU, cœurs, RAM) : ______ · Threads
 
 ## Décision
 
-À rédiger après les mesures : modèle retenu, précision (dtype), paramètres, ou constat d'échec.
+**Modèle recommandé : `Xenova/distilbert-base-multilingual-cased-ner-hrl`, quantifié q8 (≈ 138 Mo).**
+
+- Seul candidat mesuré qui couvre le français **et** l'anglais avec la meilleure précision (rappel PERSON 0,85 fr et 0,87 en, précision 0,96 sous Node) ; combiné aux packs (listes officielles de prénoms et de noms, propagation), rappel PERSON 0,90 fr et 0,92 en (docs/evaluation-ner.md).
+- Paramètres : pipeline `token-classification` sans `aggregation_strategy`, regroupement des jetons par contiguïté d'index, positions reconstruites dans le texte original, ONNX Runtime Web en WASM avec `numThreads = 1` (CSP sans `blob:`).
+- **Licence** : la question ne se pose plus pour le projet. Le modèle n'est pas distribué avec Lessive : l'utilisateur le télécharge lui-même et l'accepte sous sa licence propre (AFL-3.0), puis le charge depuis son disque (amendement A20, ADR 0003).
+- **Alternative** pour un usage en français seulement : `Xenova/camembert-ner` (MIT, rappel PERSON fr 0,87, plus faible en anglais), chargeable de la même façon.
+- **Reste à faire** : mesure de vitesse dans un navigateur réel (Chrome, Firefox, Safari) ; la mesure indicative en Chrome headless donne environ 3 s pour 5 000 caractères (cible 5 s).
 
 ## Options si aucun modèle ne satisfait tous les critères
 

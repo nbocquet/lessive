@@ -66,7 +66,7 @@ CLI, import de packs par l'utilisateur, YAML, formats CSV/JSON structurés, DOCX
 
 | Décision | Tranchée par | Valeur par défaut |
 |---|---|---|
-| Modèle NER | S1 | Aucune : S1 est bloquant |
+| Modèle NER | S1 | **Tranché : DistilBERT multilingue (ADR 0001, 17 novembre 2026), chargé par l'utilisateur (ADR 0003)** |
 | Format des jetons | S2 | `PERSONNE_001` — **tranché : A accepté (ADR 0002, 17 novembre 2026)** |
 | Poids maximal du modèle | S1 + Nico | 150 Mo |
 
