@@ -111,6 +111,8 @@ Un seul `package.json`. Les frontières sont tenues par une règle ESLint : `src
 
 ## 5. Contrats du moteur (base de T1.2)
 
+> **Source de vérité : `src/core/types/`.** Le bloc ci-dessous résume les contrats tels qu'implémentés ; en cas d'écart, le code fait foi (voir `docs/contrats.md`).
+
 ```typescript
 type EntityType =
   | "PERSON" | "ORGANIZATION" | "LOCATION"
@@ -144,13 +146,21 @@ interface Recognizer {
 
 interface NerEngine {
   load(onProgress?: (p: number) => void): Promise<void>;
-  recognize(text: string, signal?: AbortSignal): Promise<Detection[]>;
+  recognize(text: string, ctx: AnalysisContext): Promise<Detection[]>; // ctx.signal pour annuler, ctx.nextId pour les ids
   dispose(): Promise<void>;
 }
 
 interface Operator {
   id: "suppress" | "mask" | "categorize" | "pseudonymize";
-  apply(value: string, d: Detection, session: Session): string;
+  apply(ctx: OperatorContext): string;   // { value, detection, session? }
+}
+
+interface Session {           // table de correspondance en mémoire (R5)
+  resolve(surfaceForm: string, entityType: EntityType): Entity;
+  entities(): readonly Entity[];
+  merge(targetId: string, sourceId: string): void;
+  split(entityId: string, surfaceForm: string): Entity;
+  byPseudonym(pseudonym: string): Entity | undefined;
 }
 
 interface Entity {            // une personne, un lieu… réel, indépendant des occurrences
