@@ -61,4 +61,25 @@ describe("mergeAdjacentPersons", () => {
     const out = mergeAdjacentPersons(t, [person(t, "Claire", 0.45), person(t, "Müller", 0.4)], ctx);
     expect(JSON.stringify(out)).not.toMatch(/Claire|Müller/);
   });
+
+  it("source mixte : recognizerId neutre, source et packId du premier élément", () => {
+    const t = "Claire Müller";
+    const ner: Detection = {
+      ...person(t, "Müller", 0.9),
+      recognizerId: "ner/fake",
+      packId: "ner",
+      source: "ner",
+    };
+    const out = mergeAdjacentPersons(t, [person(t, "Claire", 0.45), ner], ctx);
+    expect(out).toHaveLength(1);
+    expect(out[0]!.recognizerId).toBe("core/adjacent-persons");
+    expect(out[0]!.source).toBe("dictionary");
+    expect(out[0]!.packId).toBe("lang-fr-en");
+  });
+
+  it("même source : garde le recognizerId du premier", () => {
+    const t = "Claire Müller";
+    const out = mergeAdjacentPersons(t, [person(t, "Claire", 0.45), person(t, "Müller", 0.4)], ctx);
+    expect(out[0]!.recognizerId).toBe("lang-fr-en/prenoms");
+  });
 });

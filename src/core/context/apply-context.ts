@@ -6,6 +6,20 @@ export const CONTEXT_BOOST = 0.35;
 /** Taille de la fenêtre, en mots, de chaque côté de la détection. */
 export const CONTEXT_WINDOW_WORDS = 5;
 
+/*
+ * Règle de comparaison des mots de contexte (appliquée mot par mot, y compris
+ * dans une expression de plusieurs mots) :
+ *
+ * - par défaut : insensible à la casse et aux accents (« Siren » = « siren ») ;
+ * - un mot de contexte qui contient une lettre accentuée (« né », « née ») ne
+ *   correspond qu'avec ses accents : comparaison insensible à la casse
+ *   seulement, après normalisation NFC. Sinon « né » deviendrait « ne », la
+ *   négation française ;
+ * - un mot de contexte qui se termine par un point (« M. », « Dr. », « art. »)
+ *   ne correspond que si le mot du texte est suivi immédiatement d'un point
+ *   dans le texte original. Sinon « M. » deviendrait la lettre isolée « m ».
+ */
+
 export interface ContextResult {
   /** Détections conservées, dans l'ordre d'entrée, éventuellement rehaussées. */
   detections: Detection[];
@@ -21,6 +35,43 @@ interface Token {
   end: number;
 }
 
+/** Mot du texte, prêt à être comparé selon les trois modes de comparaison. */
+interface TextWord {
+  /** Replié : sans casse ni accents. */
+  folded: string;
+  /** NFC en minuscules : accents conservés. */
+  exact: string;
+  /** Suivi immédiatement d'un point dans le texte original. */
+  dot: boolean;
+}
+
+/** Mot d'une expression de contexte. */
+interface PhraseWord {
+  folded: string;
+  /** Défini seulement si le mot contient une lettre accentuée. */
+  exact: string | undefined;
+  /** Le mot de contexte se termine par un point. */
+  dot: boolean;
+}
+
+function matchesWord(w: TextWord, p: PhraseWord): boolean {
+  if (p.dot && !w.dot) return false;
+  return p.exact !== undefined ? w.exact === p.exact : w.folded === p.folded;
+}
+
+/** Mots d'une expression de contexte brute, avec leur mode de comparaison. */
+function parsePhrase(raw: string): PhraseWord[] {
+  return tokenizeWords(raw).map((t) => {
+    const exact = t.text.normalize("NFC").toLowerCase();
+    const folded = foldString(t.text);
+    return {
+      folded,
+      exact: folded === exact ? undefined : exact,
+      dot: raw[t.end] === ".",
+    };
+  });
+}
+
 function lookupRule(rules: RulesById, id: string): Rule | undefined {
   if (rules instanceof Map) return rules.get(id);
   const rec = rules as Readonly<Record<string, Rule>>;
@@ -34,12 +85,12 @@ function wordsFor(words: Record<string, string[] | undefined>, language: Languag
 }
 
 /** Cherche la suite de mots `phrase` dans `window` (mots consécutifs). */
-function containsPhrase(window: readonly string[], phrase: readonly string[]): boolean {
+function containsPhrase(window: readonly TextWord[], phrase: readonly PhraseWord[]): boolean {
   if (phrase.length === 0 || phrase.length > window.length) return false;
   for (let i = 0; i + phrase.length <= window.length; i++) {
     let ok = true;
     for (let k = 0; k < phrase.length; k++) {
-      if (window[i + k] !== phrase[k]) {
+      if (!matchesWord(window[i + k] as TextWord, phrase[k] as PhraseWord)) {
         ok = false;
         break;
       }
@@ -59,6 +110,10 @@ function containsPhrase(window: readonly string[], phrase: readonly string[]): b
  * - `required` sans mot trouvé : détection supprimée et renvoyée dans `dropped`.
  *
  * `language` absent : les mots de toutes les langues sont utilisés.
+ *
+ * Comparaison des mots de contexte : sans casse ni accents par défaut ; avec
+ * accents (casse ignorée, NFC) pour un mot qui en contient ; un mot terminé par
+ * un point (« M. ») exige un point juste après le mot dans le texte original.
  */
 export function applyContext(
   text: string,
@@ -69,13 +124,13 @@ export function applyContext(
   const kept: Detection[] = [];
   const dropped: Detection[] = [];
   let tokens: Token[] | undefined;
-  let foldedTokens: string[] = [];
-  const phraseCache = new Map<string, string[]>();
+  let words: TextWord[] = [];
+  const phraseCache = new Map<string, PhraseWord[]>();
 
-  const phraseOf = (raw: string): string[] => {
+  const phraseOf = (raw: string): PhraseWord[] => {
     let p = phraseCache.get(raw);
     if (!p) {
-      p = tokenizeWords(foldString(raw)).map((t) => t.text);
+      p = parsePhrase(raw);
       phraseCache.set(raw, p);
     }
     return p;
@@ -102,15 +157,19 @@ export function applyContext(
     }
     if (!tokens) {
       tokens = tokenizeWords(text);
-      foldedTokens = tokens.map((t) => foldString(t.text));
+      words = tokens.map((t) => ({
+        folded: foldString(t.text),
+        exact: t.text.normalize("NFC").toLowerCase(),
+        dot: text[t.end] === ".",
+      }));
     }
     // Mots entièrement avant l'intervalle : ceux dont la fin <= d.start ; après : début >= d.end.
     const afterIdx = firstTokenStartingAtOrAfter(tokens, d.end);
     let beforeEnd = firstTokenStartingAtOrAfter(tokens, d.start); // premiers tokens commençant à >= d.start
     // Un mot qui commence avant d.start mais déborde dans l'intervalle n'est pas « avant ».
     while (beforeEnd > 0 && (tokens[beforeEnd - 1] as Token).end > d.start) beforeEnd--;
-    const before = foldedTokens.slice(Math.max(0, beforeEnd - CONTEXT_WINDOW_WORDS), beforeEnd);
-    const after = foldedTokens.slice(afterIdx, afterIdx + CONTEXT_WINDOW_WORDS);
+    const before = words.slice(Math.max(0, beforeEnd - CONTEXT_WINDOW_WORDS), beforeEnd);
+    const after = words.slice(afterIdx, afterIdx + CONTEXT_WINDOW_WORDS);
 
     const found = wordsFor(context.words, language).find((raw) => {
       const phrase = phraseOf(raw);

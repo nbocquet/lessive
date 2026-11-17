@@ -29,7 +29,14 @@ export interface AnalyzeOptions {
   /** Seuil de score (défaut 0,5). */
   minScore?: number;
   signal?: AbortSignal;
-  /** Détections ajoutées à la main par l'utilisateur ; elles gagnent tous les conflits. */
+  /**
+   * Détections ajoutées à la main par l'utilisateur ; elles gagnent tous les conflits.
+   * Elles sont validées : une borne invalide (non entière, `start < 0`, `start >= end`,
+   * `end > text.length`, ou coupant une paire de substitution UTF-16) fait lever une
+   * `RangeError` (sans valeur du texte dans le message). Leurs identifiants sont
+   * réattribués (`m1`, `m2`… dans l'ordre d'entrée) pour éviter toute collision avec les
+   * identifiants générés (`d1`…) ; l'identifiant d'origine n'est pas conservé.
+   */
   manual?: Detection[];
 }
 
@@ -52,6 +59,34 @@ function appliesTo(r: Recognizer, language: Language | undefined): boolean {
   return language === undefined || r.languages === "any" || r.languages.includes(language);
 }
 
+const isHigh = (c: number) => c >= 0xd800 && c <= 0xdbff;
+const isLow = (c: number) => c >= 0xdc00 && c <= 0xdfff;
+
+/** Vrai si `pos` tombe entre les deux unités d'une paire de substitution. */
+function splitsSurrogate(text: string, pos: number): boolean {
+  return (
+    pos > 0 && pos < text.length && isHigh(text.charCodeAt(pos - 1)) && isLow(text.charCodeAt(pos))
+  );
+}
+
+/** Rejette (RangeError) une détection manuelle aux bornes invalides. Le message ne contient aucune valeur du texte. */
+function assertValidManual(text: string, d: Detection, index: number): void {
+  const { start, end } = d;
+  const ok =
+    Number.isInteger(start) &&
+    Number.isInteger(end) &&
+    start >= 0 &&
+    start < end &&
+    end <= text.length &&
+    !splitsSurrogate(text, start) &&
+    !splitsSurrogate(text, end);
+  if (!ok) {
+    throw new RangeError(
+      `Détection manuelle n° ${index + 1} invalide : bornes hors du texte, vides, inversées ou coupant un caractère.`,
+    );
+  }
+}
+
 /** Crée un analyseur à partir des règles actives d'un registre. */
 export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
   const recognizers = activeRules.map(buildRecognizer);
@@ -66,6 +101,7 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
         );
       }
       const { language, ner, signal, manual = [] } = options;
+      manual.forEach((d, i) => assertValidManual(text, d, i));
       let counter = 0;
       const ctx: AnalysisContext = {
         nextId: () => `d${++counter}`,
@@ -98,7 +134,11 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
 
       const { detections: contextual, dropped } = applyContext(text, raw, rulesById, language);
       const persons = mergeAdjacentPersons(text, contextual, ctx);
-      const manualWithIds = manual.map((d) => ({ ...d, source: "manual" as const }));
+      const manualWithIds = manual.map((d, i) => ({
+        ...d,
+        id: `m${i + 1}`,
+        source: "manual" as const,
+      }));
       const { kept, discarded } = resolveConflicts([...contextual, ...persons, ...manualWithIds], {
         ...(options.minScore !== undefined ? { minScore: options.minScore } : {}),
       });

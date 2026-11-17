@@ -15,6 +15,9 @@ import type { AnalysisContext, Detection } from "../types/index.ts";
 /** Bonus appliqué à une suite d'au moins deux noms adjacents. */
 export const ADJACENT_PERSON_BOOST = 0.35;
 
+/** Identifiant de détecteur d'une fusion dont les éléments viennent de sources différentes. */
+export const MERGED_RECOGNIZER_ID = "core/adjacent-persons";
+
 const GAP = /^[ \u00A0\u202F]{1,2}$/;
 
 export function mergeAdjacentPersons(
@@ -52,6 +55,9 @@ export function mergeAdjacentPersons(
     if (chain.length >= 2) {
       const first = chain[0] as Detection;
       const last = chain[chain.length - 1] as Detection;
+      // Éléments de sources différentes (ex. dictionnaire + NER) : la détection fusionnée
+      // n'appartient plus à un seul détecteur. packId reste celui du premier (banc des packs).
+      const sameSource = chain.every((d) => d.source === first.source);
       const best = Math.max(...chain.map((d) => d.score));
       merged.push({
         id: ctx.nextId(),
@@ -59,7 +65,7 @@ export function mergeAdjacentPersons(
         end: last.end,
         entityType: "PERSON",
         score: Math.min(1, Math.round((best + ADJACENT_PERSON_BOOST) * 1e6) / 1e6),
-        recognizerId: first.recognizerId,
+        recognizerId: sameSource ? first.recognizerId : MERGED_RECOGNIZER_ID,
         packId: first.packId,
         source: first.source,
         explanation: [

@@ -93,21 +93,55 @@ describe("applyContext", () => {
     ).toBe(0.5);
   });
 
-  it("insensible à la casse et aux accents, mots et expressions", () => {
-    const c = { words: { fr: ["numéro de sécurité", "Évaluation"] } };
-    const t1 = "NUMERO DE SECURITE : 123456789";
+  it("insensible à la casse et aux accents pour un mot de contexte sans accent", () => {
+    const c = { words: { fr: ["numero de securite", "Evaluation"] } };
+    const t1 = "NUMÉRO DE SÉCURITÉ : 123456789";
     expect(
       applyContext(t1, [det(t1, "123456789")], rules(mkRule(c)), "fr").detections[0]?.score,
     ).toBeCloseTo(0.85);
-    const t2 = "evaluation 123456789";
+    const t2 = "évaluation 123456789";
     expect(
       applyContext(t2, [det(t2, "123456789")], rules(mkRule(c)), "fr").detections[0]?.score,
     ).toBeCloseTo(0.85);
     // l'expression doit être entière et consécutive
-    const t3 = "numéro de 123456789 sécurité";
+    const t3 = "numero de 123456789 securite";
     expect(
       applyContext(t3, [det(t3, "123456789")], rules(mkRule(c)), "fr").detections[0]?.score,
     ).toBe(0.5);
+  });
+
+  it("un mot de contexte accentué exige ses accents (casse ignorée, NFC)", () => {
+    const c = { words: { fr: ["numéro de sécurité", "Évaluation"] } };
+    const score = (t: string) =>
+      applyContext(t, [det(t, "123456789")], rules(mkRule(c)), "fr").detections[0]?.score;
+    expect(score("NUMÉRO DE SÉCURITÉ : 123456789")).toBeCloseTo(0.85);
+    expect(score("évaluation 123456789")).toBeCloseTo(0.85);
+    expect(score("e\u0301valuation 123456789")).toBeCloseTo(0.85); // NFD dans le texte
+    expect(score("NUMERO DE SECURITE : 123456789")).toBe(0.5);
+    expect(score("evaluation 123456789")).toBe(0.5);
+    // mot par mot : « numéro » accentué, « de » libre
+    expect(score("numéro DE sécurité 123456789")).toBeCloseTo(0.85);
+    expect(score("numero de sécurité 123456789")).toBe(0.5);
+  });
+
+  it("un mot de contexte terminé par un point exige un point dans le texte", () => {
+    const c = { words: { fr: ["M.", "Dr.", "art."] } };
+    const score = (t: string) =>
+      applyContext(t, [det(t, "123456789")], rules(mkRule(c)), "fr").detections[0]?.score;
+    expect(score("M. 123456789")).toBeCloseTo(0.85);
+    expect(score("123456789 Dr. X")).toBeCloseTo(0.85);
+    expect(score("ART. 123456789")).toBeCloseTo(0.85);
+    expect(score("M 123456789")).toBe(0.5);
+    expect(score("dr 123456789")).toBe(0.5);
+    expect(score("M .123456789")).toBe(0.5);
+  });
+
+  it("applique le point mot par mot dans une expression", () => {
+    const c = { words: { fr: ["Mme. la directrice"] } };
+    const score = (t: string) =>
+      applyContext(t, [det(t, "123456789")], rules(mkRule(c)), "fr").detections[0]?.score;
+    expect(score("Mme. la directrice 123456789")).toBeCloseTo(0.85);
+    expect(score("Mme la directrice 123456789")).toBe(0.5);
   });
 
   it("ne trouve pas un mot de contexte à l'intérieur d'un autre mot", () => {
@@ -201,5 +235,55 @@ describe("applyContext", () => {
     const a = applyContext(t, ds, rules(mkRule(ctx)), "fr");
     const b = applyContext(t, ds, rules(mkRule(ctx)), "fr");
     expect(a).toEqual(b);
+  });
+
+  describe("mots de contexte accentués et abrégés (faux positifs PERSON)", () => {
+    const personRule: PatternRule = {
+      kind: "pattern",
+      id: "p",
+      entityType: "PERSON",
+      score: 0.45,
+      pattern: "[A-Z][a-z]+",
+      context: {
+        words: { fr: ["né", "née", "M.", "MM.", "Mme", "Dr.", "bonjour", "art."] },
+      },
+    };
+    const run = (t: string, value: string) => {
+      const start = t.indexOf(value);
+      const d: Detection = {
+        id: "d1",
+        start,
+        end: start + value.length,
+        entityType: "PERSON",
+        score: 0.45,
+        recognizerId: "pk/p",
+        packId: "pk",
+        source: "dictionary",
+        explanation: [],
+      };
+      return applyContext(t, [d], new Map([["pk/p", personRule]]), "fr").detections[0];
+    };
+
+    it.each([
+      ["Art. 5 ne s'applique pas.", "Art"],
+      ["Je ne sais pas si Pierre viendra.", "Pierre"],
+      ["Avril ne viendra pas", "Avril"],
+      ["Rose ne veut pas", "Rose"],
+      ["Ange ne sait rien", "Ange"],
+      ["Le prix est de 5 m Rose", "Rose"],
+    ])("ne rehausse pas : %s", (t, value) => {
+      expect(run(t, value)?.contextBoost).toBeUndefined();
+      expect(run(t, value)?.score).toBe(0.45);
+    });
+
+    it.each([
+      ["née le 12.03.85", "le"],
+      ["M. Rossi", "Rossi"],
+      ["Bonjour Rose", "Rose"],
+      ["Dr. Martin", "Martin"],
+      ["MM. Dupont", "Dupont"],
+    ])("rehausse : %s", (t, value) => {
+      expect(run(t, value)?.contextBoost).toBeCloseTo(0.35);
+    });
   });
 });
