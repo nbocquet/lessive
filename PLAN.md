@@ -382,4 +382,7 @@ Après chaque vague, un agent de relecture distinct, sans accès aux échanges d
 | Données sensibles (santé, religion, opinions, vie sexuelle, pénal, aide sociale) | Test de Nico, 17 novembre 2026 : « absente pour raisons médicales » resté en clair | Hors MVP (décision de Nico). Piste : signaler sans remplacer, par listes d'expressions par catégorie. Documenté dans docs/limites.md. |
 | Propagation des noms détectés (prénom seul, identifiants dérivés type CMARTIN) | Même test | En cours (src/core/analyzer/propagate-names.ts). |
 | Adresses postales FR et CH | Même test (adresse privée restée en clair) | En cours (packs country-fr et country-ch). |
+| Références internes (dossier, commande, contrat, serveur : ET-2026-003821, PO-2026-77841…) | Même test | Non traitées (décision de Nico, 17 novembre 2026) : ce ne sont pas des données personnelles ; elles restent en clair. |
+| IDE suisse à clé de contrôle invalide (CHE-123.456.789) | Même test | À détecter quand même au format CHE-xxx.xxx.xxx, score réduit, explication « clé invalide » (faute de frappe possible sur un vrai numéro). |
+| Organisations non reconnues par le NER (« Établissement des Tilleuls ») | Même test | Limite du modèle, documentée. |
 
