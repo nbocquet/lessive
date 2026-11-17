@@ -86,13 +86,23 @@ export function createAnalysisHandler(
     const extraWarnings: string[] = [];
     let ner: NerEngine | undefined;
     if (req.ner) {
-      nerEngine ??= await loadNer((progress) =>
-        post({ type: "progress", id: req.id, stage: "ner", progress }),
-      );
-      ner = nerEngine;
-      if (!ner) {
+      try {
+        // Chargement paresseux au premier besoin ; un échec n'est pas mis en cache (le modèle
+        // peut être déposé ensuite) et ne fait jamais échouer l'analyse : simple avertissement.
+        nerEngine ??= await loadNer((progress) =>
+          post({ type: "progress", id: req.id, stage: "ner", progress }),
+        );
+        ner = nerEngine;
+        if (!ner) {
+          extraWarnings.push(
+            "La reconnaissance des noms (NER) a été demandée mais n'est pas disponible dans cette version.",
+          );
+        }
+      } catch {
+        // Message volontairement générique : l'erreur d'origine peut citer des chemins, jamais le texte (R5).
+        if (signal.aborted) throw new AbortError();
         extraWarnings.push(
-          "La reconnaissance des noms (NER) a été demandée mais n'est pas disponible dans cette version.",
+          "La reconnaissance des noms (NER) n'est pas disponible : modèle introuvable ou illisible. Seuls les détecteurs par règles ont été appliqués.",
         );
       }
     }
