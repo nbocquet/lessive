@@ -18,5 +18,15 @@ Listes de prénoms et de noms de famille (packs/lang-fr-en)
     © OFS 2026. Utilisation libre, obligation d'indiquer la source.
     Extraits : prénoms portés par au moins 200 personnes, noms par au moins 300.
 
-À compléter : modèle NER, motifs de détection repris de Presidio (https://github.com/data-privacy-stack/presidio, licence MIT,
-Copyright (c) Microsoft Corporation).
+Presidio (https://github.com/data-privacy-stack/presidio, licence MIT,
+Copyright (c) Microsoft Corporation) a servi de référence fonctionnelle et
+d'architecture. Les motifs de détection et le code de Lessive ont été écrits
+pour le projet ; aucun fichier de Presidio n'est inclus.
+
+Modèle de reconnaissance d'entités (NER) : il n'est pas distribué avec
+Lessive. L'utilisateur le télécharge lui-même et l'accepte sous sa propre
+licence (voir docs/adr/0003-modele-charge-par-l-utilisateur.md).
+
+Les dépendances npm incluses dans le build (Svelte, Zod, Transformers.js,
+ONNX Runtime Web) sont sous licences MIT ou Apache 2.0 ; leurs notices
+figurent dans leurs paquets respectifs.

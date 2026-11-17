@@ -727,6 +727,9 @@ export class AppState {
       this.modelInfo = stored;
       this.modelStatus = "stored";
       this.modelError = null;
+      // Un modèle déjà chargé lors d'une visite précédente : la reconnaissance des noms est
+      // activée d'office (recette T6.6). L'utilisateur peut toujours la décocher.
+      if (!this.ner) this.setNer(true);
     }
     if (import.meta.env.DEV && import.meta.env.MODE !== "test") {
       const { probeDevModel } = await import("./dev-model.ts");
@@ -760,6 +763,7 @@ export class AppState {
       this.modelStatus = "stored";
       this.#sendModelSource();
       if (this.ner) this.#analysisInputsChanged();
+      else this.setNer(true); // charger un modèle, c'est vouloir s'en servir
       return true;
     } catch {
       this.modelError =
@@ -793,6 +797,7 @@ export class AppState {
     this.modelNotice = null;
     this.#getService().setModel?.({ kind: "dev" });
     if (this.ner) this.#analysisInputsChanged();
+    else this.setNer(true);
   }
 
   /** Dit au worker où lire le modèle (Cache Storage par défaut, Blob en mémoire sinon). */

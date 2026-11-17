@@ -104,4 +104,4 @@ npm run test:e2e    # tests de confidentialité dans Chrome (voir docs/confident
 
 ## Licence et attributions
 
-Apache 2.0, voir [LICENSE](LICENSE). Les listes de prénoms et de noms de famille viennent de l'Insee et de l'Office fédéral de la statistique, les motifs de détection s'inspirent de Presidio (MIT) : sources et conditions dans [NOTICE](NOTICE).
+Apache 2.0, voir [LICENSE](LICENSE). Les listes de prénoms et de noms de famille viennent de l'Insee et de l'Office fédéral de la statistique, l'architecture s'inspire de Presidio (MIT), sans en reprendre de fichier : sources et conditions dans [NOTICE](NOTICE).

@@ -311,6 +311,15 @@ export class Session {
     await this.evaluate(`(${find}).click()`);
   }
 
+  /** Coche ou décoche une case libellée, sans la basculer si elle est déjà dans l'état voulu. */
+  async setChecked(labelText: string, checked: boolean): Promise<void> {
+    const find = `[...document.querySelectorAll("label")].find((l) => l.textContent.includes(${JSON.stringify(labelText)}))?.querySelector("input")`;
+    await this.waitFor(find, `case « ${labelText} »`);
+    await this.evaluate(
+      `(() => { const el = ${find}; if (el.checked !== ${checked}) el.click(); })()`,
+    );
+  }
+
   /** Saisit du texte dans un champ (focus puis insertion, comme au clavier). */
   async type(selector: string, text: string): Promise<void> {
     await this.waitFor(`document.querySelector(${JSON.stringify(selector)})`, `champ ${selector}`);
@@ -334,7 +343,8 @@ export class Session {
     ner: boolean;
   }): Promise<{ transformed: string; reidentified: string; tokens: string[] }> {
     await this.clickLabelled("Pseudonymisation");
-    if (opts.ner) await this.clickLabelled("Reconnaître les noms");
+    // Le NER s'active d'office quand un modèle est chargé : on fixe l'état voulu, sans basculer.
+    await this.setChecked("Reconnaître les noms", opts.ner);
     await this.type("#source-text", INPUT_TEXT);
     await this.clickButton("Analyser");
     // Soit passage direct à la vérification, soit avertissements à lire d'abord.
