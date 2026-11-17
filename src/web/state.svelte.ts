@@ -392,6 +392,7 @@ export class AppState {
     this.progress = 0;
     this.analysisStage = "rules";
     this.errorMessage = null;
+    const knownPersons = this.#knownPersons();
     const job = this.#getService().start(
       {
         text: this.text,
@@ -399,6 +400,7 @@ export class AppState {
         manual: this.#manualDetections(),
         activeRuleIds: [...this.activeRuleIds],
         ner: this.ner,
+        ...(knownPersons.length > 0 ? { knownPersons } : {}),
         ...(this.language !== "auto" ? { language: this.language } : {}),
       },
       (stage, progress) => {
@@ -436,6 +438,13 @@ export class AppState {
         this.analysisStage = null;
       }
     }
+  }
+
+  /** Formes de surface des personnes de la session : propagation d'un document à l'autre (worker local seulement). */
+  #knownPersons(): string[] {
+    return (this.session?.entities() ?? [])
+      .filter((e) => e.entityType === "PERSON")
+      .flatMap((e) => e.surfaceForms);
   }
 
   /** Le worker n'est créé qu'au premier besoin. */

@@ -39,6 +39,18 @@ describe("analysis-engine", () => {
     expect(out[0]).toMatchObject({ type: "progress", stage: "rules" });
   });
 
+  it("propage les formes connues (knownPersons) vers l'analyse", async () => {
+    const { handler, request, final } = setup();
+    const text = "Merci à Sophie et à CMARTIN.";
+    handler.handle(request({ id: 5, text, knownPersons: ["Sophie Durand", "CMARTIN"] }));
+    const res = await final(5);
+    expect(res.type).toBe("result");
+    if (res.type !== "result") return;
+    const values = res.result.detections.map((d) => text.slice(d.start, d.end));
+    expect(values).toEqual(["Sophie", "CMARTIN"]);
+    expect(JSON.stringify(res)).not.toContain("Durand");
+  });
+
   it("n'applique que les règles actives demandées", async () => {
     const { handler, request, final } = setup();
     handler.handle(request({ activeRuleIds: [] }));

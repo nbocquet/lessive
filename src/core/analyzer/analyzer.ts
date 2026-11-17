@@ -20,6 +20,10 @@ import {
 } from "../types/index.ts";
 import { getValidator } from "../validators/index.ts";
 import { mergeAdjacentPersons } from "./merge-persons.ts";
+import { collectAmbiguousNames, propagatePersonNames } from "./propagate-names.ts";
+
+/** Seuil par défaut de l'analyse (aligné sur la résolution des conflits). */
+const DEFAULT_MIN_SCORE = 0.5;
 
 export interface AnalyzeOptions {
   /** Langue principale du texte. Absente : tous les détecteurs s'appliquent. */
@@ -38,6 +42,18 @@ export interface AnalyzeOptions {
    * identifiants générés (`d1`…) ; l'identifiant d'origine n'est pas conservé.
    */
   manual?: Detection[];
+  /**
+   * Formes de surface de personnes connues d'avance (par exemple celles des entités PERSON de la
+   * session), pour propager les noms d'un document à l'autre : elles sont traitées comme des noms
+   * « sûrs » de ce texte. Elles restent en mémoire et ne sont jamais recopiées dans le résultat (R5).
+   */
+  knownPersons?: readonly string[];
+  /**
+   * Prénoms ambigus supplémentaires (comparés sans casse ni accents), jamais propagés seuls. Ils
+   * s'ajoutent à ceux des règles actives `prenoms-ambigus` : à remplir par l'appelant si cette règle
+   * peut être désactivée alors que la protection doit rester.
+   */
+  ambiguousGivenNames?: ReadonlySet<string>;
 }
 
 export interface Analyzer {
@@ -91,6 +107,7 @@ function assertValidManual(text: string, d: Detection, index: number): void {
 export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
   const recognizers = activeRules.map(buildRecognizer);
   const rulesById = new Map<string, Rule>(activeRules.map((a) => [a.globalId, a.rule]));
+  const ambiguous = collectAmbiguousNames(activeRules);
 
   return {
     recognizers,
@@ -139,9 +156,16 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
         id: `m${i + 1}`,
         source: "manual" as const,
       }));
-      const { kept, discarded } = resolveConflicts([...contextual, ...persons, ...manualWithIds], {
-        ...(options.minScore !== undefined ? { minScore: options.minScore } : {}),
+      const minScore = options.minScore ?? DEFAULT_MIN_SCORE;
+      // Propagation : prénoms seuls et identifiants dérivés de noms déjà sûrs, avant les conflits.
+      const known = [...contextual, ...persons, ...manualWithIds];
+      const propagated = propagatePersonNames(text, known, ctx, {
+        minScore,
+        ...(options.knownPersons ? { knownPersons: options.knownPersons } : {}),
+        ambiguousGivenNames: new Set([...ambiguous.given, ...(options.ambiguousGivenNames ?? [])]),
+        ambiguousFamilyNames: ambiguous.family,
       });
+      const { kept, discarded } = resolveConflicts([...known, ...propagated], { minScore });
 
       return { detections: kept, discarded: [...dropped, ...discarded], warnings };
     },

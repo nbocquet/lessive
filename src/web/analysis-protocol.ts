@@ -25,6 +25,12 @@ export interface AnalyzeRequest {
   activeRuleIds: string[];
   /** Active la reconnaissance de noms (NER). Voir `ner-provider.ts`. */
   ner: boolean;
+  /**
+   * Formes de surface des entités PERSON de la session courante (voir `AnalyzeOptions.knownPersons`),
+   * pour propager les noms d'un document à l'autre. Elles ne vont que vers le worker local (même
+   * origine) et ne reviennent dans aucune réponse (R5).
+   */
+  knownPersons?: string[];
 }
 
 /** Demande d'annulation (coopérative ; le client force l'arrêt du worker au besoin). */

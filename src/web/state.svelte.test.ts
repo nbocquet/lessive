@@ -329,6 +329,23 @@ describe("AppState : transformation et validation", () => {
     expect(app.session?.entities()).toHaveLength(0);
   });
 
+  it("passe à l'analyse les formes des personnes de la session (knownPersons)", async () => {
+    const { app, calls } = await analyzed({
+      detections: [det("d1", 10, 31, { entityType: "PERSON" })],
+      discarded: [],
+      warnings: [],
+    });
+    expect(calls[0]!.params.knownPersons).toBeUndefined();
+    app.setMode("pseudonymization");
+    app.refreshTransform();
+    const forms = app.session!.entities().flatMap((e) => e.surfaceForms);
+    expect(forms.length).toBeGreaterThan(0);
+    const p = app.analyze();
+    expect(calls[1]!.params.knownPersons).toEqual(forms);
+    calls[1]!.resolve({ detections: [], discarded: [], warnings: [] });
+    await p;
+  });
+
   it("renseigne transformError sans valeur du texte quand le plan est invalide", async () => {
     const { app } = await analyzed();
     // Détections qui se chevauchent : le transformateur refuse.

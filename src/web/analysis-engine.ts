@@ -4,6 +4,7 @@
  */
 import {
   AbortError,
+  collectAmbiguousNames,
   createAnalyzer,
   type ActiveRule,
   type Analyzer,
@@ -123,10 +124,17 @@ export function createAnalysisHandler(
         }
       }
     }
+    // Les prénoms ambigus viennent de toutes les règles, même désactivées : désactiver
+    // `prenoms-ambigus` ne doit pas faire propager « Rose » ou « Pierre » seuls.
+    const ambiguousGivenNames = collectAmbiguousNames(allRules(getRegistry())).given;
     const result = await analyzer.analyze(req.text, {
       minScore: req.minScore,
       signal,
       manual: req.manual,
+      ambiguousGivenNames,
+      ...(req.knownPersons && req.knownPersons.length > 0
+        ? { knownPersons: req.knownPersons }
+        : {}),
       ...(req.language ? { language: req.language } : {}),
       ...(ner ? { ner } : {}),
     });
