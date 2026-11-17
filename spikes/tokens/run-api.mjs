@@ -59,7 +59,7 @@ function parseArgs(argv) {
     throw new Error("--provider doit valoir openai, anthropic, gemini ou openrouter.");
   }
   if (o.provider === "openrouter" && !o.llm && o.model) {
-    const vendor = o.model.split("/")[0] ?? "";
+    const vendor = (o.model.split("/")[0] ?? "").replace(/^~/, ""); // alias « ~openai/gpt-latest »
     o.llm = OPENROUTER_FOLDERS[vendor] ?? vendor.toLowerCase().replace(/[^a-z0-9-]/g, "-");
   }
   if (!o.model && !o.dryRun) throw new Error("--model est obligatoire (nom exact du modèle).");
@@ -87,7 +87,7 @@ async function call(provider, model, key, prompt) {
         body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }] }),
       }),
     );
-    return r.choices?.[0]?.message?.content ?? "";
+    return { text: r.choices?.[0]?.message?.content ?? "", servedModel: r.model };
   }
   if (provider === "anthropic") {
     const r = await json(
@@ -101,7 +101,10 @@ async function call(provider, model, key, prompt) {
         body: JSON.stringify({ model, max_tokens: 4096, messages: [{ role: "user", content: prompt }] }),
       }),
     );
-    return (r.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join("");
+    return {
+      text: (r.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join(""),
+      servedModel: r.model,
+    };
   }
   const r = await json(
     await fetch(
@@ -113,7 +116,10 @@ async function call(provider, model, key, prompt) {
       },
     ),
   );
-  return (r.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? "").join("");
+  return {
+    text: (r.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? "").join(""),
+    servedModel: r.modelVersion,
+  };
 }
 
 async function main() {
@@ -141,6 +147,7 @@ async function main() {
     );
   }
 
+  const served = new Set();
   let done = 0;
   for (const t of lot.trials) {
     const file = join(outDir, `${trialKey(t)}.txt`);
@@ -150,12 +157,17 @@ async function main() {
     }
     try {
       const answer = await call(o.provider, o.model, key, buildPrompt(t, textOf(t)));
-      writeFileSync(file, answer);
+      writeFileSync(file, answer.text);
+      if (answer.servedModel) served.add(answer.servedModel);
       done++;
       console.log(`  ok : ${trialKey(t)}`);
     } catch (err) {
       console.error(`  échec : ${trialKey(t)} : ${err instanceof Error ? err.message : err}`);
     }
+  }
+  if (served.size > 0) {
+    // Un alias (« ~anthropic/claude-sonnet-latest ») est résolu par le fournisseur : on note le modèle servi.
+    writeFileSync(modelFile, `Modèle(s) réellement servi(s) : ${[...served].join(", ")}\n`, { flag: "a" });
   }
   console.log(`\n${done} réponse(s) écrite(s). Ensuite : node spikes/tokens/score.mjs`);
 }
