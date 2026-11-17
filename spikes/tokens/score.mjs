@@ -231,7 +231,9 @@ export function renderMarkdown(records, ignored, { demo = false, date = new Date
     const cells = Object.values(LOTS).map((lot) => `${lot.trials.filter((t) => h.has(trialKey(t))).length}/${lot.trials.length}`);
     return [llm, ...cells];
   });
-  out.push(table(["LLM", "Lot 1 (obligatoire)", "Lot 2", "Lot 3 (témoin)"], rows4));
+  // Un titre par lot de config.mjs, dans le même ordre que les cellules.
+  const lotTitles = Object.keys(LOTS).map((id) => `Lot ${id}`);
+  out.push(table(["LLM", ...lotTitles], rows4));
   out.push("");
 
   // 5. Détail par réponse
