@@ -166,7 +166,13 @@
       "id": "ide-cle-fausse",
       "language": "fr",
       "text": "IDE : CHE-123.456.789",
-      "expect": []
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE-123.456.789"
+        }
+      ],
+      "note": "Clé fausse : retenu par la règle uid-unverified (score 0,6), faute de frappe possible sur un vrai numéro."
     },
     {
       "id": "ide-sans-prefixe-che",
@@ -530,62 +536,62 @@
     {
       "id": "npa-espace-insecable",
       "language": "fr",
-      "text": "NPA 1204\u00a0Genève",
+      "text": "NPA 1204 Genève",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "1204\u00a0Genève"
+          "value": "1204 Genève"
         }
       ]
     },
     {
       "id": "npa-espace-fine-insecable",
       "language": "fr",
-      "text": "Rue du Rhône 1, 1204\u202fGenève",
+      "text": "Rue du Rhône 1, 1204 Genève",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "Rue du Rhône 1, 1204\u202fGenève"
+          "value": "Rue du Rhône 1, 1204 Genève"
         }
       ]
     },
     {
       "id": "tel-intl-nbsp",
       "language": "fr",
-      "text": "Tél. +41\u00a079\u00a0123\u00a045\u00a067",
+      "text": "Tél. +41 79 123 45 67",
       "expect": [
         {
           "type": "PHONE",
-          "value": "+41\u00a079\u00a0123\u00a045\u00a067"
+          "value": "+41 79 123 45 67"
         }
       ]
     },
     {
       "id": "tel-0041-nbsp",
       "language": "fr",
-      "text": "Joignable au 0041\u00a022\u00a0123\u00a045\u00a067.",
+      "text": "Joignable au 0041 22 123 45 67.",
       "expect": [
         {
           "type": "PHONE",
-          "value": "0041\u00a022\u00a0123\u00a045\u00a067"
+          "value": "0041 22 123 45 67"
         }
       ]
     },
     {
       "id": "tel-national-nbsp",
       "language": "fr",
-      "text": "Tél. 079\u00a0123\u00a045\u00a067",
+      "text": "Tél. 079 123 45 67",
       "expect": [
         {
           "type": "PHONE",
-          "value": "079\u00a0123\u00a045\u00a067"
+          "value": "079 123 45 67"
         }
       ]
     },
     {
       "id": "tel-compact-nbsp",
       "language": "fr",
-      "text": "Natel\u00a00791234567",
+      "text": "Natel 0791234567",
       "expect": [
         {
           "type": "PHONE",
@@ -596,51 +602,51 @@
     {
       "id": "avs-nbsp",
       "language": "fr",
-      "text": "N° AVS : 756\u00a01234\u00a05678\u00a097",
+      "text": "N° AVS : 756 1234 5678 97",
       "expect": [
         {
           "type": "CH_AVS",
-          "value": "756\u00a01234\u00a05678\u00a097"
+          "value": "756 1234 5678 97"
         }
       ]
     },
     {
       "id": "tel-intl-nnbsp",
       "language": "fr",
-      "text": "Tél. +41\u202f79\u202f123\u202f45\u202f67",
+      "text": "Tél. +41 79 123 45 67",
       "expect": [
         {
           "type": "PHONE",
-          "value": "+41\u202f79\u202f123\u202f45\u202f67"
+          "value": "+41 79 123 45 67"
         }
       ]
     },
     {
       "id": "tel-0041-nnbsp",
       "language": "fr",
-      "text": "Joignable au 0041\u202f22\u202f123\u202f45\u202f67.",
+      "text": "Joignable au 0041 22 123 45 67.",
       "expect": [
         {
           "type": "PHONE",
-          "value": "0041\u202f22\u202f123\u202f45\u202f67"
+          "value": "0041 22 123 45 67"
         }
       ]
     },
     {
       "id": "tel-national-nnbsp",
       "language": "fr",
-      "text": "Tél. 079\u202f123\u202f45\u202f67",
+      "text": "Tél. 079 123 45 67",
       "expect": [
         {
           "type": "PHONE",
-          "value": "079\u202f123\u202f45\u202f67"
+          "value": "079 123 45 67"
         }
       ]
     },
     {
       "id": "tel-compact-nnbsp",
       "language": "fr",
-      "text": "Natel\u202f0791234567",
+      "text": "Natel 0791234567",
       "expect": [
         {
           "type": "PHONE",
@@ -651,33 +657,33 @@
     {
       "id": "avs-nnbsp",
       "language": "fr",
-      "text": "N° AVS : 756\u202f1234\u202f5678\u202f97",
+      "text": "N° AVS : 756 1234 5678 97",
       "expect": [
         {
           "type": "CH_AVS",
-          "value": "756\u202f1234\u202f5678\u202f97"
+          "value": "756 1234 5678 97"
         }
       ]
     },
     {
       "id": "ide-nbsp-suffixe",
       "language": "fr",
-      "text": "TVA : CHE-100.000.006\u00a0TVA",
+      "text": "TVA : CHE-100.000.006 TVA",
       "expect": [
         {
           "type": "CH_UID",
-          "value": "CHE-100.000.006\u00a0TVA"
+          "value": "CHE-100.000.006 TVA"
         }
       ]
     },
     {
       "id": "ide-nnbsp-prefixe",
       "language": "fr",
-      "text": "IDE : CHE\u202f100.000.006",
+      "text": "IDE : CHE 100.000.006",
       "expect": [
         {
           "type": "CH_UID",
-          "value": "CHE\u202f100.000.006"
+          "value": "CHE 100.000.006"
         }
       ]
     },
@@ -805,22 +811,22 @@
     {
       "id": "rue-romand-insecables",
       "language": "fr",
-      "text": "Rue\u00a0du\u00a0Rhône\u00a014,\u00a01204\u00a0Genève",
+      "text": "Rue du Rhône 14, 1204 Genève",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "Rue\u00a0du\u00a0Rhône\u00a014,\u00a01204\u00a0Genève"
+          "value": "Rue du Rhône 14, 1204 Genève"
         }
       ]
     },
     {
       "id": "rue-romand-fines-insecables",
       "language": "fr",
-      "text": "Rue\u202fdu\u202fRhône\u202f14,\u202f1204\u202fGenève",
+      "text": "Rue du Rhône 14, 1204 Genève",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "Rue\u202fdu\u202fRhône\u202f14,\u202f1204\u202fGenève"
+          "value": "Rue du Rhône 14, 1204 Genève"
         }
       ]
     },
@@ -1092,6 +1098,12 @@
       "id": "negatif-annee-et-pluriel",
       "language": "fr",
       "text": "En 2023, 2024 Personnes ont voté.",
+      "expect": []
+    },
+    {
+      "id": "ide-neuf-chiffres-sans-prefixe-ignore",
+      "language": "fr",
+      "text": "Référence 123.456.789 du dossier.",
       "expect": []
     }
   ]

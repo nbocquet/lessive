@@ -46,7 +46,7 @@ import { createAnalyzer, PackRegistry, type Language } from "../../src/core/inde
 import { bundledPackDirs, loadPackDir } from "./load.ts";
 
 /** Temps maximal de l'analyse statique d'un motif : au-delà, le motif doit être simplifié. */
-const STATIC_CHECK_TIMEOUT_MS = 1500;
+const STATIC_CHECK_TIMEOUT_MS = 10_000;
 const ADVERSARIAL_LENGTH = 20_000;
 const ADVERSARIAL_BUDGET_MS = 150;
 

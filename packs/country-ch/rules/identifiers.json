@@ -47,6 +47,16 @@
       "validator": "ch_uid_mod11",
       "languages": "any",
       "description": "Numéro IDE (CHE-123.456.789), suffixe TVA, MWST ou IVA facultatif, clé modulo 11 vérifiée. Le préfixe CHE est obligatoire."
+    },
+    {
+      "kind": "pattern",
+      "id": "uid-unverified",
+      "entityType": "CH_UID",
+      "score": 0.6,
+      "pattern": "\\bCHE[-. \\u00a0\\u202f]?\\d{3}[. \\u00a0\\u202f]?\\d{3}[. \\u00a0\\u202f]?\\d{3}(?:[ \\u00a0\\u202f]?(?:TVA|MWST|IVA))?\\b",
+      "flags": "i",
+      "languages": "any",
+      "description": "Numéro IDE au format CHE-123.456.789 dont la clé modulo 11 est fausse (faute de frappe possible sur un vrai numéro). Le format avec préfixe CHE est assez spécifique pour être masqué ; un IDE à clé valide est retenu par la règle « uid » (validée, score 1,0)."
     }
   ]
 }
