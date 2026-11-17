@@ -42,7 +42,7 @@
       "id": "uid",
       "entityType": "CH_UID",
       "score": 0.7,
-      "pattern": "\\bCHE[-. ]?\\d{3}[. ]?\\d{3}[. ]?\\d{3}(?:[ \\u00a0]?(?:TVA|MWST|IVA))?\\b",
+      "pattern": "\\bCHE[-. \\u00a0\\u202f]?\\d{3}[. \\u00a0\\u202f]?\\d{3}[. \\u00a0\\u202f]?\\d{3}(?:[ \\u00a0\\u202f]?(?:TVA|MWST|IVA))?\\b",
       "flags": "i",
       "validator": "ch_uid_mod11",
       "languages": "any",

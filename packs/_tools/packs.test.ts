@@ -29,6 +29,14 @@
  * exactement `expect` (type + texte), ni plus ni moins. Les détections des autres
  * packs sont ignorées, sauf si elles font disparaître une entité attendue.
  * Un cas négatif s'écrit avec "expect": [].
+ *
+ * 4. Tests croisés (facultatifs). Le contrôle 3 ne voit que les détections du pack testé : un
+ *    conflit entre packs lui échappe. Chaque pack peut donc fournir tests/cross.json, et le banc
+ *    fournit cross-cases.json (phrases mêlant plusieurs types). Format :
+ *    { "cases": [ { "id", "language"?, "text", "expectAll": [{ "type", "value" }] } ] }
+ *    `expectAll` est la liste EXACTE de toutes les détections retenues, tous packs confondus
+ *    (ni plus, ni moins). On n'y met que ce qui DOIT être détecté ; si un pack produit autre
+ *    chose, on corrige le pack plutôt que l'attente.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
@@ -137,6 +145,42 @@ describe("packs livrés", () => {
           const sortKey = (x: { type: string; value: string }) => `${x.type}|${x.value}`;
           expect(mine.map(sortKey).sort(), `pack ${basename(dir)}, cas ${c.id}`).toEqual(
             c.expect.map(sortKey).sort(),
+          );
+        });
+      }
+    });
+  }
+});
+
+interface CrossCase {
+  id: string;
+  language?: Language;
+  text: string;
+  expectAll: Array<{ type: string; value: string }>;
+}
+
+const crossFiles = [
+  { label: "banc commun", file: new URL("./cross-cases.json", import.meta.url).pathname },
+  ...dirs.map((dir) => ({ label: basename(dir), file: join(dir, "tests", "cross.json") })),
+].filter(({ file }) => existsSync(file));
+
+describe("tests croisés (tous packs actifs, détections retenues exactes)", () => {
+  for (const { label, file } of crossFiles) {
+    describe(label, () => {
+      const { cases } = JSON.parse(readFileSync(file, "utf8")) as { cases: CrossCase[] };
+      it("contient des cas", () => {
+        expect(cases.length).toBeGreaterThan(0);
+      });
+      for (const c of cases) {
+        it(`cas ${c.id}`, async () => {
+          const res = await analyzer.analyze(c.text, c.language ? { language: c.language } : {});
+          const all = res.detections.map((d) => ({
+            type: d.entityType,
+            value: c.text.slice(d.start, d.end),
+          }));
+          const sortKey = (x: { type: string; value: string }) => `${x.type}|${x.value}`;
+          expect(all.map(sortKey).sort(), `croisé ${label}, cas ${c.id}`).toEqual(
+            c.expectAll.map(sortKey).sort(),
           );
         });
       }

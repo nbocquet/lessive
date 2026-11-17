@@ -4,19 +4,34 @@
       "id": "nir-espaces-avec-contexte",
       "language": "fr",
       "text": "Mon numéro de sécurité sociale est le 1 85 05 78 006 084 91.",
-      "expect": [{ "type": "FR_NIR", "value": "1 85 05 78 006 084 91" }]
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1 85 05 78 006 084 91"
+        }
+      ]
     },
     {
       "id": "nir-compact-texte-anglais",
       "language": "en",
       "text": "The French social security number is 185057800608491 on the form.",
-      "expect": [{ "type": "FR_NIR", "value": "185057800608491" }]
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "185057800608491"
+        }
+      ]
     },
     {
       "id": "nir-sans-contexte-valide-par-la-cle",
       "language": "fr",
       "text": "Dossier reçu : 290047512345653, à traiter.",
-      "expect": [{ "type": "FR_NIR", "value": "290047512345653" }]
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "290047512345653"
+        }
+      ]
     },
     {
       "id": "nir-cle-fausse",
@@ -28,13 +43,23 @@
       "id": "nir-corse-2a",
       "language": "fr",
       "text": "NIR : 2 85 10 2A 004 123 86",
-      "expect": [{ "type": "FR_NIR", "value": "2 85 10 2A 004 123 86" }]
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "2 85 10 2A 004 123 86"
+        }
+      ]
     },
     {
       "id": "nir-corse-2b-compact",
       "language": "fr",
       "text": "Assuré né en Haute-Corse, NIR 192052B03304515.",
-      "expect": [{ "type": "FR_NIR", "value": "192052B03304515" }]
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "192052B03304515"
+        }
+      ]
     },
     {
       "id": "nir-corse-cle-fausse",
@@ -46,13 +71,23 @@
       "id": "nir-outre-mer",
       "language": "fr",
       "text": "Carte Vitale : 1 90 12 971 06 045 73",
-      "expect": [{ "type": "FR_NIR", "value": "1 90 12 971 06 045 73" }]
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1 90 12 971 06 045 73"
+        }
+      ]
     },
     {
       "id": "nir-mois-special-31",
       "language": "fr",
       "text": "Numéro INSEE : 1 85 31 78 006 084 22",
-      "expect": [{ "type": "FR_NIR", "value": "1 85 31 78 006 084 22" }]
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1 85 31 78 006 084 22"
+        }
+      ]
     },
     {
       "id": "nir-mois-impossible-13",
@@ -65,29 +100,51 @@
       "language": "fr",
       "text": "Sécu 185057800608491, SIREN 123 456 782.",
       "expect": [
-        { "type": "FR_NIR", "value": "185057800608491" },
-        { "type": "FR_SIREN", "value": "123 456 782" }
+        {
+          "type": "FR_NIR",
+          "value": "185057800608491"
+        },
+        {
+          "type": "FR_SIREN",
+          "value": "123 456 782"
+        }
       ]
     },
     {
       "id": "siret-espaces",
       "language": "fr",
       "text": "Le SIRET de l'établissement est 123 456 782 00010.",
-      "expect": [{ "type": "FR_SIRET", "value": "123 456 782 00010" }]
+      "expect": [
+        {
+          "type": "FR_SIRET",
+          "value": "123 456 782 00010"
+        }
+      ]
     },
     {
       "id": "siret-compact-texte-anglais",
       "language": "en",
       "text": "Our SIRET is 98765432400423, please keep it.",
-      "expect": [{ "type": "FR_SIRET", "value": "98765432400423" }]
+      "expect": [
+        {
+          "type": "FR_SIRET",
+          "value": "98765432400423"
+        }
+      ]
     },
     {
       "id": "siret-contient-siren-le-siret-l-emporte",
       "language": "fr",
       "text": "L'entreprise immatriculée sous le SIREN 123 456 782 exploite l'établissement 123 456 782 00010.",
       "expect": [
-        { "type": "FR_SIREN", "value": "123 456 782" },
-        { "type": "FR_SIRET", "value": "123 456 782 00010" }
+        {
+          "type": "FR_SIREN",
+          "value": "123 456 782"
+        },
+        {
+          "type": "FR_SIRET",
+          "value": "123 456 782 00010"
+        }
       ]
     },
     {
@@ -106,19 +163,34 @@
       "id": "siren-avec-rcs",
       "language": "fr",
       "text": "Dupont Conseil SAS, RCS Annecy 123 456 782.",
-      "expect": [{ "type": "FR_SIREN", "value": "123 456 782" }]
+      "expect": [
+        {
+          "type": "FR_SIREN",
+          "value": "123 456 782"
+        }
+      ]
     },
     {
       "id": "siren-texte-anglais",
       "language": "en",
       "text": "The company number is 987654324.",
-      "expect": [{ "type": "FR_SIREN", "value": "987654324" }]
+      "expect": [
+        {
+          "type": "FR_SIREN",
+          "value": "987654324"
+        }
+      ]
     },
     {
       "id": "siren-points",
       "language": "fr",
       "text": "Société immatriculée sous le numéro 123.456.782.",
-      "expect": [{ "type": "FR_SIREN", "value": "123.456.782" }]
+      "expect": [
+        {
+          "type": "FR_SIREN",
+          "value": "123.456.782"
+        }
+      ]
     },
     {
       "id": "siren-sans-contexte",
@@ -142,57 +214,103 @@
       "id": "telephone-fixe-espaces",
       "language": "fr",
       "text": "Tél : 01 99 00 12 34",
-      "expect": [{ "type": "PHONE", "value": "01 99 00 12 34" }]
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "01 99 00 12 34"
+        }
+      ]
     },
     {
       "id": "telephone-points",
       "language": "fr",
       "text": "Portable 06.39.98.12.34, merci de rappeler.",
-      "expect": [{ "type": "PHONE", "value": "06.39.98.12.34" }]
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "06.39.98.12.34"
+        }
+      ]
     },
     {
       "id": "telephone-tirets",
       "language": "fr",
       "text": "Mobile : 07-38-76-12-34",
-      "expect": [{ "type": "PHONE", "value": "07-38-76-12-34" }]
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "07-38-76-12-34"
+        }
+      ]
     },
     {
-      "id": "telephone-compact-sans-contexte",
+      "id": "telephone-compact-contexte-rappelez",
       "language": "fr",
       "text": "Rappelez-moi au 0639981234 dès que possible.",
-      "expect": [{ "type": "PHONE", "value": "0639981234" }]
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0639981234"
+        }
+      ]
     },
     {
       "id": "telephone-international-plus33",
       "language": "fr",
       "text": "Joignable au +33 6 39 98 12 34 toute la semaine.",
-      "expect": [{ "type": "PHONE", "value": "+33 6 39 98 12 34" }]
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33 6 39 98 12 34"
+        }
+      ]
     },
     {
       "id": "telephone-international-zero-entre-parentheses",
       "language": "en",
       "text": "Call me on +33 (0)1 99 00 12 34 tomorrow.",
-      "expect": [{ "type": "PHONE", "value": "+33 (0)1 99 00 12 34" }]
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33 (0)1 99 00 12 34"
+        }
+      ]
     },
     {
       "id": "telephone-international-0033",
       "language": "fr",
       "text": "Fax 0033 4 65 71 12 34",
-      "expect": [{ "type": "PHONE", "value": "0033 4 65 71 12 34" }]
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0033 4 65 71 12 34"
+        }
+      ]
     },
     {
       "id": "telephone-international-compact",
       "language": "en",
       "text": "My phone: +33639981234.",
-      "expect": [{ "type": "PHONE", "value": "+33639981234" }]
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33639981234"
+        }
+      ]
     },
     {
       "id": "telephones-deux-dans-une-liste",
       "language": "fr",
       "text": "Contacts : 06 39 98 12 34, 07 38 76 12 34.",
       "expect": [
-        { "type": "PHONE", "value": "06 39 98 12 34" },
-        { "type": "PHONE", "value": "07 38 76 12 34" }
+        {
+          "type": "PHONE",
+          "value": "06 39 98 12 34"
+        },
+        {
+          "type": "PHONE",
+          "value": "07 38 76 12 34"
+        }
       ]
     },
     {
@@ -247,25 +365,45 @@
       "id": "code-postal-adresse-complete",
       "language": "fr",
       "text": "Adresse : 12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS",
-      "expect": [{ "type": "LOCATION", "value": "74160 SAINT-JULIEN-EN-GENEVOIS" }]
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "74160 SAINT-JULIEN-EN-GENEVOIS"
+        }
+      ]
     },
     {
       "id": "code-postal-corse",
       "language": "fr",
       "text": "Code postal 20000 AJACCIO.",
-      "expect": [{ "type": "LOCATION", "value": "20000 AJACCIO" }]
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "20000 AJACCIO"
+        }
+      ]
     },
     {
       "id": "code-postal-commune-accentuee",
       "language": "fr",
       "text": "Livraison au 13 avenue Victor Hugo, 42000 SAINT-ÉTIENNE.",
-      "expect": [{ "type": "LOCATION", "value": "42000 SAINT-ÉTIENNE" }]
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "42000 SAINT-ÉTIENNE"
+        }
+      ]
     },
     {
       "id": "code-postal-texte-anglais",
       "language": "en",
       "text": "Postal code 69002 LYON is on the label.",
-      "expect": [{ "type": "LOCATION", "value": "69002 LYON" }]
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "69002 LYON"
+        }
+      ]
     },
     {
       "id": "code-postal-sans-contexte",
@@ -290,23 +428,45 @@
       "language": "fr",
       "text": "Mme Test, tél. 06 39 98 12 34, sécu 185057800608491, société SIRET 123 456 782 00010, 12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS.",
       "expect": [
-        { "type": "PHONE", "value": "06 39 98 12 34" },
-        { "type": "FR_NIR", "value": "185057800608491" },
-        { "type": "FR_SIRET", "value": "123 456 782 00010" },
-        { "type": "LOCATION", "value": "74160 SAINT-JULIEN-EN-GENEVOIS" }
+        {
+          "type": "PHONE",
+          "value": "06 39 98 12 34"
+        },
+        {
+          "type": "FR_NIR",
+          "value": "185057800608491"
+        },
+        {
+          "type": "FR_SIRET",
+          "value": "123 456 782 00010"
+        },
+        {
+          "type": "LOCATION",
+          "value": "74160 SAINT-JULIEN-EN-GENEVOIS"
+        }
       ]
     },
     {
       "id": "siret-siren-colle-au-nic",
       "language": "fr",
       "text": "SIRET : 123456782 00010",
-      "expect": [{ "type": "FR_SIRET", "value": "123456782 00010" }]
+      "expect": [
+        {
+          "type": "FR_SIRET",
+          "value": "123456782 00010"
+        }
+      ]
     },
     {
       "id": "nir-cle-separee",
       "language": "fr",
       "text": "NIR 1850578006084 91",
-      "expect": [{ "type": "FR_NIR", "value": "1850578006084 91" }]
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1850578006084 91"
+        }
+      ]
     },
     {
       "id": "telephone-colle-a-des-lettres",
@@ -319,6 +479,249 @@
       "language": "en",
       "text": "Account GB29NWBK60161331926819 at the bank.",
       "expect": []
+    },
+    {
+      "id": "telephone-compact-sans-contexte-reference",
+      "language": "fr",
+      "text": "Référence 0639981234 en stock.",
+      "expect": []
+    },
+    {
+      "id": "telephone-compact-numero-de-commande",
+      "language": "fr",
+      "text": "Commande n° 0123456789 expédiée.",
+      "expect": []
+    },
+    {
+      "id": "telephone-compact-avec-contexte",
+      "language": "fr",
+      "text": "Pour me joindre : 0639981234.",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0639981234"
+        }
+      ]
+    },
+    {
+      "id": "telephone-national-nbsp",
+      "language": "fr",
+      "text": "Tél : 01\u00a099\u00a000\u00a012\u00a034",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "01\u00a099\u00a000\u00a012\u00a034"
+        }
+      ]
+    },
+    {
+      "id": "telephone-international-nbsp",
+      "language": "fr",
+      "text": "Joignable au +33\u00a06\u00a039\u00a098\u00a012\u00a034.",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33\u00a06\u00a039\u00a098\u00a012\u00a034"
+        }
+      ]
+    },
+    {
+      "id": "telephone-international-paren-nbsp",
+      "language": "fr",
+      "text": "Tél : +33\u00a0(0)6\u00a039\u00a098\u00a012\u00a034",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33\u00a0(0)6\u00a039\u00a098\u00a012\u00a034"
+        }
+      ]
+    },
+    {
+      "id": "telephone-international-compact-nbsp",
+      "language": "fr",
+      "text": "Mobile : +33\u00a0639981234",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33\u00a0639981234"
+        }
+      ]
+    },
+    {
+      "id": "nir-espaces-nbsp",
+      "language": "fr",
+      "text": "Sécurité sociale : 1\u00a085\u00a005\u00a078\u00a0006\u00a0084\u00a091.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1\u00a085\u00a005\u00a078\u00a0006\u00a0084\u00a091"
+        }
+      ]
+    },
+    {
+      "id": "nir-cle-separee-nbsp",
+      "language": "fr",
+      "text": "NIR 1850578006084\u00a091",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1850578006084\u00a091"
+        }
+      ]
+    },
+    {
+      "id": "siret-nbsp",
+      "language": "fr",
+      "text": "SIRET : 123\u00a0456\u00a0782\u00a000010.",
+      "expect": [
+        {
+          "type": "FR_SIRET",
+          "value": "123\u00a0456\u00a0782\u00a000010"
+        }
+      ]
+    },
+    {
+      "id": "siren-nbsp",
+      "language": "fr",
+      "text": "Société immatriculée, SIREN 123\u00a0456\u00a0782.",
+      "expect": [
+        {
+          "type": "FR_SIREN",
+          "value": "123\u00a0456\u00a0782"
+        }
+      ]
+    },
+    {
+      "id": "code-postal-nbsp",
+      "language": "fr",
+      "text": "Adresse : 12 rue des Lilas, 74160\u00a0SAINT-JULIEN-EN-GENEVOIS",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "74160\u00a0SAINT-JULIEN-EN-GENEVOIS"
+        }
+      ]
+    },
+    {
+      "id": "telephone-national-nnbsp",
+      "language": "fr",
+      "text": "Tél : 01\u202f99\u202f00\u202f12\u202f34",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "01\u202f99\u202f00\u202f12\u202f34"
+        }
+      ]
+    },
+    {
+      "id": "telephone-international-nnbsp",
+      "language": "fr",
+      "text": "Joignable au +33\u202f6\u202f39\u202f98\u202f12\u202f34.",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33\u202f6\u202f39\u202f98\u202f12\u202f34"
+        }
+      ]
+    },
+    {
+      "id": "telephone-international-paren-nnbsp",
+      "language": "fr",
+      "text": "Tél : +33\u202f(0)6\u202f39\u202f98\u202f12\u202f34",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33\u202f(0)6\u202f39\u202f98\u202f12\u202f34"
+        }
+      ]
+    },
+    {
+      "id": "telephone-international-compact-nnbsp",
+      "language": "fr",
+      "text": "Mobile : +33\u202f639981234",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+33\u202f639981234"
+        }
+      ]
+    },
+    {
+      "id": "nir-espaces-nnbsp",
+      "language": "fr",
+      "text": "Sécurité sociale : 1\u202f85\u202f05\u202f78\u202f006\u202f084\u202f91.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1\u202f85\u202f05\u202f78\u202f006\u202f084\u202f91"
+        }
+      ]
+    },
+    {
+      "id": "nir-cle-separee-nnbsp",
+      "language": "fr",
+      "text": "NIR 1850578006084\u202f91",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1850578006084\u202f91"
+        }
+      ]
+    },
+    {
+      "id": "siret-nnbsp",
+      "language": "fr",
+      "text": "SIRET : 123\u202f456\u202f782\u202f00010.",
+      "expect": [
+        {
+          "type": "FR_SIRET",
+          "value": "123\u202f456\u202f782\u202f00010"
+        }
+      ]
+    },
+    {
+      "id": "siren-nnbsp",
+      "language": "fr",
+      "text": "Société immatriculée, SIREN 123\u202f456\u202f782.",
+      "expect": [
+        {
+          "type": "FR_SIREN",
+          "value": "123\u202f456\u202f782"
+        }
+      ]
+    },
+    {
+      "id": "code-postal-nnbsp",
+      "language": "fr",
+      "text": "Adresse : 12 rue des Lilas, 74160\u202fSAINT-JULIEN-EN-GENEVOIS",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "74160\u202fSAINT-JULIEN-EN-GENEVOIS"
+        }
+      ]
+    },
+    {
+      "id": "code-postal-commune-espaces-mixtes",
+      "language": "fr",
+      "text": "Adresse : 3 place du Marché, 74800\u00a0LA\u202fROCHE-SUR-FORON",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "74800\u00a0LA\u202fROCHE-SUR-FORON"
+        }
+      ]
+    },
+    {
+      "id": "siret-compact-pas-une-carte",
+      "language": "fr",
+      "text": "Notre SIRET est 41234567000019.",
+      "expect": [
+        {
+          "type": "FR_SIRET",
+          "value": "41234567000019"
+        }
+      ]
     }
   ]
 }

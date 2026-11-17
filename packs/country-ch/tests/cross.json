@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {
+      "id": "annees-pas-des-codes-postaux",
+      "language": "fr",
+      "text": "En 2023 Paul a voyagé via Lyon. Le budget 2025 Rue de Lausanne est validé.",
+      "expectAll": []
+    },
+    {
+      "id": "adresse-et-telephone",
+      "language": "fr",
+      "text": "Rue du Rhône 1, 1204 Genève, tél. 022 123 45 67.",
+      "expectAll": [
+        {
+          "type": "LOCATION",
+          "value": "1204 Genève"
+        },
+        {
+          "type": "PHONE",
+          "value": "022 123 45 67"
+        }
+      ]
+    }
+  ]
+}

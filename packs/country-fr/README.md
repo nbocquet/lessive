@@ -16,6 +16,7 @@ ou collés à des lettres, pour ne pas lire un fragment d'IBAN comme un téléph
 | `fr-siret` | `FR_SIRET` | 0,6 | `fr_siret_luhn` | facultatif (+0,35) |
 | `fr-siren` | `FR_SIREN` | 0,5 | `fr_siren_luhn` | **obligatoire** |
 | `fr-phone-national` | `PHONE` | 0,65 | aucun | facultatif (+0,35) |
+| `fr-phone-national-compact` | `PHONE` | 0,4 | aucun | nécessaire pour passer le seuil (+0,35) |
 | `fr-phone-international` | `PHONE` | 0,8 | aucun | facultatif (+0,35) |
 | `fr-phone-international-compact` | `PHONE` | 0,8 | aucun | facultatif (+0,35) |
 | `fr-phone-international-paren` | `PHONE` | 0,8 | aucun | facultatif (+0,35) |
@@ -42,7 +43,7 @@ commune (3 chiffres), numéro d'ordre (3 chiffres), clé (2 chiffres).
 ### SIRET (`FR_SIRET`) et SIREN (`FR_SIREN`)
 
 - SIRET : 14 chiffres (SIREN de 9 chiffres + NIC de 5 chiffres), écrits `123 456 782 00010`, `12345678200010`,
-  `123456782 00010`, séparateurs espace, point, espace insécable. Validé par Luhn (exception La Poste dans le validateur).
+  `123456782 00010`, séparateurs espace, point, espace insécable (U+00A0) ou fine insécable (U+202F). Validé par Luhn (exception La Poste dans le validateur).
 - SIREN : 9 chiffres, `123 456 782`, `123.456.782` ou `123456782`. **Le contexte est obligatoire** (SIREN, RCS, immatriculé,
   entreprise, société, raison sociale, Kbis, SAS, SARL…), car un nombre de 9 chiffres sur 10 passe Luhn.
 - Un SIREN n'est jamais détecté à l'intérieur d'un SIRET : le motif SIREN refuse un numéro suivi de 5 chiffres
@@ -52,14 +53,14 @@ commune (3 chiffres), numéro d'ordre (3 chiffres), clé (2 chiffres).
 
 ### Téléphones (`PHONE`)
 
-- National : `0X XX XX XX XX`, séparateurs espace, point, tiret, espace insécable, ou aucun (`0612345678`).
-  Préfixes 01 à 07 et 09.
+- National groupé (`fr-phone-national`, 0,65) : `0X XX XX XX XX`, séparateurs espace, point, tiret, espace insécable (U+00A0) ou fine insécable (U+202F). Préfixes 01 à 07 et 09.
+- National compact (`fr-phone-national-compact`, 0,4) : `0612345678`. Aligné sur la politique suisse : sous le seuil, retenu seulement avec un mot de contexte (téléphone, tél, portable, mobile, joindre, appeler, rappeler, rappelez, fixe, tel, fax, GSM…). « Commande n° 0123456789 » n'est plus un téléphone. Si le pack `country-ch` est actif, un numéro compact avec un mot de contexte commun aux deux packs (« Portable 0639981234 ») est retenu par `country-ch/phone-national-compact` (même score, ordre alphabétique) : la détection PHONE est la même.
 - International : `+33 X XX XX XX XX`, `+33 (0)X XX XX XX XX`, `0033 X XX XX XX XX`, `+33612345678`.
 - Exclus : les numéros 08 (numéros verts et à valeur ajoutée, qui ne désignent pas une personne) ; les numéros courts
   (112, 15, 17, 18, 3949, 118 xxx…), faute de motif à 10 chiffres. Ne sont pas non plus lus comme téléphones : un NIR, un
   SIRET, un IBAN, une date, un montant, un ISBN (motif interdit de démarrer au milieu d'une suite de chiffres ou collé à
   des lettres, et interdit de continuer par un chiffre).
-- Pas de validateur : le score de 0,65 (0,8 en international) passe le seuil sans contexte. Le contexte (tél, téléphone,
+- Pas de validateur : le score de 0,65 (0,8 en international) passe le seuil sans contexte, sauf pour la forme compacte nationale (0,4). Le contexte (tél, téléphone,
   portable, mobile, phone, fax…) porte le score à 1,0.
 
 ### Codes postaux (`LOCATION`)
@@ -88,6 +89,8 @@ elle reste la plus fragile du pack.
 
 ## Données de test
 
+Tous les séparateurs blancs (NIR, SIRET, SIREN, téléphones, code postal et commune) acceptent l'espace ordinaire, l'espace insécable (U+00A0) et l'espace fine insécable (U+202F) ; `tests/cases.json` contient des cas avec chacune, et `tests/cross.json` 2 cas croisés (tous packs actifs).
+
 `tests/cases.json` ne contient que des valeurs synthétiques : clés NIR et clés de Luhn calculées, jamais de vrais numéros.
 Les SIREN `123456782` et `987654324` sont des suites construites pour passer Luhn ; ils peuvent coïncider par hasard avec
 une entreprise réelle. Les téléphones ont été choisis dans des plages que l'on sait réservées à la fiction (01 99 00, 06 39 98,
@@ -102,7 +105,7 @@ une entreprise réelle. Les téléphones ont été choisis dans des plages que l
   intracommunautaire (`FR 12 123 456 789`) n'est pas détecté.
 - Téléphones : les numéros 08, les numéros courts et les formats avec parenthèses autour de l'indicatif régional
   `(01) 23 45 67 89` ne sont pas détectés. Un nombre de 10 chiffres commençant par 0 et groupé par paires est lu comme
-  un téléphone, même s'il s'agit d'une référence.
+  un téléphone, même s'il s'agit d'une référence. La forme collée (10 chiffres) exige un mot de contexte ; un mot de contexte voisin d'une référence (« portable, commande 0123456789 ») la fait détecter.
 - Les autres pays et les territoires d'outre-mer à indicatif propre (+262, +590, +594, +596…) ne sont pas couverts.
 - Codes postaux : communes écrites en minuscules ou en casse mixte ignorées ; `CEDEX` est inclus dans la détection
   mais pas son numéro ; une ligne tout en majuscules précédée d'un nombre de 5 chiffres près d'un mot comme « place »

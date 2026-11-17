@@ -703,6 +703,469 @@
       "language": "fr",
       "text": "Le mot de passe doit contenir huit caractères.",
       "expect": []
+    },
+    {
+      "id": "carte-negatif-siret-compact",
+      "language": "fr",
+      "text": "Notre SIRET est 41234567000019.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-siret-compact-en",
+      "language": "en",
+      "text": "Our SIRET is 41234567000019, please keep it.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-quatorze-chiffres-visa-impossible",
+      "language": "fr",
+      "text": "Numéro 41111111111114 saisi.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-prefixe-inconnu-compact",
+      "language": "fr",
+      "text": "Carte 1111111111111117 saisie.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-prefixe-inconnu-groupe",
+      "language": "fr",
+      "text": "Carte 1111 1111 1111 1117 saisie.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-maestro-sans-contexte-14-chiffres",
+      "language": "fr",
+      "text": "Dossier 50000000000009 archivé.",
+      "expect": []
+    },
+    {
+      "id": "carte-negatif-maestro-sans-contexte",
+      "language": "fr",
+      "text": "Dossier 6759649826438453 archivé.",
+      "expect": []
+    },
+    {
+      "id": "carte-compacte-visa-19",
+      "language": "fr",
+      "text": "Numéro de carte 4000000000000000006 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "4000000000000000006"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-mastercard-51",
+      "language": "fr",
+      "text": "Numéro de carte 5105105105105100 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "5105105105105100"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-mastercard-2221",
+      "language": "fr",
+      "text": "Numéro de carte 2223003122003222 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "2223003122003222"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-amex-34-37",
+      "language": "fr",
+      "text": "Numéro de carte 371449635398431 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "371449635398431"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-discover-6011",
+      "language": "fr",
+      "text": "Numéro de carte 6011111111111117 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6011111111111117"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-discover-644",
+      "language": "fr",
+      "text": "Numéro de carte 6445644564456445 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6445644564456445"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-discover-65",
+      "language": "fr",
+      "text": "Numéro de carte 6500000000000002 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6500000000000002"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-discover-19",
+      "language": "fr",
+      "text": "Numéro de carte 6011111111111111110 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6011111111111111110"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-diners-38",
+      "language": "fr",
+      "text": "Numéro de carte 38520000023237 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "38520000023237"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-diners-305",
+      "language": "fr",
+      "text": "Numéro de carte 30569309025904 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "30569309025904"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-jcb-3530",
+      "language": "fr",
+      "text": "Numéro de carte 3530111333300000 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3530111333300000"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-jcb-3566",
+      "language": "fr",
+      "text": "Numéro de carte 3566002020360505 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3566002020360505"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-jcb-19",
+      "language": "fr",
+      "text": "Numéro de carte 3530111333300000001 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3530111333300000001"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-unionpay-16",
+      "language": "fr",
+      "text": "Numéro de carte 6200000000000005 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6200000000000005"
+        }
+      ]
+    },
+    {
+      "id": "carte-compacte-unionpay-19",
+      "language": "fr",
+      "text": "Numéro de carte 6200000000000000000 enregistré.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6200000000000000000"
+        }
+      ]
+    },
+    {
+      "id": "carte-maestro-compacte-avec-contexte",
+      "language": "fr",
+      "text": "Carte Maestro 6759649826438453 enregistrée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6759649826438453"
+        }
+      ]
+    },
+    {
+      "id": "carte-maestro-12-chiffres-avec-contexte",
+      "language": "en",
+      "text": "Debit card Maestro 500000000009 on file.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "500000000009"
+        }
+      ]
+    },
+    {
+      "id": "carte-groupee-discover",
+      "language": "fr",
+      "text": "Carte 6011 1111 1111 1117 débitée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6011 1111 1111 1117"
+        }
+      ]
+    },
+    {
+      "id": "carte-groupee-jcb",
+      "language": "fr",
+      "text": "Carte 3530 1113 3330 0000 débitée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3530 1113 3330 0000"
+        }
+      ]
+    },
+    {
+      "id": "carte-groupee-unionpay",
+      "language": "fr",
+      "text": "Carte 6200 0000 0000 0005 débitée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6200 0000 0000 0005"
+        }
+      ]
+    },
+    {
+      "id": "carte-groupee-mastercard-2221",
+      "language": "fr",
+      "text": "Carte 2223 0031 2200 3222 débitée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "2223 0031 2200 3222"
+        }
+      ]
+    },
+    {
+      "id": "carte-groupee-maestro",
+      "language": "fr",
+      "text": "Carte 6759 6498 2643 8453 débitée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "6759 6498 2643 8453"
+        }
+      ]
+    },
+    {
+      "id": "carte-groupee-amex-bis",
+      "language": "fr",
+      "text": "Carte 3714 496353 98431 débitée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3714 496353 98431"
+        }
+      ]
+    },
+    {
+      "id": "carte-groupee-diners-38",
+      "language": "fr",
+      "text": "Carte 3852 000002 3237 débitée.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3852 000002 3237"
+        }
+      ]
+    },
+    {
+      "id": "iban-suisse-nbsp",
+      "language": "fr",
+      "text": "IBAN : CH93\u00a00076\u00a02011\u00a06238\u00a05295\u00a07.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "CH93\u00a00076\u00a02011\u00a06238\u00a05295\u00a07"
+        }
+      ]
+    },
+    {
+      "id": "iban-allemand-nbsp",
+      "language": "en",
+      "text": "Send it to DE89\u00a03704\u00a00044\u00a00532\u00a00130\u00a000 please.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "DE89\u00a03704\u00a00044\u00a00532\u00a00130\u00a000"
+        }
+      ]
+    },
+    {
+      "id": "carte-visa-nbsp",
+      "language": "fr",
+      "text": "Carte Visa 4111\u00a01111\u00a01111\u00a01111, expire 12/30.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "4111\u00a01111\u00a01111\u00a01111"
+        }
+      ]
+    },
+    {
+      "id": "carte-amex-nbsp",
+      "language": "en",
+      "text": "Amex 3782\u00a0822463\u00a010005 on file.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3782\u00a0822463\u00a010005"
+        }
+      ]
+    },
+    {
+      "id": "iban-suisse-nnbsp",
+      "language": "fr",
+      "text": "IBAN : CH93\u202f0076\u202f2011\u202f6238\u202f5295\u202f7.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "CH93\u202f0076\u202f2011\u202f6238\u202f5295\u202f7"
+        }
+      ]
+    },
+    {
+      "id": "iban-allemand-nnbsp",
+      "language": "en",
+      "text": "Send it to DE89\u202f3704\u202f0044\u202f0532\u202f0130\u202f00 please.",
+      "expect": [
+        {
+          "type": "IBAN",
+          "value": "DE89\u202f3704\u202f0044\u202f0532\u202f0130\u202f00"
+        }
+      ]
+    },
+    {
+      "id": "carte-visa-nnbsp",
+      "language": "fr",
+      "text": "Carte Visa 4111\u202f1111\u202f1111\u202f1111, expire 12/30.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "4111\u202f1111\u202f1111\u202f1111"
+        }
+      ]
+    },
+    {
+      "id": "carte-amex-nnbsp",
+      "language": "en",
+      "text": "Amex 3782\u202f822463\u202f10005 on file.",
+      "expect": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "3782\u202f822463\u202f10005"
+        }
+      ]
+    },
+    {
+      "id": "ipv4-negatif-version-mot",
+      "language": "fr",
+      "text": "Installer la version 10.2.3.4 du client.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-negatif-version-majuscule",
+      "language": "en",
+      "text": "Version 10.2.3.4 released.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-negatif-v-espace",
+      "language": "en",
+      "text": "Release v 10.2.3.4 is out.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-negatif-section",
+      "language": "fr",
+      "text": "Voir la section 1.2.3.4 du contrat.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-negatif-article",
+      "language": "fr",
+      "text": "Selon l'art. 1.2.3.4 du règlement.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-negatif-chapitre",
+      "language": "fr",
+      "text": "Lire le chapitre 1.2.3.4.",
+      "expect": []
+    },
+    {
+      "id": "ipv4-apres-mot-voisin",
+      "language": "fr",
+      "text": "Le serveur est à 10.2.3.4 depuis hier.",
+      "expect": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "10.2.3.4"
+        }
+      ]
+    },
+    {
+      "id": "secret-mot-de-passe-nbsp",
+      "language": "fr",
+      "text": "Mot\u00a0de\u00a0passe\u00a0: Tr0ub4dor&3 à changer.",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "Tr0ub4dor&3"
+        }
+      ]
+    },
+    {
+      "id": "secret-mot-de-passe-nnbsp",
+      "language": "fr",
+      "text": "Mot\u202fde\u202fpasse\u202f: Tr0ub4dor&3 à changer.",
+      "expect": [
+        {
+          "type": "SECRET",
+          "value": "Tr0ub4dor&3"
+        }
+      ]
     }
   ]
 }

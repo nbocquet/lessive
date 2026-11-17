@@ -605,6 +605,160 @@
           "value": "10.12.85"
         }
       ]
+    },
+    {
+      "id": "fr-complet-nbsp",
+      "language": "fr",
+      "text": "Il est né le 12\u00a0mars\u00a01985 à Annecy.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12\u00a0mars\u00a01985"
+        }
+      ]
+    },
+    {
+      "id": "fr-premier-nbsp",
+      "language": "fr",
+      "text": "Livraison prévue le 1er\u00a0avril\u00a02020.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "1er\u00a0avril\u00a02020"
+        }
+      ]
+    },
+    {
+      "id": "fr-jour-semaine-nbsp",
+      "language": "fr",
+      "text": "Réunion le lundi\u00a05\u00a0février\u00a02024 à Genève.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "lundi\u00a05\u00a0février\u00a02024"
+        }
+      ]
+    },
+    {
+      "id": "fr-sans-annee-nbsp",
+      "language": "fr",
+      "text": "Rendez-vous le 3\u00a0janvier prochain.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "3\u00a0janvier"
+        }
+      ]
+    },
+    {
+      "id": "fr-abrege-nbsp",
+      "language": "fr",
+      "text": "Facture du 15\u00a0janv.\u00a02023.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "15\u00a0janv.\u00a02023"
+        }
+      ]
+    },
+    {
+      "id": "en-dmy-nbsp",
+      "language": "en",
+      "text": "The meeting is on 12\u00a0March\u00a01985.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12\u00a0March\u00a01985"
+        }
+      ]
+    },
+    {
+      "id": "en-mdy-nbsp",
+      "language": "en",
+      "text": "He was born on March\u00a012,\u00a01985 in Leeds.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "March\u00a012,\u00a01985"
+        }
+      ]
+    },
+    {
+      "id": "fr-complet-nnbsp",
+      "language": "fr",
+      "text": "Il est né le 12\u202fmars\u202f1985 à Annecy.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12\u202fmars\u202f1985"
+        }
+      ]
+    },
+    {
+      "id": "fr-premier-nnbsp",
+      "language": "fr",
+      "text": "Livraison prévue le 1er\u202favril\u202f2020.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "1er\u202favril\u202f2020"
+        }
+      ]
+    },
+    {
+      "id": "fr-jour-semaine-nnbsp",
+      "language": "fr",
+      "text": "Réunion le lundi\u202f5\u202ffévrier\u202f2024 à Genève.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "lundi\u202f5\u202ffévrier\u202f2024"
+        }
+      ]
+    },
+    {
+      "id": "fr-sans-annee-nnbsp",
+      "language": "fr",
+      "text": "Rendez-vous le 3\u202fjanvier prochain.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "3\u202fjanvier"
+        }
+      ]
+    },
+    {
+      "id": "fr-abrege-nnbsp",
+      "language": "fr",
+      "text": "Facture du 15\u202fjanv.\u202f2023.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "15\u202fjanv.\u202f2023"
+        }
+      ]
+    },
+    {
+      "id": "en-dmy-nnbsp",
+      "language": "en",
+      "text": "The meeting is on 12\u202fMarch\u202f1985.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12\u202fMarch\u202f1985"
+        }
+      ]
+    },
+    {
+      "id": "en-mdy-nnbsp",
+      "language": "en",
+      "text": "He was born on March\u202f12,\u202f1985 in Leeds.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "March\u202f12,\u202f1985"
+        }
+      ]
     }
   ]
 }

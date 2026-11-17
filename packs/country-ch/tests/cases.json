@@ -338,7 +338,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "1204"
+          "value": "1204 Genève"
         }
       ]
     },
@@ -349,7 +349,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "CH-1003"
+          "value": "CH-1003 Lausanne"
         }
       ]
     },
@@ -372,7 +372,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "8001"
+          "value": "8001 Zürich"
         }
       ]
     },
@@ -382,7 +382,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "3011"
+          "value": "3011 Bern"
         }
       ]
     },
@@ -405,7 +405,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "1950"
+          "value": "1950 Sion"
         },
         {
           "type": "PHONE",
@@ -418,6 +418,266 @@
         {
           "type": "CH_UID",
           "value": "CHE-100.000.006"
+        }
+      ]
+    },
+    {
+      "id": "npa-negatif-annee-et-prenom",
+      "language": "fr",
+      "text": "En 2023 Paul a voyagé via Lyon.",
+      "expect": []
+    },
+    {
+      "id": "npa-negatif-budget-rue",
+      "language": "fr",
+      "text": "Le budget 2025 Rue de Lausanne.",
+      "expect": []
+    },
+    {
+      "id": "npa-negatif-annee-avec-contexte-et-rue",
+      "language": "fr",
+      "text": "Adresse du budget : 2025 Rue de Lausanne.",
+      "expect": []
+    },
+    {
+      "id": "npa-negatif-annee-prenom-avec-contexte",
+      "language": "fr",
+      "text": "Domicile : en 2023 Paul a déménagé.",
+      "expect": []
+    },
+    {
+      "id": "npa-negatif-montant-avec-contexte",
+      "language": "fr",
+      "text": "Adresse de facturation, total 1500 Francs.",
+      "expect": []
+    },
+    {
+      "id": "npa-negatif-via-et-cap",
+      "language": "fr",
+      "text": "Passer via 1204 Genève ou voir CAP 1204 Genève.",
+      "expect": []
+    },
+    {
+      "id": "npa-negatif-annee-2000-sans-contexte",
+      "language": "fr",
+      "text": "Depuis 2000 Neuchâtel organise la fête.",
+      "expect": []
+    },
+    {
+      "id": "npa-adresse-sur-plusieurs-lignes",
+      "language": "fr",
+      "text": "Rue du Rhône 1\n1204 Genève\nSuisse",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "1204 Genève"
+        }
+      ]
+    },
+    {
+      "id": "npa-adresse-virgule",
+      "language": "fr",
+      "text": "Rue du Rhône 1, 1204 Genève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "1204 Genève"
+        }
+      ]
+    },
+    {
+      "id": "npa-neuchatel-2000",
+      "language": "fr",
+      "text": "NPA 2000 Neuchâtel.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "2000 Neuchâtel"
+        }
+      ]
+    },
+    {
+      "id": "npa-localite-composee",
+      "language": "fr",
+      "text": "Adresse : Rue Neuve 3, 2300 La Chaux-de-Fonds",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "2300 La Chaux-de-Fonds"
+        }
+      ]
+    },
+    {
+      "id": "npa-allemand-postfach",
+      "text": "Postfach 123, 8005 Zürich",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "8005 Zürich"
+        }
+      ]
+    },
+    {
+      "id": "npa-prefixe-ch-sans-contexte",
+      "text": "CH-1003 Lausanne",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "CH-1003 Lausanne"
+        }
+      ]
+    },
+    {
+      "id": "npa-espace-insecable",
+      "language": "fr",
+      "text": "NPA 1204\u00a0Genève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "1204\u00a0Genève"
+        }
+      ]
+    },
+    {
+      "id": "npa-espace-fine-insecable",
+      "language": "fr",
+      "text": "Rue du Rhône 1, 1204\u202fGenève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "1204\u202fGenève"
+        }
+      ]
+    },
+    {
+      "id": "tel-intl-nbsp",
+      "language": "fr",
+      "text": "Tél. +41\u00a079\u00a0123\u00a045\u00a067",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+41\u00a079\u00a0123\u00a045\u00a067"
+        }
+      ]
+    },
+    {
+      "id": "tel-0041-nbsp",
+      "language": "fr",
+      "text": "Joignable au 0041\u00a022\u00a0123\u00a045\u00a067.",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0041\u00a022\u00a0123\u00a045\u00a067"
+        }
+      ]
+    },
+    {
+      "id": "tel-national-nbsp",
+      "language": "fr",
+      "text": "Tél. 079\u00a0123\u00a045\u00a067",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "079\u00a0123\u00a045\u00a067"
+        }
+      ]
+    },
+    {
+      "id": "tel-compact-nbsp",
+      "language": "fr",
+      "text": "Natel\u00a00791234567",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0791234567"
+        }
+      ]
+    },
+    {
+      "id": "avs-nbsp",
+      "language": "fr",
+      "text": "N° AVS : 756\u00a01234\u00a05678\u00a097",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "756\u00a01234\u00a05678\u00a097"
+        }
+      ]
+    },
+    {
+      "id": "tel-intl-nnbsp",
+      "language": "fr",
+      "text": "Tél. +41\u202f79\u202f123\u202f45\u202f67",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "+41\u202f79\u202f123\u202f45\u202f67"
+        }
+      ]
+    },
+    {
+      "id": "tel-0041-nnbsp",
+      "language": "fr",
+      "text": "Joignable au 0041\u202f22\u202f123\u202f45\u202f67.",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0041\u202f22\u202f123\u202f45\u202f67"
+        }
+      ]
+    },
+    {
+      "id": "tel-national-nnbsp",
+      "language": "fr",
+      "text": "Tél. 079\u202f123\u202f45\u202f67",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "079\u202f123\u202f45\u202f67"
+        }
+      ]
+    },
+    {
+      "id": "tel-compact-nnbsp",
+      "language": "fr",
+      "text": "Natel\u202f0791234567",
+      "expect": [
+        {
+          "type": "PHONE",
+          "value": "0791234567"
+        }
+      ]
+    },
+    {
+      "id": "avs-nnbsp",
+      "language": "fr",
+      "text": "N° AVS : 756\u202f1234\u202f5678\u202f97",
+      "expect": [
+        {
+          "type": "CH_AVS",
+          "value": "756\u202f1234\u202f5678\u202f97"
+        }
+      ]
+    },
+    {
+      "id": "ide-nbsp-suffixe",
+      "language": "fr",
+      "text": "TVA : CHE-100.000.006\u00a0TVA",
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE-100.000.006\u00a0TVA"
+        }
+      ]
+    },
+    {
+      "id": "ide-nnbsp-prefixe",
+      "language": "fr",
+      "text": "IDE : CHE\u202f100.000.006",
+      "expect": [
+        {
+          "type": "CH_UID",
+          "value": "CHE\u202f100.000.006"
         }
       ]
     }

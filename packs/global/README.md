@@ -10,12 +10,13 @@ Seuil par défaut du moteur : 0,5. Un validateur réussi porte le score à 1,0 ;
 |---|---|---|---|---|---|
 | `email` | EMAIL | 0,9 | — | — | Local 1 à 64 caractères `[A-Za-z0-9._%+-]`, domaine à étiquettes. |
 | `url` | URL | 0,9 | — | — | `http://`, `https://`, `www.`. Ponctuation finale (`.,;:!?`) et parenthèses exclues. |
-| `ipv4` | IP_ADDRESS | 0,6 | — | ip, serveur, hôte… (boost) | Quatre octets 0–255 vérifiés par la regex, sans zéro de tête. |
+| `ipv4` | IP_ADDRESS | 0,6 | — | ip, serveur, hôte… (boost) | Quatre octets 0–255 vérifiés par la regex, sans zéro de tête. Non détectée juste après `version`, `ver`, `v`, `section`, `article`, `art.`, `chapitre`, `chap.`, `§` (lookbehind, insensible à la casse). |
 | `ipv6` | IP_ADDRESS | 0,7 | — | ip, ipv6, serveur… (boost) | Forme complète et formes compressées `::`. Pas de forme IPv4 intégrée. |
 | `iban-compact` | IBAN | 0,5 → 1,0 | `iban_mod97` | — | `CC99` + 11 à 30 caractères alphanumériques. |
-| `iban-grouped` | IBAN | 0,5 → 1,0 | `iban_mod97` | — | Groupes de 4 séparés par une espace, dernier groupe de 1 à 3 caractères. |
-| `credit-card-grouped` | CREDIT_CARD | 0,6 → 1,0 | `luhn` | carte, card, Visa, Mastercard, CB, amex… (boost) | 4-4-4-4, 4-6-5 (Amex), 4-6-4 (Diners) ; séparateur espace ou tiret, identique dans tout le numéro. |
-| `credit-card-compact` | CREDIT_CARD | 0,6 → 1,0 | `luhn` | idem | 13 à 19 chiffres, premier chiffre 2 à 6, exclut 13 chiffres commençant par 756 (AVS). |
+| `iban-grouped` | IBAN | 0,5 → 1,0 | `iban_mod97` | — | Groupes de 4 séparés par une espace ordinaire, insécable (U+00A0) ou fine insécable (U+202F), dernier groupe de 1 à 3 caractères. |
+| `credit-card-grouped` | CREDIT_CARD | 0,6 → 1,0 | `luhn` | carte, card, Visa, Mastercard, CB, amex… (boost) | 4-4-4-4 (préfixes 4, 50-69, 2221-2720, 3528-3589), 4-6-5 (Amex 34/37), 4-6-4 (Diners 36/38/300-305) ; séparateur espace, U+00A0, U+202F ou tiret, identique dans tout le numéro. |
+| `credit-card-compact` | CREDIT_CARD | 0,6 → 1,0 | `luhn` | idem | Préfixes et longueurs d'émetteurs (voir « Cartes : émetteurs retenus »), Maestro exclu. |
+| `credit-card-maestro-compact` | CREDIT_CARD | 0,6 → 1,0 | `luhn` | idem + maestro, **obligatoire** | Maestro 50 et 56-69, 12 à 19 chiffres. |
 | `aws-access-key-id` | SECRET | 0,9 | — | — | `AKIA` / `ASIA` + 16 caractères base 32. |
 | `github-token` | SECRET | 0,95 | — | — | `ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_` + 36 à 255 caractères. |
 | `github-fine-grained-pat` | SECRET | 0,95 | — | — | `github_pat_` + 22 à 255 caractères. |
@@ -31,11 +32,30 @@ Seuil par défaut du moteur : 0,5. Un validateur réussi porte le score à 1,0 ;
 
 ## Interactions avec les autres types
 
+- **SIRET compact (14 chiffres) / carte** : « Notre SIRET est 41234567000019. » donnait CREDIT_CARD (carte 95 > SIRET 90, les deux validés par Luhn). Les cartes compactes sont désormais limitées aux préfixes et longueurs d'émetteurs : un numéro de 14 chiffres n'est une carte que pour Diners (36, 38, 300-305). Maestro, dont la plage 56-69 recouvre des SIRET à 14 chiffres commençant par 5 ou 6, est dans une règle séparée à contexte obligatoire. Le pack `country-fr` détecte alors le SIRET (test croisé `siret-compact-pas-une-carte`). Reste possible : un SIRET de 14 chiffres commençant par 36, 38 ou 300-305 avec une clé Luhn valide reste pris pour une carte Diners (un cas sur 10 environ parmi ces préfixes) ; non traité.
+- **AVS compact (13 chiffres en 756)** : 7 n'est le préfixe d'aucun émetteur retenu, donc l'ancienne exclusion explicite de `756…` n'est plus nécessaire.
 - **IBAN / carte** : les cartes groupées exigent un séparateur identique et un premier bloc non précédé d'un mot ou d'un `+`. Un IBAN groupé dont quatre blocs consécutifs passent Luhn (cas `iban-negatif-iban-ne-donne-pas-carte`) est résolu par le moteur : l'IBAN validé contient la carte et l'emporte.
 - **AVS (`756.1234.5678.97`)** : les points ne sont pas des séparateurs de carte ; sans points, les 13 chiffres en `756` sont exclus par la règle compacte.
 - **Téléphones** : `+41 79 …`, `0041 79 …`, `0033…` ne correspondent à aucun format de carte (groupes différents, premier chiffre 0, `+` interdit devant).
 - **URL / IP / courriel** : une URL qui contient une IP ou un courriel (même score 0,9 que le courriel) l'emporte comme intervalle englobant.
 - **Dates** (pack `dates`) : `12.03.2024` n'a que trois segments, jamais pris pour une IPv4.
+
+## Cartes : émetteurs retenus
+
+| Émetteur | Préfixes | Longueurs |
+|---|---|---|
+| Visa | 4 | 13, 16, 19 |
+| Mastercard | 51-55, 2221-2720 | 16 |
+| American Express | 34, 37 | 15 |
+| Discover | 6011, 644-649, 65 | 16 à 19 |
+| Diners Club | 36, 38, 300-305 | 14 |
+| JCB | 3528-3589 | 16 à 19 |
+| UnionPay | 62 | 16 à 19 |
+| Maestro (règle séparée, contexte obligatoire) | 50, 56-69 | 12 à 19 |
+
+Groupées : 4-4-4-4 (16 chiffres, tous préfixes ci-dessus sauf Amex et Diners, Maestro compris sans contexte car le groupement et Luhn suffisent), 4-6-5 (Amex), 4-6-4 (Diners). Pas de groupement pour 12-15 et 17-19 chiffres, ni pour les Diners à 16 chiffres.
+
+Sources : ISO/IEC 7812-1 (structure du numéro, IIN) et clé de Luhn ; plages des émetteurs telles que synthétisées dans la table publique « Payment card number » de Wikipédia et dans les documentations des réseaux (Mastercard série 2, plage 2221-2720 depuis 2017). **Non revérifié en ligne dans cette session** (accès réseau refusé) : à relire avant publication. Les cartes de test de `tests/cases.json` viennent des jeux d'essai publiés par les prestataires de paiement ; les numéros à 19 chiffres et le Maestro à 12 chiffres sont fabriqués pour passer Luhn.
 
 ## Valeurs de test publiées
 
@@ -59,8 +79,9 @@ IBAN d'exemple publiés dans le registre IBAN de SWIFT et par les banques centra
 - **Contrôle ReDoS du banc : 8 motifs signalés** (`email`, `ipv4`, `ipv6`, `google-api-key`, `anthropic-api-key`, `openai-api-key`, `jwt`, `pem-private-key`). Cause : `redos-detector` préfixe tout motif non ancré par `[^]*` et compte comme ambiguïté les départs possibles à chaque position d'une série de caractères de classe (par exemple le préfixe `AIza` est lui-même composé de caractères de la classe du corps). Avec un `^` devant, les motifs sauf `ipv4` passent, et `ipv6` passe par morceaux. Mesure réelle : au plus 14 ms sur des entrées adverses de 100 000 caractères, motifs à bornes finies, aucun quantificateur imbriqué.
 - IBAN groupé : un mot de 1 à 3 caractères en majuscules juste après un IBAN dont le dernier groupe est plein peut être avalé ; le validateur échoue alors et l'IBAN n'est pas détecté. IBAN en minuscules non détecté.
 - IBAN avec un autre séparateur que l'espace (point, tiret) : non détecté.
-- Carte : seuls les groupements usuels (4-4-4-4, 4-6-5, 4-6-4) ; pas de groupement pour 18 et 19 chiffres ; compacte limitée aux numéros commençant par 2 à 6.
-- IPv4 : un numéro de version à quatre segments (`2.10.4.1`) est détecté (score 0,6) ; adresses avec zéro de tête (`010.001.001.001`) non détectées.
+- Carte : seuls les groupements usuels (4-4-4-4, 4-6-5, 4-6-4) ; pas de groupement pour 17 à 19 chiffres ; compacte limitée aux préfixes et longueurs d'émetteurs ci-dessus. Un code-barres EAN-13 commençant par 4 (13 chiffres) dont la clé est juste est pris pour une Visa à 13 chiffres.
+- IPv4 : un numéro de version à quatre segments est ignoré seulement s'il suit directement `version`, `ver`, `v`, `section`, `article`, `art.`, `chapitre`, `chap.` ou `§` (au plus 3 espaces entre les deux). `2.10.4.1` sans mot-clé (« upgrade to 2.10.4.1 ») est toujours détecté (score 0,6). La règle est dans `redos-exceptions.json` pour le contrôle statique (inchangé) et passe le test de durée. Adresses avec zéro de tête (`010.001.001.001`) non détectées.
+- Séparateurs insécables : IBAN groupé, cartes groupées et `password-assignment` (« mot de passe : » avec U+00A0 ou U+202F avant les deux-points, très courant en typographie française) les acceptent ; les autres règles n'ont pas de séparateur blanc.
 - IPv6 : un identifiant de type `ab::cd` (par exemple un espace de noms C++ en hexadécimal) est pris pour une adresse.
 - URL : parenthèses balancées dans l'URL (Wikipédia) coupées au premier `(` ; URL sans schéma ni `www.` non détectées.
 - Courriel : parties locales entre guillemets, commentaires et domaines à adresse IP entre crochets non pris en charge ; noms de domaine internationalisés non ASCII non détectés.

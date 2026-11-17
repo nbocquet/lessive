@@ -1,0 +1,26 @@
+{
+  "cases": [
+    {
+      "id": "numero-de-commande-pas-un-telephone",
+      "language": "fr",
+      "text": "Commande n° 0123456789 expédiée le 3 janvier 2025.",
+      "expectAll": [
+        {
+          "type": "DATE",
+          "value": "3 janvier 2025"
+        }
+      ]
+    },
+    {
+      "id": "compact-avec-contexte-joindre",
+      "language": "fr",
+      "text": "Pour me joindre : 0639981234.",
+      "expectAll": [
+        {
+          "type": "PHONE",
+          "value": "0639981234"
+        }
+      ]
+    }
+  ]
+}

@@ -20,6 +20,7 @@ compris. Les règles de téléphone écartent les IBAN suisses (voir « Limites 
 | `phone-national` | `PHONE` | 0,6 | aucun | rehausse |
 | `phone-national-compact` | `PHONE` | 0,4 | aucun | rehausse, et nécessaire pour passer le seuil de 0,5 |
 | `postal-code` | `LOCATION` | 0,5 | aucun | **obligatoire** |
+| `postal-code-ch-prefix` | `LOCATION` | 0,6 | aucun | non (le préfixe `CH-` suffit) |
 
 Un validateur réussi porte le score à 1,0 ; un validateur échoué supprime la détection.
 
@@ -29,7 +30,7 @@ Numéro à 13 chiffres : `756` (code pays GS1 de la Suisse), 9 chiffres anonymes
 clé. Présentation officielle : `756.XXXX.XXXX.XC`. La clé est celle d'un code EAN-13
 (validateur `ean13`). Formes acceptées :
 
-- `756.1234.5678.97`, `756 1234 5678 97` (points ou espaces, y compris insécables) : règle `avs`.
+- `756.1234.5678.97`, `756 1234 5678 97` (points ou espaces, y compris insécables U+00A0 et fines insécables U+202F) : règle `avs`.
 - `7561234567897` (13 chiffres collés) : règle `avs-compact`, **avec mot de contexte obligatoire**
   (AVS, AHV, NAVS, Sozialversicherungsnummer, social security…). Raison : les codes-barres
   EAN-13 des produits suisses commencent aussi par 756 et seraient autrement tous signalés
@@ -44,6 +45,7 @@ positifs). Clé modulo 11 vérifiée par `ch_uid_mod11`. Le motif est insensible
 
 ### Téléphones suisses (`PHONE`)
 
+- Dans les quatre règles, tout séparateur blanc accepte l'espace ordinaire, l'espace insécable (U+00A0) et l'espace fine insécable (U+202F), fréquentes dans les numéros copiés d'un PDF ou d'une page web ; idem pour l'IDE.
 - `phone-intl` : `+41 79 123 45 67`, `+41 (0)79 123 45 67`, `+41791234567`.
 - `phone-intl-00` : `0041 22 123 45 67` (règle séparée de `phone-intl` : le détecteur de ReDoS
   refuse l'alternance `\+41|0041`).
@@ -61,16 +63,16 @@ du pack `country-fr`.
 
 ### Codes postaux (`LOCATION`)
 
-Quatre chiffres entre 1000 et 9699, **suivis d'une majuscule** (début d'un nom de localité) ou
-**précédés de `CH-`** (la valeur inclut alors `CH-`). Un mot de contexte est obligatoire dans une
-fenêtre de 5 mots : NPA, code postal, case postale, CP, adresse, rue, route, chemin, avenue,
-domicile, localité ; postcode, postal code, zip, address, street, road ; PLZ, Postleitzahl,
-Postfach, Adresse, Strasse, Weg, Gasse ; indirizzo, via, CAP. Seul le code est détecté, pas le nom
-de la localité (le NER s'en charge).
+La valeur détectée est le code **et la localité** (comme `fr-postal-code-commune` côté France) : `1204 Genève`, `CH-1003 Lausanne`.
 
-La règle est livrée **activée** : l'exigence de contexte cumulée à celle de la majuscule ou de
-`CH-` laisse peu de faux positifs dans les tests (montants « 1500 Francs », années, numéros sans
-contexte). Elle reste la plus fragile du pack : voir « Limites ».
+- `postal-code-ch-prefix` : `CH-` + code (1000-9699) + localité capitalisée. Aucun contexte exigé.
+- `postal-code` : code (1000-9699) + espace (ordinaire, U+00A0 ou U+202F) + localité capitalisée, avec un mot de contexte d'adresse **obligatoire** dans la fenêtre de 5 mots : NPA, code postal, case postale, adresse, rue, route, chemin, avenue, domicile, localité ; postcode, postal code, zip, address, street, avenue, PO box ; PLZ, Postleitzahl, Postfach, Adresse, Strasse, Gasse, Wohnort, indirizzo.
+- Retirés comme ambigus : `via`, `CAP`, `CP`, `Weg`, ainsi que `road` (cas « via Lyon », « CAP 2023 »).
+- Localité : un à cinq mots capitalisés, avec particules minuscules (La Chaux-de-Fonds, Yverdon-les-Bains, Biel/Bienne non géré). Elle doit finir le groupe : virgule, point, point-virgule, deux-points, parenthèse fermante ou fin de ligne. « 2023 Paul a voyagé » est donc refusé (Paul est suivi de « a »). Une localité qui commence par un mot de voirie (Rue, Route, Chemin, Avenue, Place, Strasse…) ou par un mot de montant ou d'unité (Francs, CHF, Euros, Heures, Ans…) est refusée : « Le budget 2025 Rue de Lausanne » ne donne rien.
+- Les codes 1900-2099 existent (2000 Neuchâtel, 1950 Sion) : ils ne sont pas exclus ; c'est la localité plus le contexte qui écartent les années.
+- Adresse sur plusieurs lignes : le code en début de ligne, la localité en fin de ligne, la rue sur la ligne précédente (dans les 5 mots).
+
+La règle est livrée **activée**. Voir « Limites ».
 
 ## Validateurs
 
@@ -79,7 +81,7 @@ que les 13 chiffres et la clé : le préfixe 756 et la présentation sont contr�
 
 ## Tests
 
-`tests/cases.json` : 45 cas (fr, en, allemand ; positifs, négatifs et pièges). Toutes les
+`tests/cases.json` : 72 cas (fr, en, allemand ; positifs, négatifs, pièges, espaces insécables U+00A0 et U+202F pour téléphones, AVS, IDE et codes postaux) ; `tests/cross.json` : 2 cas croisés, tous packs actifs. Toutes les
 valeurs sont synthétiques ; les clés EAN-13 et modulo 11 ont été calculées, ce ne sont pas de vrais
 numéros. Le banc commun (`packs/_tools/packs.test.ts`) vérifie aussi l'absence de ReDoS.
 
@@ -116,10 +118,12 @@ motifs n'imposent volontairement aucune liste d'indicatifs : un indicatif inexis
   couverts.
 - AVS compact : sans mot de contexte, un numéro AVS collé n'est pas signalé (choix délibéré, voir
   plus haut). La forme avec points ou espaces l'est toujours.
-- Codes postaux : une année ou un nombre de 1000 à 9699 suivi d'un mot à majuscule à moins de
-  5 mots d'un mot comme « rue » ou « adresse » sera signalé à tort. Les codes postaux du
-  Liechtenstein (9485-9498) sont dans la plage ; les NPA suisses 9700 et plus n'existent pas.
-  La localité n'est pas détectée.
+- Codes postaux : il faut un code, une localité capitalisée en fin de groupe et un mot d'adresse dans
+  les 5 mots (sauf `CH-`). Un faux positif reste possible si une année est suivie d'un mot
+  capitalisé qui termine un groupe, près d'un mot d'adresse (« Adresse : budget 2024 Genève. »).
+  Une localité suivie d'un mot courant (« 1204 Genève depuis longtemps ») n'est pas détectée avec
+  ce motif (recall sacrifié). Localités à graphie bilingue (Biel/Bienne) coupées au `/`. Les codes
+  du Liechtenstein (9485-9498) sont dans la plage ; les NPA 9700 et plus n'existent pas.
 - Les mots de contexte sont comparés mot entier : « Bahnhofstrasse » ne déclenche pas « Strasse ».
 - Un numéro AVS ou IDE à clé fausse (faute de frappe) n'est pas signalé : c'est le choix du
   validateur. À signaler à l'interface si l'utilisateur veut un mode plus prudent.

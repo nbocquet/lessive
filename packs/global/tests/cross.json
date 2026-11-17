@@ -1,0 +1,26 @@
+{
+  "cases": [
+    {
+      "id": "siret-compact-pas-une-carte",
+      "language": "fr",
+      "text": "Notre SIRET est 41234567000019.",
+      "expectAll": [
+        {
+          "type": "FR_SIRET",
+          "value": "41234567000019"
+        }
+      ]
+    },
+    {
+      "id": "version-section-et-vraie-ip",
+      "language": "fr",
+      "text": "Section 1.2.3.4, version 10.2.3.4, passerelle 10.0.0.1.",
+      "expectAll": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "10.0.0.1"
+        }
+      ]
+    }
+  ]
+}

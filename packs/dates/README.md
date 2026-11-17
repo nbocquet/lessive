@@ -31,4 +31,4 @@ Heures (`12:30`, `12h30`), versions (`1.2.3`), montants (`12.50`), numéros AVS,
 - `JJ.MM.AA` n'est retenue qu'avec un mot de contexte (score 0,45 sous le seuil de 0,5) : une version telle que `10.12.15` n'est pas détectée. Les formes `J.M.AA` à un chiffre ne sont pas prises en compte.
 - Années à deux chiffres dans les formes littérales, et plages abrégées (`du 3 au 5 mars` : seul `5 mars` est détecté), non gérées.
 - `may` et `mar` en anglais sont des mots courants : `may 12` est lu comme une date.
-- Les séparateurs entre jour, mois et année sont un seul caractère blanc (espace, espace insécable).
+- Les séparateurs entre jour, mois et année sont un seul caractère blanc (`\s` : espace, espace insécable U+00A0, espace fine insécable U+202F). Cas de test avec U+00A0 et U+202F dans `tests/cases.json`.
