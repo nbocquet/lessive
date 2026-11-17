@@ -165,10 +165,13 @@ Je n'ai pas pu exécuter ces commandes (réseau) : si une option a changé dans 
 ```bash
 pip install -U "huggingface_hub[cli]"
 
+# hf 2.x : --include ne prend qu'un motif, il faut le répéter (sinon les motifs suivants
+# sont lus comme des noms de fichiers et --include est ignoré).
 dl() {  # dl <dépôt> [fichier.onnx]   -> models/<dépôt>/
   hf download "$1" --local-dir "models/$1" \
-    --include "config.json" "tokenizer.json" "tokenizer_config.json" "special_tokens_map.json" \
-              "vocab.txt" "sentencepiece.bpe.model" "onnx/${2:-model_quantized.onnx}"
+    --include "config.json" --include "tokenizer.json" --include "tokenizer_config.json" \
+    --include "special_tokens_map.json" --include "vocab.txt" --include "sentencepiece.bpe.model" \
+    --include "onnx/${2:-model_quantized.onnx}"
 }
 
 dl Xenova/distilbert-base-multilingual-cased-ner-hrl     # n° 1
@@ -190,7 +193,8 @@ Le n° 6 (`cmarkea/distilcamembert-base-ner`) demande une adaptation (commandes 
 
 ```bash
 hf download cmarkea/distilcamembert-base-ner --local-dir models/cmarkea/distilcamembert-base-ner \
-  --include "config.json" "tokenizer_config.json" "sentencepiece.bpe.model" "vocab.txt" "model_quantized.onnx"
+  --include "config.json" --include "tokenizer_config.json" --include "sentencepiece.bpe.model" \
+  --include "model_quantized.onnx"
 mkdir -p models/cmarkea/distilcamembert-base-ner/onnx
 mv models/cmarkea/distilcamembert-base-ner/model_quantized.onnx models/cmarkea/distilcamembert-base-ner/onnx/
 # générer tokenizer.json (nécessite : pip install transformers sentencepiece)
