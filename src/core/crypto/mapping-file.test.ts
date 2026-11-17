@@ -1,9 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createSession, restoreSession, serializeSession } from "../mapping/index.ts";
 import type { SessionSnapshot } from "../mapping/index.ts";
 import { run } from "../mapping/test-helpers.ts";
 import { CryptoFormatError } from "./errors.ts";
-import { decryptSnapshot, encryptSnapshot, encryptSnapshotWithIterations } from "./mapping-file.ts";
+import { decryptSnapshot, encryptSnapshot } from "./mapping-file.ts";
+import * as fileModule from "./mapping-file.ts";
+import {
+  canonicalHeaderBytes,
+  deriveTestKey,
+  encryptSnapshotWithIterations,
+} from "./mapping-file.test-utils.ts";
 import * as publicApi from "./index.ts";
 
 const PASS = "correct horse battery staple";
@@ -84,11 +90,10 @@ describe("export chiffré : aller-retour", () => {
     expect(atob(f.iv as string)).toHaveLength(12);
   });
 
-  it("la phrase de passe est normalisée en NFC", async () => {
-    const nfd = "été-trop-long-1"; // « été-trop-long-1 » décomposé
-    const nfc = nfd.normalize("NFC");
-    const text = await enc(sampleSnapshot(), nfd);
-    await expect(decryptSnapshot(text, nfc)).resolves.toBeDefined();
+  it("le déchiffrement normalise la phrase en NFC", async () => {
+    const nfc = "été-trop-long-1".normalize("NFC");
+    const text = await enc(sampleSnapshot(), nfc); // l'utilitaire ne normalise pas
+    await expect(decryptSnapshot(text, nfc.normalize("NFD"))).resolves.toBeDefined();
   });
 
   it("deux exports de la même session donnent des chiffrés différents", async () => {
@@ -122,11 +127,9 @@ describe("export chiffré : aller-retour", () => {
 
 describe("phrase de passe", () => {
   it("refuse une phrase trop courte, sans la citer", async () => {
-    const short = "secret-court";
-    expect(short.length).toBeLessThan(12 + 1);
     const tooShort = "abc-1234-xy"; // 11 caractères
     const err = await expectError(
-      encryptSnapshotWithIterations(sampleSnapshot(), tooShort, FAST),
+      encryptSnapshot(sampleSnapshot(), tooShort),
       "passphrase-too-short",
       /12 caractères/,
     );
@@ -134,10 +137,38 @@ describe("phrase de passe", () => {
     await expectError(decryptSnapshot(await enc(), tooShort), "passphrase-too-short");
   });
 
+  it("compte les caractères après normalisation NFC", async () => {
+    // 11 « é » décomposés : 22 unités UTF-16, mais 11 caractères après NFC.
+    const nfd = "é".normalize("NFD").repeat(11);
+    expect(nfd.length).toBe(22);
+    await expectError(encryptSnapshot(sampleSnapshot(), nfd), "passphrase-too-short");
+  });
+
+  it("refuse une phrase mal formée (moitié de paire isolée), sans la citer", async () => {
+    const lone = "phrase-de-passe-\ud83d-fin"; // surrogate haut isolé
+    const lone2 = "phrase-de-passe-\ude00-fin"; // surrogate bas isolé
+    for (const bad of [lone, lone2]) {
+      const err = await expectError(
+        encryptSnapshot(sampleSnapshot(), bad),
+        "invalid-parameters",
+        /invalide/,
+      );
+      expect(err.message).not.toContain("phrase-de-passe");
+      await expectError(decryptSnapshot(await enc(), bad), "invalid-parameters");
+    }
+    // Deux phrases mal formées différentes ne doivent pas se confondre.
+    await expectError(encryptSnapshot(sampleSnapshot(), lone), "invalid-parameters");
+    await expectError(encryptSnapshot(sampleSnapshot(), lone2), "invalid-parameters");
+    // Une paire valide reste acceptée.
+    await expect(enc(sampleSnapshot(), "phrase-de-passe-\ud83d\ude00-fin")).resolves.toBeTypeOf(
+      "string",
+    );
+  });
+
   it("accepte exactement 12 caractères et compte les points de code", async () => {
     await expect(enc(sampleSnapshot(), "123456789012")).resolves.toBeTypeOf("string");
     await expect(enc(sampleSnapshot(), "😀".repeat(12))).resolves.toBeTypeOf("string");
-    await expectError(enc(sampleSnapshot(), "😀".repeat(11)), "passphrase-too-short");
+    await expectError(encryptSnapshot(sampleSnapshot(), "😀".repeat(11)), "passphrase-too-short");
   });
 
   it("une mauvaise phrase donne l'erreur unique, sans la citer", async () => {
@@ -180,12 +211,37 @@ describe("fichier altéré ou invalide", () => {
   });
 
   it("l'en-tête est authentifié : l'AAD est bien utilisée", async () => {
-    // Même clé, même IV, mais en-tête différent : seul l'AAD peut faire échouer.
+    // Même clé, même IV, même chiffré : seul l'AAD change.
     const f = parse(await enc());
-    const alt = parse(await enc());
-    // Recopie sel/iv/ciphertext d'un autre export : échec (clé ou tag différent).
-    f.ciphertext = alt.ciphertext;
-    await expectError(decryptSnapshot(JSON.stringify(f), PASS), "authentication-failed");
+    const bytes = (v: unknown) => Uint8Array.from(atob(v as string), (c) => c.charCodeAt(0));
+    const salt = bytes(f.salt);
+    const iv = bytes(f.iv);
+    const ciphertext = bytes(f.ciphertext);
+    const key = await deriveTestKey(PASS, salt, FAST, ["decrypt"]);
+    const tryDecrypt = (aad: Uint8Array<ArrayBuffer>) =>
+      crypto.subtle.decrypt(
+        { name: "AES-GCM", iv, additionalData: aad, tagLength: 128 },
+        key,
+        ciphertext,
+      );
+
+    // En-tête canonique inchangé : le déchiffrement réussit.
+    await expect(tryDecrypt(canonicalHeaderBytes(FAST))).resolves.toBeInstanceOf(ArrayBuffer);
+    // En-tête modifié dans l'AAD (clé inchangée) : échec.
+    await expect(tryDecrypt(canonicalHeaderBytes(FAST + 1))).rejects.toThrow();
+    await expect(tryDecrypt(new Uint8Array(0))).rejects.toThrow();
+  });
+
+  it("clé de premier niveau inconnue → format non pris en charge", async () => {
+    for (const extra of ["comment", "padding", "v2"]) {
+      const f = parse(await enc());
+      f[extra] = "non authentifié";
+      await expectError(
+        decryptSnapshot(JSON.stringify(f), PASS),
+        "unsupported-format",
+        /^Format non pris en charge\.$/,
+      );
+    }
   });
 
   it("version inconnue → format non pris en charge", async () => {
@@ -225,15 +281,8 @@ describe("fichier altéré ou invalide", () => {
     },
   );
 
-  it("accepte les bornes 100 000 et refuse l'encodage hors bornes à l'export interne", async () => {
-    await expectError(
-      encryptSnapshotWithIterations(sampleSnapshot(), PASS, 99_999),
-      "invalid-parameters",
-    );
-    await expectError(
-      encryptSnapshotWithIterations(sampleSnapshot(), PASS, 5_000_001),
-      "invalid-parameters",
-    );
+  it("accepte la borne basse de 100 000 itérations", async () => {
+    await expect(decryptSnapshot(await enc(), PASS)).resolves.toBeDefined();
   });
 
   it("texte non JSON, JSON non objet, champs manquants ou mal encodés", async () => {
@@ -256,9 +305,23 @@ describe("fichier altéré ou invalide", () => {
   });
 });
 
+describe("WebCrypto indisponible", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("lève « unavailable » avant tout tirage aléatoire", async () => {
+    const getRandomValues = vi.fn();
+    vi.stubGlobal("crypto", { getRandomValues });
+    await expectError(encryptSnapshot(sampleSnapshot(), PASS), "unavailable");
+    expect(getRandomValues).not.toHaveBeenCalled();
+    vi.stubGlobal("crypto", undefined);
+    await expectError(encryptSnapshot(sampleSnapshot(), PASS), "unavailable");
+  });
+});
+
 describe("API publique", () => {
-  it("n'expose pas la fonction interne à itérations injectables", () => {
+  it("n'expose pas la fonction à itérations injectables (ni index.ts, ni le module)", () => {
     expect(Object.keys(publicApi)).not.toContain("encryptSnapshotWithIterations");
+    expect(Object.keys(fileModule)).not.toContain("encryptSnapshotWithIterations");
     expect(publicApi.encryptSnapshot.length).toBe(2);
     expect(publicApi.DEFAULT_ITERATIONS).toBe(600_000);
   });
@@ -269,6 +332,11 @@ describe("API publique", () => {
     const t1 = performance.now();
     const snap = await decryptSnapshot(text, PASS);
     const t2 = performance.now();
+    // La phrase est normalisée en NFC aussi à l'export public.
+    const nfd = "été-trop-long-1".normalize("NFD");
+    await expect(
+      decryptSnapshot(await encryptSnapshot(sampleSnapshot(), nfd), nfd.normalize("NFC")),
+    ).resolves.toBeDefined();
     expect(parse(text).iterations).toBe(600_000);
     expect(snap.sessionId).toBe("sess-crypto");
     // Durées indicatives, reportées dans le compte rendu.

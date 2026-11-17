@@ -19,6 +19,14 @@ export class TransformError extends Error {
   }
 }
 
+/** Vrai si une borne tombe entre les deux moitiés d'une paire de substitution UTF-16. */
+function splitsSurrogatePair(text: string, index: number): boolean {
+  if (index <= 0 || index >= text.length) return false;
+  const before = text.charCodeAt(index - 1);
+  const after = text.charCodeAt(index);
+  return before >= 0xd800 && before <= 0xdbff && after >= 0xdc00 && after <= 0xdfff;
+}
+
 function chooseOperator(d: Detection, plan: TransformPlan): OperatorId {
   const id =
     plan.byDetectionId?.[d.id] ?? plan.byEntityType?.[d.entityType] ?? plan.defaultOperator;
@@ -38,8 +46,8 @@ function chooseOperator(d: Detection, plan: TransformPlan): OperatorId {
  *
  * Priorité des opérateurs : `byDetectionId` > `byEntityType` > `defaultOperator`.
  *
- * 1. Validation : toute détection hors du texte, vide ou chevauchante fait
- *    échouer l'appel (`TransformError`) avant tout remplacement.
+ * 1. Validation : toute détection hors du texte, vide, chevauchante ou dont
+ *    une borne coupe une paire de substitution UTF-16 (R7) fait échouer l'appel (`TransformError`) avant tout remplacement.
  * 2. Résolution : les remplacements sont calculés dans l'ORDRE DU TEXTE, de
  *    sorte que la première personne citée reçoive `PERSONNE_001`.
  * 3. Assemblage : le texte final est construit en une passe, chaque
@@ -69,6 +77,11 @@ export function transform(
     }
     if (d.start >= d.end) {
       throw new TransformError(`La détection ${d.id} (${d.start}-${d.end}) est vide ou inversée.`);
+    }
+    if (splitsSurrogatePair(text, d.start) || splitsSurrogatePair(text, d.end)) {
+      throw new TransformError(
+        `La détection ${d.id} (${d.start}-${d.end}) coupe un caractère codé sur deux unités UTF-16.`,
+      );
     }
     if (previous && d.start < previous.end) {
       throw new TransformError(

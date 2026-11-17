@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Session } from "../types/index.ts";
 import { run } from "./test-helpers.ts";
 import { createSession } from "./session.ts";
+import type { InMemorySession } from "./session.ts";
 import { restoreSession, serializeSession, SnapshotError, validateSnapshot } from "./snapshot.ts";
 
 describe("AC-06 : même session sur plusieurs documents", () => {
@@ -53,7 +54,7 @@ describe("sérialisation de session", () => {
   it("produit un instantané versionné", () => {
     const snap = serializeSession(build());
     expect(snap.format).toBe("lessive-session");
-    expect(snap.version).toBe(1);
+    expect(snap.version).toBe(2);
     expect(snap.sessionId).toBe("sess-1");
     expect(snap.counters).toEqual({ PERSON: 3, LOCATION: 1 });
     expect(Object.keys(snap.aliases)).toHaveLength(1);
@@ -111,7 +112,7 @@ describe("validation stricte du snapshot", () => {
   });
 
   const cases: [string, (s: Json) => void][] = [
-    ["version inconnue", (s) => (s.version = 2)],
+    ["version inconnue", (s) => (s.version = 3)],
     ["format inconnu", (s) => (s.format = "autre")],
     ["champ en trop", (s) => (s.extra = 1)],
     ["champ manquant", (s) => delete s.counters],
@@ -123,10 +124,38 @@ describe("validation stricte du snapshot", () => {
     ["compteur trop bas", (s) => (s.counters.PERSON = 1)],
     ["compteur négatif", (s) => (s.counters.PERSON = -1)],
     ["séquence trop basse", (s) => (s.sequence = 0)],
-    ["alias vers entité absente", (s) => (s.aliases.PERSONNE_009 = "entity-99")],
+    [
+      "alias vers entité absente",
+      (s) => (s.aliases.PERSONNE_009 = { target: "entity-99", forms: [], ambiguous: false }),
+    ],
     [
       "alias égal à un pseudonyme vivant",
-      (s) => (s.aliases[s.entities[0].pseudonym] = s.entities[1].id),
+      (s) =>
+        (s.aliases[s.entities[0].pseudonym] = {
+          target: s.entities[1].id,
+          forms: [],
+          ambiguous: false,
+        }),
+    ],
+    [
+      "alias dont les formes ne sont plus dans la cible",
+      (s) =>
+        (s.aliases.PERSONNE_009 = {
+          target: s.entities[0].id,
+          forms: ["inconnu total"],
+          ambiguous: false,
+        }),
+    ],
+    ["alias au format v1 sous la version 2", (s) => (s.aliases.PERSONNE_009 = s.entities[0].id)],
+    [
+      "alias avec champ en trop",
+      (s) =>
+        (s.aliases.PERSONNE_009 = {
+          target: s.entities[0].id,
+          forms: [],
+          ambiguous: false,
+          x: 1,
+        }),
     ],
     ["formes vides", (s) => (s.entities[0].surfaceForms = [])],
     ["booléen invalide", (s) => (s.entities[0].needsReview = "oui")],
@@ -152,5 +181,69 @@ describe("validation stricte du snapshot", () => {
     } catch (e) {
       expect((e as Error).message).not.toMatch(/Claire|Martin|Dupont/);
     }
+  });
+});
+
+describe("fusion puis scission à travers un instantané (B1)", () => {
+  function mergedSession(): Session {
+    const s = createSession({ id: "b1" });
+    const a = s.resolve("Claire Martin", "PERSON");
+    const b = s.resolve("Paul Durand", "PERSON");
+    s.resolve("P. Durand", "PERSON");
+    s.merge(a.id, b.id);
+    return s;
+  }
+  const roundTrip = (s: Session) => restoreSession(JSON.parse(JSON.stringify(serializeSession(s))));
+
+  it("aller-retour avant scission : l'alias garde ses formes", () => {
+    const s = roundTrip(mergedSession());
+    const a = s.byPseudonym("PERSONNE_001")!;
+    expect(s.byPseudonym("PERSONNE_002")?.id).toBe(a.id);
+  });
+
+  it("scission complète après restauration : le pseudonyme est repris", () => {
+    const s = createSession({ id: "b1" });
+    const a = s.resolve("Claire Martin", "PERSON");
+    const b = s.resolve("Paul Durand", "PERSON");
+    s.merge(a.id, b.id);
+    const r = roundTrip(s);
+    expect(r.split(a.id, "Paul Durand").pseudonym).toBe("PERSONNE_002");
+    expect(r.byPseudonym("PERSONNE_002")?.surfaceForms).toEqual(["Paul Durand"]);
+    expect(roundTrip(r).byPseudonym("PERSONNE_002")?.surfaceForms).toEqual(["Paul Durand"]);
+    expect(r.resolve("Anne Petit", "PERSON").pseudonym).toBe("PERSONNE_003");
+  });
+
+  it("scission partielle : l'ambiguïté survit à la sérialisation", () => {
+    const s = mergedSession();
+    const a = s.byPseudonym("PERSONNE_001")!;
+    s.split(a.id, "Paul Durand");
+    const r = roundTrip(s) as InMemorySession;
+    expect(r.byPseudonym("PERSONNE_002")).toBeUndefined();
+    expect(r.isAmbiguousPseudonym("PERSONNE_002")).toBe(true);
+    expect(serializeSession(r)).toEqual(serializeSession(s));
+    expect(r.resolve("Zoé Petit", "PERSON").pseudonym).toBe("PERSONNE_004");
+  });
+
+  it("lit un instantané version 1 : alias résolu, scission ultérieure prudente", () => {
+    const s = mergedSession();
+    const snap = JSON.parse(JSON.stringify(serializeSession(s)));
+    const v1 = {
+      ...snap,
+      version: 1,
+      aliases: { PERSONNE_002: snap.aliases.PERSONNE_002.target },
+    };
+    expect(validateSnapshot(v1).version).toBe(2);
+    const r = restoreSession(v1) as InMemorySession;
+    const a = r.byPseudonym("PERSONNE_001")!;
+    expect(r.byPseudonym("PERSONNE_002")?.id).toBe(a.id);
+    r.split(a.id, "Paul Durand");
+    expect(r.byPseudonym("PERSONNE_002")).toBeUndefined();
+    expect(r.isAmbiguousPseudonym("PERSONNE_002")).toBe(true);
+  });
+
+  it("refuse un instantané v1 mal formé", () => {
+    const snap = JSON.parse(JSON.stringify(serializeSession(mergedSession())));
+    const v1 = { ...snap, version: 1, aliases: { PERSONNE_002: "entity-99" } };
+    expect(() => validateSnapshot(v1)).toThrow(SnapshotError);
   });
 });

@@ -13,10 +13,18 @@ import { ENTITY_TYPES } from "../types/index.ts";
 import type { Entity, EntityType, Session } from "../types/index.ts";
 import { ENTITY_LABELS } from "../transform/labels.ts";
 import { formatPseudonym } from "./pseudonym.ts";
+import { normalizeForm } from "./resolution.ts";
 import { InMemorySession } from "./session.ts";
+import type { AliasRecord } from "./session.ts";
 
 export const SNAPSHOT_FORMAT = "lessive-session";
-export const SNAPSHOT_VERSION = 1;
+/**
+ * Version 2 : les alias portent les formes normalisées de l'entité absorbée
+ * et un indicateur d'ambiguïté (voir `AliasRecord`). La version 1 (alias =
+ * simple id de la cible) reste lisible : ses alias sont migrés avec des formes
+ * inconnues (liste vide).
+ */
+export const SNAPSHOT_VERSION = 2;
 
 export interface SessionSnapshot {
   format: typeof SNAPSHOT_FORMAT;
@@ -25,8 +33,8 @@ export interface SessionSnapshot {
   entities: Entity[];
   /** Dernier numéro attribué, par type d'entité. */
   counters: Partial<Record<EntityType, number>>;
-  /** Pseudonymes d'entités fusionnées → id de l'entité qui les a absorbées. */
-  aliases: Record<string, string>;
+  /** Pseudonymes d'entités fusionnées → entité qui les a absorbées. */
+  aliases: Record<string, AliasRecord>;
   /** Séquence des identifiants d'entités. */
   sequence: number;
 }
@@ -49,14 +57,30 @@ const entitySchema = z.strictObject({
   needsReview: z.boolean(),
 });
 
-const snapshotSchema = z.strictObject({
+const aliasSchema = z.strictObject({
+  target: z.string().min(1),
+  forms: z.array(z.string()),
+  ambiguous: z.boolean(),
+});
+
+const snapshotShape = {
   format: z.literal(SNAPSHOT_FORMAT),
-  version: z.literal(SNAPSHOT_VERSION),
   sessionId: z.string().min(1),
   entities: z.array(entitySchema),
   counters: z.partialRecord(entityTypeSchema, counterSchema),
-  aliases: z.record(z.string(), z.string()),
   sequence: counterSchema,
+};
+
+const snapshotSchema = z.strictObject({
+  ...snapshotShape,
+  version: z.literal(SNAPSHOT_VERSION),
+  aliases: z.record(z.string(), aliasSchema),
+});
+
+const snapshotSchemaV1 = z.strictObject({
+  ...snapshotShape,
+  version: z.literal(1),
+  aliases: z.record(z.string(), z.string()),
 });
 
 function fail(reason: string): never {
@@ -73,12 +97,25 @@ function pseudonymNumber(pseudonym: string, type: EntityType): number | undefine
   return formatPseudonym(type, n) === pseudonym ? n : undefined;
 }
 
+/** Version 1 → 2 : formes d'alias inconnues (vide), donc non ambiguës a priori. */
+function migrateV1(v1: z.infer<typeof snapshotSchemaV1>): SessionSnapshot {
+  return {
+    ...v1,
+    version: SNAPSHOT_VERSION,
+    aliases: Object.fromEntries(
+      Object.entries(v1.aliases).map(([p, target]) => [p, { target, forms: [], ambiguous: false }]),
+    ),
+  };
+}
+
 /**
  * Valide strictement un instantané (structure puis cohérence interne) et le
  * renvoie typé. Lève `SnapshotError` sans citer aucune valeur.
  */
 export function validateSnapshot(input: unknown): SessionSnapshot {
-  const parsed = snapshotSchema.safeParse(input);
+  const isV1 =
+    typeof input === "object" && input !== null && (input as { version?: unknown }).version === 1;
+  const parsed = isV1 ? snapshotSchemaV1.safeParse(input) : snapshotSchema.safeParse(input);
   if (!parsed.success) {
     const paths = [
       ...new Set(
@@ -91,7 +128,11 @@ export function validateSnapshot(input: unknown): SessionSnapshot {
     ];
     fail(`structure ou format non conforme (${paths.slice(0, 5).join(", ")})`);
   }
-  const snap = parsed.data as SessionSnapshot;
+  const snap = (
+    isV1
+      ? migrateV1(parsed.data as z.infer<typeof snapshotSchemaV1>)
+      : (parsed.data as SessionSnapshot)
+  ) satisfies SessionSnapshot;
 
   const ids = new Set<string>();
   const pseudonyms = new Set<string>();
@@ -110,12 +151,21 @@ export function validateSnapshot(input: unknown): SessionSnapshot {
   }
 
   const typeById = new Map(snap.entities.map((e) => [e.id, e.entityType]));
-  for (const [alias, target] of Object.entries(snap.aliases)) {
+  const formsById = new Map(snap.entities.map((e) => [e.id, e]));
+  for (const [alias, record] of Object.entries(snap.aliases)) {
     if (pseudonyms.has(alias)) fail("alias identique au pseudonyme d'une entité");
-    const type = typeById.get(target);
+    const type = typeById.get(record.target);
     if (type === undefined) fail("alias vers une entité absente");
     const n = pseudonymNumber(alias, type);
     if (n === undefined) fail("alias incohérent avec le type de l'entité cible");
+    if (!record.ambiguous && record.forms.length > 0) {
+      const known = new Set(
+        formsById.get(record.target)!.surfaceForms.map((f) => normalizeForm(f, type)),
+      );
+      if (!record.forms.every((f) => known.has(f))) {
+        fail("alias non couvert par les formes de l'entité cible");
+      }
+    }
     maxByType.set(type, Math.max(maxByType.get(type) ?? 0, n));
   }
 

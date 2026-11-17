@@ -196,6 +196,30 @@ describe("transform", () => {
     }
   });
 
+  it("refuse une borne qui coupe une paire de substitution (R7), sans valeur dans l'erreur", () => {
+    const t = "ab😀cd"; // l'emoji occupe les indices 2 et 3
+    const plan: TransformPlan = { mode: "masking", defaultOperator: "mask" };
+    const base = find(t, "ab", "PERSON", "a");
+    for (const bad of [
+      { ...base, start: 0, end: 3 }, // fin au milieu de l'emoji
+      { ...base, start: 3, end: 5 }, // début au milieu de l'emoji
+    ]) {
+      let message = "";
+      try {
+        transform(t, [bad], plan);
+      } catch (e) {
+        expect(e).toBeInstanceOf(TransformError);
+        message = (e as Error).message;
+      }
+      expect(message).toMatch(/UTF-16/);
+      expect(message).not.toContain("ab");
+      expect(message).not.toContain("😀");
+    }
+    // Les bornes de part et d'autre de l'emoji restent valides.
+    const whole = { ...base, start: 2, end: 4 };
+    expect(transform(t, [whole], plan).applied).toHaveLength(1);
+  });
+
   it("renvoie le texte inchangé sans détection", () => {
     expect(transform("abc", [], { mode: "masking", defaultOperator: "mask" })).toEqual({
       text: "abc",

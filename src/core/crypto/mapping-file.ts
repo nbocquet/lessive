@@ -30,6 +30,17 @@ export const MIN_PASSPHRASE_LENGTH = 12;
 const SALT_BYTES = 16;
 const IV_BYTES = 12;
 
+const FILE_KEYS: ReadonlySet<string> = new Set([
+  "format",
+  "v",
+  "kdf",
+  "iterations",
+  "salt",
+  "cipher",
+  "iv",
+  "ciphertext",
+]);
+
 const MSG_UNSUPPORTED = "Format non pris en charge.";
 const MSG_AUTH = "Phrase de passe incorrecte ou fichier altéré.";
 const MSG_MALFORMED = "Fichier de correspondance illisible ou incomplet.";
@@ -96,8 +107,35 @@ function canonicalHeader(h: Header): Uint8Array<ArrayBuffer> {
   return new TextEncoder().encode(json);
 }
 
-/** Normalise en NFC et refuse une phrase trop courte (sans la citer). */
+/** Vrai si la chaîne ne contient aucune moitié de paire de substitution isolée. */
+function isWellFormed(value: string): boolean {
+  const native = (value as { isWellFormed?: () => boolean }).isWellFormed;
+  if (typeof native === "function") return native.call(value);
+  for (let i = 0; i < value.length; i++) {
+    const c = value.charCodeAt(i);
+    if (c >= 0xd800 && c <= 0xdbff) {
+      const next = value.charCodeAt(i + 1);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) return false;
+      i++;
+    } else if (c >= 0xdc00 && c <= 0xdfff) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Refuse une phrase mal formée (UTF-16 invalide : l'encodage UTF-8 la
+ * remplacerait par U+FFFD et deux phrases distinctes donneraient la même clé),
+ * normalise en NFC, puis refuse une phrase trop courte. Jamais citée.
+ */
 function preparePassphrase(passphrase: string): string {
+  if (typeof passphrase === "string" && !isWellFormed(passphrase)) {
+    throw new CryptoFormatError(
+      "invalid-parameters",
+      "La phrase de passe contient une séquence de caractères invalide.",
+    );
+  }
   const normalized = typeof passphrase === "string" ? passphrase.normalize("NFC") : "";
   if ([...normalized].length < MIN_PASSPHRASE_LENGTH) {
     throw new CryptoFormatError(
@@ -127,23 +165,26 @@ async function deriveKey(
 }
 
 /**
- * Chiffrement avec nombre d'itérations explicite. INTERNE : réservé aux
- * tests (itérations basses pour la rapidité) ; non exporté par `index.ts`.
- * L'API publique `encryptSnapshot` impose 600 000 itérations.
+ * Chiffre un instantané de session (600 000 itérations PBKDF2, imposées).
+ * Les tests utilisent `mapping-file.test-utils.ts`, qui produit un fichier
+ * à itérations réduites sans que ce module n'expose un paramètre d'itérations.
  */
-export async function encryptSnapshotWithIterations(
+export async function encryptSnapshot(
   snapshot: SessionSnapshot,
   passphrase: string,
-  iterations: number,
 ): Promise<string> {
+  const iterations = DEFAULT_ITERATIONS;
   const phrase = preparePassphrase(passphrase);
-  if (!Number.isInteger(iterations) || iterations < MIN_ITERATIONS || iterations > MAX_ITERATIONS) {
+  const valid = validateSnapshot(snapshot);
+  // Disponibilité de WebCrypto vérifiée avant tout tirage aléatoire.
+  const s = subtle();
+  const rng = (globalThis as { crypto?: { getRandomValues?: unknown } }).crypto?.getRandomValues;
+  if (typeof rng !== "function") {
     throw new CryptoFormatError(
-      "invalid-parameters",
-      "Nombre d'itérations hors des bornes autorisées.",
+      "unavailable",
+      "WebCrypto n'est pas disponible dans cet environnement.",
     );
   }
-  const valid = validateSnapshot(snapshot);
   const header: Header = {
     format: MAPPING_FORMAT,
     v: MAPPING_VERSION,
@@ -156,7 +197,7 @@ export async function encryptSnapshotWithIterations(
   const key = await deriveKey(phrase, salt, iterations);
   const plaintext = new TextEncoder().encode(JSON.stringify(valid));
   const ciphertext = new Uint8Array(
-    await subtle().encrypt(
+    await s.encrypt(
       { name: "AES-GCM", iv, additionalData: canonicalHeader(header), tagLength: 128 },
       key,
       plaintext,
@@ -174,11 +215,6 @@ export async function encryptSnapshotWithIterations(
   });
 }
 
-/** Chiffre un instantané de session (600 000 itérations PBKDF2). */
-export function encryptSnapshot(snapshot: SessionSnapshot, passphrase: string): Promise<string> {
-  return encryptSnapshotWithIterations(snapshot, passphrase, DEFAULT_ITERATIONS);
-}
-
 /** Déchiffre et valide un fichier d'export. */
 export async function decryptSnapshot(text: string, passphrase: string): Promise<SessionSnapshot> {
   const phrase = preparePassphrase(passphrase);
@@ -193,6 +229,11 @@ export async function decryptSnapshot(text: string, passphrase: string): Promise
     throw new CryptoFormatError("malformed-file", MSG_MALFORMED);
   }
   const f = file as Record<string, unknown>;
+
+  // Une clé inconnue ne serait pas authentifiée (hors AAD) : on la refuse.
+  if (Object.keys(f).some((k) => !FILE_KEYS.has(k))) {
+    throw new CryptoFormatError("unsupported-format", MSG_UNSUPPORTED);
+  }
 
   if (
     f.format !== MAPPING_FORMAT ||

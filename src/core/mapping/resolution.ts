@@ -34,6 +34,11 @@
  *  - « Claire Martin » citée après « Claire » seule : nouvelle entité (le
  *    rattachement ne va que du connu vers le partiel) ; à fusionner à la main.
  *  - Ordre inversé (« Martin Claire »), surnoms, fautes de frappe : non gérés.
+ *  - « M. Dupont » et « Mme Dupont » reçoivent le même pseudonyme : les titres
+ *    sont retirés à la normalisation et le pack exclut le titre de
+ *    l'intervalle détecté, donc la civilité ne distingue pas deux personnes
+ *    (deux membres d'une même famille, par exemple). C'est à l'utilisateur de
+ *    scinder l'entité (`split`) quand ce sont deux personnes différentes.
  *  - « M. » est toujours un titre, jamais une initiale ; « Me » toujours un
  *    titre s'il est suivi d'un autre mot.
  *

@@ -7,13 +7,30 @@ export interface SessionOptions {
   id?: string;
 }
 
+/**
+ * Pseudonyme retiré par une fusion : désigne l'entité cible, tant que ce
+ * lien reste univoque.
+ */
+export interface AliasRecord {
+  /** Id de l'entité qui a absorbé l'entité d'origine. */
+  target: string;
+  /**
+   * Formes (normalisées) de l'entité absorbée au moment de la fusion. Liste
+   * vide = formes inconnues (ancien format v1) : toute scission de la cible
+   * rend alors l'alias ambigu.
+   */
+  forms: string[];
+  /** Vrai si une scission partielle rend le lien incertain. */
+  ambiguous: boolean;
+}
+
 /** État interne d'une session, sans le format de fichier (voir `snapshot.ts`). */
 export interface SessionState {
   id: string;
   entities: Entity[];
   counters: Partial<Record<EntityType, number>>;
-  /** Pseudonymes d'entités fusionnées → id de l'entité qui les a absorbées. */
-  aliases: Record<string, string>;
+  /** Pseudonymes d'entités fusionnées → entité qui les a absorbées. */
+  aliases: Record<string, AliasRecord>;
   sequence: number;
 }
 
@@ -28,6 +45,10 @@ function snapshot(e: Entity): Entity {
   return { ...e, surfaceForms: [...e.surfaceForms] };
 }
 
+function copyAlias(a: AliasRecord): AliasRecord {
+  return { target: a.target, forms: [...a.forms], ambiguous: a.ambiguous };
+}
+
 /**
  * Session en mémoire (R5 : rien n'est persisté ni loggé).
  *
@@ -39,7 +60,13 @@ function snapshot(e: Entity): Entity {
  *   à jour (relire par `entities()`).
  * - Après une fusion, le pseudonyme de la source reste résolu par
  *   `byPseudonym` (il désigne la cible) : un texte déjà produit avec ce
- *   pseudonyme reste réidentifiable.
+ *   pseudonyme reste réidentifiable. L'alias garde les formes normalisées de
+ *   l'entité absorbée.
+ * - Scission : si les formes détachées sont exactement celles d'un alias, la
+ *   nouvelle entité reprend le pseudonyme d'origine (aucun nouveau numéro) et
+ *   l'alias disparaît. Si elles n'en couvrent qu'une partie, l'alias devient
+ *   ambigu : `byPseudonym` ne le résout plus et `isAmbiguousPseudonym` le
+ *   signale (à afficher à la réidentification plutôt que de deviner).
  * - `merge` confirme le regroupement : `needsReview` de la cible passe à faux.
  */
 export class InMemorySession implements Session {
@@ -47,7 +74,7 @@ export class InMemorySession implements Session {
   readonly #entities = new Map<string, Entity>();
   readonly #counters = new Map<EntityType, number>();
   /** Pseudonymes d'entités fusionnées → id de l'entité qui les a absorbées. */
-  readonly #retired = new Map<string, string>();
+  readonly #retired = new Map<string, AliasRecord>();
   #sequence = 0;
 
   constructor(options: SessionOptions = {}) {
@@ -63,7 +90,7 @@ export class InMemorySession implements Session {
       id: this.id,
       entities: this.entities().map((e) => ({ ...e })),
       counters: Object.fromEntries(this.#counters),
-      aliases: Object.fromEntries(this.#retired),
+      aliases: Object.fromEntries([...this.#retired].map(([p, a]) => [p, copyAlias(a)])),
       sequence: this.#sequence,
     };
   }
@@ -77,8 +104,8 @@ export class InMemorySession implements Session {
     for (const [type, n] of Object.entries(state.counters)) {
       session.#counters.set(type as EntityType, n);
     }
-    for (const [pseudonym, id] of Object.entries(state.aliases)) {
-      session.#retired.set(pseudonym, id);
+    for (const [pseudonym, alias] of Object.entries(state.aliases)) {
+      session.#retired.set(pseudonym, copyAlias(alias));
     }
     session.#sequence = state.sequence;
     return session;
@@ -116,10 +143,14 @@ export class InMemorySession implements Session {
     }
     target.needsReview = false;
     this.#entities.delete(sourceId);
-    this.#retired.set(source.pseudonym, targetId);
-    for (const [pseudonym, id] of this.#retired) {
-      if (id === sourceId) this.#retired.set(pseudonym, targetId);
+    for (const alias of this.#retired.values()) {
+      if (alias.target === sourceId) alias.target = targetId;
     }
+    this.#retired.set(source.pseudonym, {
+      target: targetId,
+      forms: [...new Set(source.surfaceForms.map((f) => normalizeForm(f, source.entityType)))],
+      ambiguous: false,
+    });
   }
 
   split(entityId: string, surfaceForm: string): Entity {
@@ -131,14 +162,38 @@ export class InMemorySession implements Session {
       throw new Error("Impossible de scinder la seule forme d'une entité.");
     }
     entity.surfaceForms = entity.surfaceForms.filter((f) => !moved.includes(f));
-    return snapshot(this.#create(entity.entityType, moved, false));
+    // Les formes détachées reprennent le pseudonyme d'un alias qu'elles
+    // couvrent entièrement ; tout autre alias touché devient ambigu.
+    let reclaimed: string | undefined;
+    for (const [pseudonym, alias] of this.#retired) {
+      if (alias.target !== entityId || alias.ambiguous) continue;
+      if (alias.forms.length === 0) {
+        alias.ambiguous = true;
+      } else if (alias.forms.includes(key)) {
+        if (reclaimed === undefined && alias.forms.every((f) => f === key)) reclaimed = pseudonym;
+        else alias.ambiguous = true;
+      }
+    }
+    if (reclaimed !== undefined) this.#retired.delete(reclaimed);
+    return snapshot(this.#create(entity.entityType, moved, false, reclaimed));
   }
 
   byPseudonym(pseudonym: string): Entity | undefined {
     for (const e of this.#entities.values()) if (e.pseudonym === pseudonym) return snapshot(e);
-    const id = this.#retired.get(pseudonym);
-    const entity = id === undefined ? undefined : this.#entities.get(id);
+    const alias = this.#retired.get(pseudonym);
+    if (!alias || alias.ambiguous) return undefined;
+    const entity = this.#entities.get(alias.target);
     return entity && snapshot(entity);
+  }
+
+  /**
+   * Vrai si ce pseudonyme était celui d'une entité fusionnée puis en partie
+   * scindée : on ne sait plus à qui il se rapporte (`byPseudonym` renvoie
+   * undefined). À signaler à la réidentification.
+   */
+  isAmbiguousPseudonym(pseudonym: string): boolean {
+    const alias = this.#retired.get(pseudonym);
+    return alias !== undefined && alias.ambiguous && this.#entities.has(alias.target);
   }
 
   #get(id: string): Entity {
@@ -147,14 +202,23 @@ export class InMemorySession implements Session {
     return entity;
   }
 
-  #create(entityType: EntityType, surfaceForms: string[], needsReview: boolean): Entity {
-    const n = (this.#counters.get(entityType) ?? 0) + 1;
-    this.#counters.set(entityType, n);
+  #create(
+    entityType: EntityType,
+    surfaceForms: string[],
+    needsReview: boolean,
+    reusedPseudonym?: string,
+  ): Entity {
+    let pseudonym = reusedPseudonym;
+    if (pseudonym === undefined) {
+      const n = (this.#counters.get(entityType) ?? 0) + 1;
+      this.#counters.set(entityType, n);
+      pseudonym = formatPseudonym(entityType, n);
+    }
     this.#sequence += 1;
     const entity: Entity = {
       id: `entity-${this.#sequence}`,
       entityType,
-      pseudonym: formatPseudonym(entityType, n),
+      pseudonym,
       surfaceForms: [...surfaceForms],
       needsReview,
     };

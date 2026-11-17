@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { createSession } from "./session.ts";
+import { createSession as createPublicSession, InMemorySession } from "./session.ts";
+
+// Ces tests utilisent la méthode propre à InMemorySession (isAmbiguousPseudonym).
+const createSession = (options?: { id?: string }) =>
+  createPublicSession(options) as InMemorySession;
 import { formatPseudonym } from "./pseudonym.ts";
 
 describe("session en mémoire", () => {
@@ -106,12 +110,71 @@ describe("session en mémoire", () => {
       expect(() => s.split("inconnu", "x")).toThrow();
     });
 
-    it("ne réutilise pas un numéro après fusion puis scission", () => {
+    it("fusion puis scission : la nouvelle entité reprend le pseudonyme d'origine", () => {
       const s = createSession();
       const a = s.resolve("Claire Martin", "PERSON");
       const b = s.resolve("Paul Durand", "PERSON");
       s.merge(a.id, b.id);
-      expect(s.split(a.id, "Paul Durand").pseudonym).toBe("PERSONNE_003");
+      expect(s.byPseudonym("PERSONNE_002")?.id).toBe(a.id);
+      const n = s.split(a.id, "Paul Durand");
+      expect(n.pseudonym).toBe("PERSONNE_002");
+      expect(s.byPseudonym("PERSONNE_002")?.surfaceForms).toEqual(["Paul Durand"]);
+      expect(s.byPseudonym("PERSONNE_001")?.surfaceForms).toEqual(["Claire Martin"]);
+      expect(s.isAmbiguousPseudonym("PERSONNE_002")).toBe(false);
+      // Le compteur n'a pas reculé : le numéro suivant est neuf.
+      expect(s.resolve("Anne Petit", "PERSON").pseudonym).toBe("PERSONNE_003");
+    });
+
+    it("scission partielle : l'alias devient ambigu et n'est plus résolu", () => {
+      const s = createSession();
+      const a = s.resolve("Claire Martin", "PERSON");
+      const b = s.resolve("Paul Durand", "PERSON");
+      s.resolve("P. Durand", "PERSON"); // rattaché à Paul Durand (needsReview)
+      s.merge(a.id, b.id);
+      const n = s.split(a.id, "Paul Durand");
+      expect(n.pseudonym).toBe("PERSONNE_003");
+      expect(s.byPseudonym("PERSONNE_002")).toBeUndefined();
+      expect(s.isAmbiguousPseudonym("PERSONNE_002")).toBe(true);
+      expect(s.isAmbiguousPseudonym("PERSONNE_001")).toBe(false);
+      expect(s.isAmbiguousPseudonym("PERSONNE_999")).toBe(false);
+      expect(s.resolve("Zoé Petit", "PERSON").pseudonym).toBe("PERSONNE_004");
+    });
+
+    it("une scission étrangère à l'alias le laisse intact", () => {
+      const s = createSession();
+      const a = s.resolve("Claire Martin", "PERSON");
+      const b = s.resolve("Paul Durand", "PERSON");
+      s.resolve("Mme Martin", "PERSON");
+      s.merge(a.id, b.id);
+      s.split(a.id, "Mme Martin");
+      expect(s.byPseudonym("PERSONNE_002")?.id).toBe(a.id);
+      expect(s.isAmbiguousPseudonym("PERSONNE_002")).toBe(false);
+    });
+
+    it("fusions en chaîne puis scission : reprise exacte, l'alias intermédiaire devient ambigu", () => {
+      const s = createSession();
+      const a = s.resolve("Anne Un", "PERSON");
+      const b = s.resolve("Bob Deux", "PERSON");
+      const c = s.resolve("Cathy Trois", "PERSON");
+      s.merge(b.id, c.id);
+      s.merge(a.id, b.id);
+      expect(s.split(a.id, "Cathy Trois").pseudonym).toBe("PERSONNE_003");
+      expect(s.byPseudonym("PERSONNE_003")?.surfaceForms).toEqual(["Cathy Trois"]);
+      // PERSONNE_002 désignait Bob, qui avait déjà absorbé Cathy : partiel.
+      expect(s.byPseudonym("PERSONNE_002")).toBeUndefined();
+      expect(s.isAmbiguousPseudonym("PERSONNE_002")).toBe(true);
+    });
+
+    it("ne réutilise jamais un numéro attribué", () => {
+      const s = createSession();
+      const a = s.resolve("Claire Martin", "PERSON");
+      const b = s.resolve("Paul Durand", "PERSON");
+      s.merge(a.id, b.id);
+      s.split(a.id, "Paul Durand");
+      const seen = new Set(s.entities().map((e) => e.pseudonym));
+      const next = s.resolve("Anne Petit", "PERSON").pseudonym;
+      expect(seen.has(next)).toBe(false);
+      expect(next).toBe("PERSONNE_003");
     });
   });
 
