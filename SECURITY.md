@@ -6,12 +6,9 @@ Lessive est un MVP en cours de construction : aucune relecture de sécurité ind
 
 ## Signaler une vulnérabilité
 
-**À compléter par Nico avant toute publication : adresse ou canal de signalement.**
+Écrivez à **nbocquet@protonmail.com**. Accusé de réception visé : **sous 2 jours**.
 
-> Adresse de signalement : `[À COMPLÉTER : adresse électronique ou formulaire de signalement privé]`
-> Délai d'accusé de réception visé : `[À COMPLÉTER]`
-
-Tant que ce champ n'est pas rempli, ce document n'indique aucun canal : n'ouvrez pas de ticket public pour une vulnérabilité exploitable. Quand le canal existera, merci d'indiquer : la version ou le commit, le navigateur, les étapes de reproduction, l'effet obtenu, et, si possible, un texte d'essai **synthétique**. N'envoyez jamais de données personnelles réelles.
+N'ouvrez pas de ticket public pour une vulnérabilité exploitable. Merci d'indiquer : la version ou le commit, le navigateur, les étapes de reproduction, l'effet obtenu, et, si possible, un texte d'essai **synthétique**. N'envoyez jamais de données personnelles réelles.
 
 ## Modèle de menace
 
