@@ -1,8 +1,38 @@
-# S2 — Consignes pour l'expérience LLM (à lire par Nico)
+# S2 — Consignes pour l'expérience LLM
 
-Objectif : savoir quel format de jeton (A `PERSONNE_001`, B `[PERSONNE_1]`, C `⟦P1⟧`) les LLM recopient le plus fidèlement. Tu colles des textes pseudonymisés dans 2 ou 3 LLM, tu sauvegardes leurs réponses telles quelles, puis `score.mjs` calcule les taux. **Aucun appel LLM n'est fait par le dépôt.** Les textes sont entièrement synthétiques (noms, courriels, numéros inventés) : tu peux les coller sans risque.
+Objectif : vérifier que les LLM recopient fidèlement les pseudonymes du format retenu par défaut, A (`PERSONNE_001`), et sinon tester B (`[PERSONNE_1]`) ou C (`⟦P1⟧`). Si un LLM écrit « Person 1 » au lieu de `PERSONNE_001`, Lessive ne peut plus remettre le vrai nom dans sa réponse. Les textes sont entièrement synthétiques : on peut les envoyer sans risque.
 
-Durée : environ une heure par LLM pour le lot 1 (30 essais).
+## 0. Version courte, exécutée par un agent (Codex ou autre) — à suivre en priorité
+
+**Règle absolue pour l'agent : ne réponds PAS toi-même aux demandes.** Tu as lu ce dépôt, tu sais que le but est de préserver les jetons : tes réponses seraient biaisées. Chaque essai doit être envoyé au LLM testé par son API, **un appel isolé par essai**, sans historique, avec le message exact construit par `buildPrompt` (`config.mjs`). Le script `run-api.mjs` fait exactement cela ; utilise-le tel quel.
+
+Plan court : **10 essais par LLM** (lot `court` : 5 textes × format A × `traduire` et `reformuler`), sur **2 LLM**.
+
+1. Vérifier le message envoyé, sans rien appeler :
+   ```bash
+   node spikes/tokens/run-api.mjs --provider openai --dry-run
+   ```
+2. Exécuter le lot court sur chaque LLM (clé dans l'environnement, jamais dans un fichier ni dans une commande enregistrée ; nom exact du modèle, celui qu'utilise le grand public de préférence) :
+   ```bash
+   export OPENAI_API_KEY=…      # saisie par Nico, ne pas l'écrire dans le dépôt
+   node spikes/tokens/run-api.mjs --provider openai --model <modèle>
+   export ANTHROPIC_API_KEY=…
+   node spikes/tokens/run-api.mjs --provider anthropic --model <modèle>
+   # facultatif : export GEMINI_API_KEY=… ; --provider gemini --model <modèle>
+   ```
+   Les réponses arrivent dans `spikes/tokens/reponses/<llm>/` (`chatgpt`, `claude`, `gemini`), avec `_modele.txt` (fournisseur, modèle, date). Un essai déjà fait est sauté ; `--force` le refait. Ne modifie aucune réponse.
+3. Calculer les résultats :
+   ```bash
+   node spikes/tokens/score.mjs        # écrit spikes/tokens/results.md
+   ```
+4. Décision, d'après la section 1 de `results.md` (taux **tolérant**, consignes complètes, par LLM) :
+   - **A ≥ 98 % pour chaque LLM** : format A retenu. Renseigner la section « Résultats » de `docs/adr/0002-format-jetons.md` (taux par LLM, modèles, date, déformations observées) et passer son statut à « Accepté ».
+   - **Sinon** : exécuter le lot `court-B` (`--lot court-B`) sur les mêmes LLM, recalculer, et noter les deux formats dans l'ADR ; ne pas trancher seul entre A et B, laisser la décision à Nico.
+5. Ne pas commiter de clé. Commiter les réponses (`reponses/<llm>/`), `results.md` et l'ADR.
+
+Sans accès aux API, la même expérience se fait à la main dans les interfaces de chat (§2 à §6) : une nouvelle conversation par essai, même message, réponse copiée telle quelle.
+
+Les plans plus longs (§7 : lot 1 complet à 30 essais, lots 2 et 3) restent possibles pour approfondir.
 
 ## 1. Ce qui est déjà prêt
 
@@ -96,7 +126,7 @@ spikes/tokens/reponses/<llm>/<texte>-<format>-<consigne>.txt
 
 Pas la combinatoire complète (5 textes × 3 formats × 5 consignes = 75, soit 225 pour 3 LLM). Proposition :
 
-- **Lot 1, obligatoire : 30 essais.** 5 textes × 3 formats × 2 consignes `traduire` et `reformuler`. La traduction est le cas le plus dur (le LLM est tenté de traduire le mot PERSONNE) ; la reformulation est le cas le plus ordinaire. Les deux sont « complètes », donc mesurables sans ambiguïté. C'est ce lot qui décide.
+- **Lot court, recommandé : 10 essais** (§0). **Lot 1, approfondi : 30 essais.** 5 textes × 3 formats × 2 consignes `traduire` et `reformuler`. La traduction est le cas le plus dur (le LLM est tenté de traduire le mot PERSONNE) ; la reformulation est le cas le plus ordinaire. Les deux sont « complètes », donc mesurables sans ambiguïté. Le lot court (format A seul) suffit à décider si A atteint 98 % ; le lot 1 compare les trois formats.
 - **Lot 2, facultatif : 18 essais.** Textes `client` et `copro` × 3 formats × `resumer`, `repondre`, `extraire`. À faire si le lot 1 est serré, ou pour voir d'autres déformations.
 - **Lot 3, témoin facultatif : 6 essais.** Textes `rh` et `medical` × 3 formats × `traduire-sans` (aucune consigne système). Il mesure ce que la consigne système apporte.
 

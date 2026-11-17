@@ -60,8 +60,21 @@ export const SYSTEM_CONSIGNES = Object.freeze({
 const grid = (textes, consignes) =>
   textes.flatMap((t) => FORMAT_IDS.flatMap((f) => consignes.map((c) => ({ texte: t, format: f, consigne: c }))));
 
-/** Plan d'essais proposé, par LLM. */
+const gridFormats = (textes, formats, consignes) =>
+  textes.flatMap((t) => formats.flatMap((f) => consignes.map((c) => ({ texte: t, format: f, consigne: c }))));
+
+const ALL_TEXTES = ["client", "copro", "medical", "reunion", "rh"];
+
+/** Plan d'essais proposé, par LLM. Version courte recommandée : lot « court » (format A seul). */
 export const LOTS = Object.freeze({
+  court: {
+    label: "Lot court (recommandé) : 5 textes x format A x {traduire, reformuler} = 10 essais",
+    trials: gridFormats(ALL_TEXTES, ["A"], ["traduire", "reformuler"]),
+  },
+  "court-B": {
+    label: "Lot court B (seulement si A < 98 %) : 5 textes x format B x {traduire, reformuler}",
+    trials: gridFormats(ALL_TEXTES, ["B"], ["traduire", "reformuler"]),
+  },
   1: {
     label: "Lot 1 (obligatoire) : 5 textes x 3 formats x {traduire, reformuler}",
     trials: grid(["client", "copro", "medical", "reunion", "rh"], ["traduire", "reformuler"]),
@@ -77,3 +90,17 @@ export const LOTS = Object.freeze({
 });
 
 export const trialKey = (t) => `${t.texte}-${t.format}-${t.consigne}`;
+
+/**
+ * Message unique envoyé au LLM pour un essai : consigne système du format (sauf témoin), consigne,
+ * puis le texte pseudonymisé. Identique au gabarit de `consignes.md` §3.
+ */
+export function buildPrompt(trial, pseudonymizedText) {
+  const c = CONSIGNES[trial.consigne];
+  if (!c) throw new Error(`Consigne inconnue : ${trial.consigne}`);
+  const parts = [];
+  if (!c.control) parts.push(SYSTEM_CONSIGNES[trial.format]);
+  parts.push(c.prompt, `Texte :\n${pseudonymizedText.trim()}`);
+  return parts.join("\n\n");
+}
+

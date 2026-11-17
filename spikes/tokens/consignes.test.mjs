@@ -45,3 +45,23 @@ describe("plan d'essais", () => {
     }
   });
 });
+
+describe("version courte et message envoyé", () => {
+  it("lot court = 10 essais au format A, consignes complètes", async () => {
+    const { LOTS: lots } = await import("./config.mjs");
+    expect(lots.court.trials).toHaveLength(10);
+    for (const t of lots.court.trials) {
+      expect(t.format).toBe("A");
+      expect(CONSIGNES[t.consigne].complete).toBe(true);
+    }
+  });
+  it("buildPrompt suit le gabarit : consigne système, consigne, texte ; pas de consigne système pour le témoin", async () => {
+    const { buildPrompt } = await import("./config.mjs");
+    const p = buildPrompt({ texte: "rh", format: "A", consigne: "traduire" }, "Bonjour PERSONNE_001.\n");
+    expect(p).toBe(
+      `${SYSTEM_CONSIGNES.A}\n\n${CONSIGNES.traduire.prompt}\n\nTexte :\nBonjour PERSONNE_001.`,
+    );
+    const t = buildPrompt({ texte: "rh", format: "A", consigne: "traduire-sans" }, "x");
+    expect(t.startsWith(CONSIGNES["traduire-sans"].prompt)).toBe(true);
+  });
+});
