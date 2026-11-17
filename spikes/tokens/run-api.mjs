@@ -4,6 +4,9 @@
 //   node spikes/tokens/run-api.mjs --provider openai    --model <modèle> [--lot court] [--dry-run]
 //   node spikes/tokens/run-api.mjs --provider anthropic --model <modèle> [--lot court]
 //   node spikes/tokens/run-api.mjs --provider gemini    --model <modèle> [--lot court]
+//   node spikes/tokens/run-api.mjs --provider openrouter --model openai/<modèle> [--lot court]
+//     (une seule clé pour plusieurs LLM : openai/…, anthropic/…, google/… ; le dossier de
+//     réponses est déduit du préfixe : chatgpt, claude, gemini)
 //
 // Options :
 //   --lot <id>      lot du plan (config.mjs : court, court-B, 1, 2, 3) ; défaut : court
@@ -12,7 +15,7 @@
 //   --force         refait les essais dont la réponse existe déjà
 //
 // Clés lues dans l'environnement, jamais écrites ni affichées :
-//   OPENAI_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY
+//   OPENAI_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY, OPENROUTER_API_KEY
 //
 // Chaque essai = UNE requête sans historique, sans instruction système d'API (la consigne
 // système est en tête du message, comme dans une conversation ordinaire), température par défaut
@@ -29,7 +32,11 @@ const PROVIDERS = {
   openai: { env: "OPENAI_API_KEY", folder: "chatgpt" },
   anthropic: { env: "ANTHROPIC_API_KEY", folder: "claude" },
   gemini: { env: "GEMINI_API_KEY", folder: "gemini" },
+  openrouter: { env: "OPENROUTER_API_KEY", folder: "openrouter" },
 };
+
+/** OpenRouter : dossier de réponses déduit de l'éditeur du modèle (« anthropic/… » → claude). */
+const OPENROUTER_FOLDERS = { openai: "chatgpt", anthropic: "claude", google: "gemini" };
 
 function parseArgs(argv) {
   const o = { lot: "court", dryRun: false, force: false };
@@ -48,7 +55,13 @@ function parseArgs(argv) {
     else if (a === "--force") o.force = true;
     else throw new Error(`Option inconnue : ${a}`);
   }
-  if (!PROVIDERS[o.provider]) throw new Error("--provider doit valoir openai, anthropic ou gemini.");
+  if (!PROVIDERS[o.provider]) {
+    throw new Error("--provider doit valoir openai, anthropic, gemini ou openrouter.");
+  }
+  if (o.provider === "openrouter" && !o.llm && o.model) {
+    const vendor = o.model.split("/")[0] ?? "";
+    o.llm = OPENROUTER_FOLDERS[vendor] ?? vendor.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+  }
   if (!o.model && !o.dryRun) throw new Error("--model est obligatoire (nom exact du modèle).");
   if (!LOTS[o.lot]) throw new Error(`Lot inconnu : ${o.lot} (${Object.keys(LOTS).join(", ")}).`);
   o.llm ??= PROVIDERS[o.provider].folder;
@@ -62,9 +75,13 @@ async function call(provider, model, key, prompt) {
     if (!res.ok) throw new Error(`HTTP ${res.status} : ${body.slice(0, 300)}`);
     return JSON.parse(body);
   };
-  if (provider === "openai") {
+  if (provider === "openai" || provider === "openrouter") {
+    const url =
+      provider === "openai"
+        ? "https://api.openai.com/v1/chat/completions"
+        : "https://openrouter.ai/api/v1/chat/completions";
     const r = await json(
-      await fetch("https://api.openai.com/v1/chat/completions", {
+      await fetch(url, {
         method: "POST",
         headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
         body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }] }),
@@ -120,7 +137,7 @@ async function main() {
   if (!existsSync(modelFile)) {
     writeFileSync(
       modelFile,
-      `Fournisseur : ${o.provider}\nModèle : ${o.model}\nDate : ${new Date().toISOString()}\nExécution : API, un appel isolé par essai (run-api.mjs)\n`,
+      `Fournisseur : ${o.provider}\nModèle : ${o.model}\nDate : ${new Date().toISOString()}\nExécution : API${o.provider === "openrouter" ? " via OpenRouter" : ""}, un appel isolé par essai (run-api.mjs)\n`,
     );
   }
 

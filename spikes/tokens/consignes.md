@@ -12,7 +12,14 @@ Plan court : **10 essais par LLM** (lot `court` : 5 textes × format A × `tradu
    ```bash
    node spikes/tokens/run-api.mjs --provider openai --dry-run
    ```
-2. Exécuter le lot court sur chaque LLM (clé dans l'environnement, jamais dans un fichier ni dans une commande enregistrée ; nom exact du modèle, celui qu'utilise le grand public de préférence) :
+2. Exécuter le lot court sur chaque LLM. **Avec une clé OpenRouter (une seule clé pour tous les LLM)** :
+   ```bash
+   export OPENROUTER_API_KEY=…   # saisie par Nico, ne pas l'écrire dans le dépôt
+   node spikes/tokens/run-api.mjs --provider openrouter --model openai/<modèle>      # → reponses/chatgpt/
+   node spikes/tokens/run-api.mjs --provider openrouter --model anthropic/<modèle>   # → reponses/claude/
+   # facultatif : --model google/<modèle> → reponses/gemini/
+   ```
+   Identifiants de modèles : ceux de la page des modèles d'OpenRouter (par exemple la version courante de GPT et de Claude). Sinon, avec les clés de chaque fournisseur (clé dans l'environnement, jamais dans un fichier ni dans une commande enregistrée ; nom exact du modèle, celui qu'utilise le grand public de préférence) :
    ```bash
    export OPENAI_API_KEY=…      # saisie par Nico, ne pas l'écrire dans le dépôt
    node spikes/tokens/run-api.mjs --provider openai --model <modèle>
