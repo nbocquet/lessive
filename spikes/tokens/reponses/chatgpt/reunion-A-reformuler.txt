@@ -1,0 +1,14 @@
+# Compte rendu de la réunion du comité du 4 novembre à LIEU_001
+
+**Membres présents :** PERSONNE_001 (président), PERSONNE_002 (trésorière) et PERSONNE_003 (secrétaire).
+
+**1. Budget**  
+PERSONNE_002 a présenté les comptes de l’ORGANISATION_001, qui font état d’un déficit prévisionnel de 3 200 francs. PERSONNE_001 a proposé de reprendre contact avec les sponsors avant la fin du mois. PERSONNE_003 se chargera de rédiger le courrier.
+
+**2. Tournoi de printemps**  
+Le comité a retenu la salle de LIEU_001 pour le 18 avril. La réservation nécessite le versement d’un acompte de 400 francs sur le compte dont l’IBAN est IBAN_001. PERSONNE_002 effectuera le virement cette semaine. PERSONNE_001 confirmera la réservation auprès de la mairie.
+
+**3. Questions diverses**  
+Pour toute question, veuillez contacter PERSONNE_003 au TELEPHONE_001. La prochaine réunion de l’ORGANISATION_001 se tiendra le 2 décembre.
+
+*Compte rendu rédigé par PERSONNE_003.*

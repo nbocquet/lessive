@@ -1,0 +1,16 @@
+From: PERSONNE_001
+To: PERSONNE_002
+Subject: March invoice, payment not found
+
+Hello Ms. PERSONNE_002,
+
+I am following up regarding the March invoice for our LIEU_001 warehouse. We paid the amount on the 28th from the IBAN account IBAN_001 of ORGANISATION_001, but your accounting department says it has not received anything. Could you please check on your end?
+
+In addition, my associate PERSONNE_003 noticed that the delivery address was still that of the former site. Please correct it and confirm the next date on which the delivery driver will come by.
+
+You can reach me on my mobile, TELEPHONE_001, or at EMAIL_001.
+
+Thank you in advance, PERSONNE_002, for your prompt attention.
+
+PERSONNE_001
+Director, ORGANISATION_001
