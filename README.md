@@ -60,6 +60,12 @@ npm run preview
 
 `dist/` est un site statique : tout serveur de fichiers convient, à condition de servir les fichiers `.wasm` avec le type `application/wasm`. Le site fonctionne sans serveur de traitement.
 
+### Référencement et partage
+
+Les métadonnées de recherche, de partage et les données structurées sont dans `src/web/index.html`. La page contient une courte présentation accessible sans exécuter l'application. L'aperçu de partage est `src/web/public/social-preview.png` (1200 × 630), avec sa source vectorielle dans `scripts/assets/social-preview.svg`. Le sitemap ne liste que la page d'accueil : les étapes de traitement ne sont pas des pages publiques distinctes.
+
+L'URL de référence est `https://nbocquet.github.io/lessive/`. Pour référencer une autre installation publique, adaptez ensemble les URL de `index.html` et de `src/web/public/sitemap.xml` avant le build. Sur GitHub Pages, le sitemap est accessible sous `/lessive/sitemap.xml` ; un fichier `robots.txt` placé dans ce sous-dossier ne configure pas l'exploration de l'origine `nbocquet.github.io`.
+
 ### Le modèle de reconnaissance des noms (NER)
 
 Les règles (courriels, IBAN, AVS, téléphones, dates, prénoms courants…) fonctionnent seules. Pour mieux repérer les noms de personnes, de lieux et d'organisations, Lessive utilise un petit modèle d'apprentissage automatique qui s'exécute localement. **Le dépôt ne contient aucun modèle.** La version en ligne fournit `Xenova/camembert-ner` ; pour une installation locale, vous le téléchargez vous-même une fois, puis vous le chargez dans Lessive.

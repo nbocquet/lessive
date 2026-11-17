@@ -30,7 +30,8 @@
     const current = app.screen;
     if (current !== previousScreen) {
       previousScreen = current;
-      main?.focus();
+      main?.focus({ preventScroll: true });
+      main?.scrollIntoView({ block: "start" });
     }
   });
 </script>
@@ -40,7 +41,7 @@
 
 <div class="page">
   <header>
-    <h1>Lessive</h1>
+    <h1><img src="./lessive-mark.svg" width="40" height="48" alt="" />Lessive</h1>
     <p>Traitement local : votre texte reste dans ce navigateur.</p>
   </header>
 
@@ -75,16 +76,24 @@
 
   header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     flex-wrap: wrap;
     gap: 0.35rem 1.5rem;
     margin-bottom: 1rem;
   }
 
   h1 {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
     margin: 0;
     font-size: 1.3rem;
     font-weight: 650;
+  }
+
+  h1 img {
+    display: block;
+    flex: none;
   }
 
   header p {
