@@ -1,6 +1,6 @@
 # ADR 0001 — Modèle NER
 
-- **Statut : Proposé — en attente des mesures**
+- **Statut : Proposé — mesures Node faites, recommandation : n° 1 ; licence et mesure navigateur à trancher par Nico (porte G0)**
 - Date de rédaction : 2026-11-16
 - Décideur : Nico (porte G0)
 - Tâche : S1 (PLAN.md, phase 0). Bloque la phase 3 (NER) et la tâche T4.4.
@@ -82,14 +82,18 @@ Statut : non évalué, à réexaminer seulement si aucun modèle de classificati
 
 ### Sous Node (généré par `npm run eval`, voir `spikes/ner/results/`)
 
-| # | Modèle | dtype | Poids + tokenizer (Mo) | Chargement (ms) | Moy./phrase (ms) | 5000 car. (ms) | RSS pic (Mo) | PERSON fr : P exact / R exact | PERSON fr : P recouv. / **R recouv.** | PERSON en : R recouv. | ORG fr : F1 recouv. | LOC fr : F1 recouv. | Entités non localisées |
+| # | Modèle | dtype | Poids + tokenizer (Mo) | Chargement (ms) | Moy./phrase (ms) | 5000 car. (ms) | Mémoire ajoutée au chargement (Mo) | PERSON fr : P exact / R exact | PERSON fr : P recouv. / **R recouv.** | PERSON en : R recouv. | ORG fr : F1 recouv. | LOC fr : F1 recouv. | Entités non localisées |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `Xenova/distilbert-base-multilingual-cased-ner-hrl` | | | | | | | | | | | | |
-| 2 | `Xenova/camembert-ner` | | | | | | | | | | | | |
-| 3 | `jiting/xlm-roberta-base-ner-hrl_onnx` | | | | | | | | | | | | |
-| 4 | `Xenova/bert-base-multilingual-cased-ner-hrl` | | | | | | | | | | | | |
-| 5 | `promptshield/miniscule` | | | | | | | | | | | | |
-| 6 | `cmarkea/distilcamembert-base-ner` | | | | | | | | | | | | |
+| 1 | `Xenova/distilbert-base-multilingual-cased-ner-hrl` | q8 | 138,3 | 374 | 4,0 | 318 | 143 | 0,89 / 0,79 | 0,96 / **0,85** | 0,87 | 0,84 | 0,87 | 0 |
+| 2 | `Xenova/camembert-ner` | q8 | 113,7 | 447 | 8,5 | 482 | 255 | 0,86 / 0,81 | 0,92 / **0,87** | 0,79 | 0,89 | 0,93 | 0 |
+| 3 | `jiting/xlm-roberta-base-ner-hrl_onnx` | non mesuré | | | | | | | | | | | |
+| 4 | `Xenova/bert-base-multilingual-cased-ner-hrl` | non mesuré | | | | | | | | | | | |
+| 5 | `promptshield/miniscule` | non mesuré | | | | | | | | | | | |
+| 6 | `cmarkea/distilcamembert-base-ner` | q8 | 146,8 | 341 | 4,3 | 275 | 96 | 0,25 / 0,27 | 0,71 / **0,76** | 0,65 | 0,29 | 0,38 | 2 |
+
+Mesuré le 17 novembre 2026 sous Node 22, Transformers.js 4.3.2, onnxruntime-node, CPU Xeon 2 cœurs, sur les corpus synthétiques (`corpus/`, 150 phrases par langue, environ 125 personnes par langue : quelques points d'écart ne sont pas significatifs). Le n° 6 a reçu un `tokenizer.json` généré à partir de son SentencePiece (conversion vérifiée : mêmes identifiants que le tokenizer d'origine).
+
+**Correctif nécessaire, à reprendre dans `src/ner` :** l'agrégation `aggregation_strategy: "simple"` de Transformers.js 4.3.2 fusionne deux entités séparées par d'autres mots quand le modèle étiquette en IO (`I-PER` sans `B-`, cas des modèles CamemBERT) : « Claire Dubois a rencontré Jean-Marc Favre » donnait une seule personne. Le banc regroupe désormais les jetons bruts selon leur contiguïté (`groupRawTokens`), ce qui a fait passer le rappel PERSON fr de CamemBERT-NER de 0,62 à 0,87.
 
 ### Dans le navigateur (mesure manuelle, page `spikes/ner/browser`)
 
@@ -106,12 +110,12 @@ Navigateur et version : ______ · Machine (CPU, cœurs, RAM) : ______ · Threads
 
 | # | C1 licence | C2 poids ≤ 150 Mo | C3 rappel PERSON fr ≥ 0,85 | C4 ≤ 5 s / 5000 car. (navigateur) | Verdict |
 |---|---|---|---|---|---|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
-| 5 | | | | | |
-| 6 | | | | | |
+| 1 | AFL-3.0 + réserve CoNLL : **à trancher** | ✅ 138 Mo | ✅ 0,85 (limite) ; en 0,87 | Node 0,3 s ; navigateur à mesurer | **Recommandé** (fr + en, meilleure précision) |
+| 2 | ✅ MIT | ✅ 114 Mo | ✅ 0,87 ; en 0,79 | Node 0,5 s ; navigateur à mesurer | Repli français (meilleur ORG/LOC fr) |
+| 3 | AFL-3.0 | ❌ 279 Mo | non mesuré | | Hors cible |
+| 4 | AFL-3.0 | ❌ 178 Mo | non mesuré | | Hors cible |
+| 5 | AFL-3.0 | ✅ annoncé 140 Mo | non mesuré | | Non mesuré |
+| 6 | ✅ MIT | ✅ 147 Mo (limite) | ❌ 0,76 | Node 0,3 s | **Écarté** (qualité, bornes imprécises) |
 
 ## Procédure pour compléter cet ADR
 

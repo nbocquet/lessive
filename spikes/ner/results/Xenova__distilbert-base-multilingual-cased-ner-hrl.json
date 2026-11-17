@@ -1,0 +1,3932 @@
+{
+  "model": "Xenova/distilbert-base-multilingual-cased-ner-hrl",
+  "date": "2026-11-17",
+  "dtype": "q8",
+  "env": {
+    "transformers": "4.3.2",
+    "node": "v22.23.4",
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cores": 2
+  },
+  "perf": {
+    "loadMs": 374.14942900000005,
+    "sentences": 300,
+    "meanSentenceMs": 4.003472413333311,
+    "p95SentenceMs": 5.335557000000335,
+    "longChars": 5000,
+    "longChunks": 5,
+    "longRuns": 3,
+    "longMedianMs": 317.89519199999995,
+    "longMinMs": 301.20741999999973,
+    "rssBefore": 379572224,
+    "rssAfterLoad": 529530880,
+    "rssPeak": 530055168
+  },
+  "size": {
+    "weightsFile": "onnx/model_quantized.onnx",
+    "weightsBytes": 135359829,
+    "neededBytes": 138280616,
+    "totalBytes": 138280616
+  },
+  "byLang": {
+    "fr": {
+      "exact": {
+        "PERSON": {
+          "precision": 0.8899082568807339,
+          "recall": 0.7886178861788617,
+          "f1": 0.8362068965517241,
+          "tp": 97,
+          "fp": 12,
+          "fn": 26,
+          "support": 123
+        },
+        "ORGANIZATION": {
+          "precision": 0.44,
+          "recall": 0.6111111111111112,
+          "f1": 0.5116279069767442,
+          "tp": 11,
+          "fp": 14,
+          "fn": 7,
+          "support": 18
+        },
+        "LOCATION": {
+          "precision": 0.90625,
+          "recall": 0.8285714285714286,
+          "f1": 0.8656716417910447,
+          "tp": 29,
+          "fp": 3,
+          "fn": 6,
+          "support": 35
+        },
+        "ALL": {
+          "precision": 0.8253012048192772,
+          "recall": 0.7784090909090909,
+          "f1": 0.801169590643275,
+          "tp": 137,
+          "fp": 29,
+          "fn": 39,
+          "support": 176
+        },
+        "ANY": {
+          "precision": 0.8614457831325302,
+          "recall": 0.8125,
+          "f1": 0.8362573099415206,
+          "tp": 143,
+          "fp": 23,
+          "fn": 33,
+          "support": 176
+        }
+      },
+      "overlap": {
+        "PERSON": {
+          "precision": 0.963302752293578,
+          "recall": 0.8536585365853658,
+          "f1": 0.9051724137931033,
+          "tp": 105,
+          "fp": 4,
+          "fn": 18,
+          "support": 123
+        },
+        "ORGANIZATION": {
+          "precision": 0.72,
+          "recall": 1,
+          "f1": 0.8372093023255813,
+          "tp": 18,
+          "fp": 7,
+          "fn": 0,
+          "support": 18
+        },
+        "LOCATION": {
+          "precision": 0.90625,
+          "recall": 0.8285714285714286,
+          "f1": 0.8656716417910447,
+          "tp": 29,
+          "fp": 3,
+          "fn": 6,
+          "support": 35
+        },
+        "ALL": {
+          "precision": 0.9156626506024096,
+          "recall": 0.8636363636363636,
+          "f1": 0.8888888888888888,
+          "tp": 152,
+          "fp": 14,
+          "fn": 24,
+          "support": 176
+        },
+        "ANY": {
+          "precision": 0.9578313253012049,
+          "recall": 0.9034090909090909,
+          "f1": 0.9298245614035089,
+          "tp": 159,
+          "fp": 7,
+          "fn": 17,
+          "support": 176
+        }
+      }
+    },
+    "en": {
+      "exact": {
+        "PERSON": {
+          "precision": 0.956140350877193,
+          "recall": 0.8650793650793651,
+          "f1": 0.9083333333333333,
+          "tp": 109,
+          "fp": 5,
+          "fn": 17,
+          "support": 126
+        },
+        "ORGANIZATION": {
+          "precision": 0.6521739130434783,
+          "recall": 0.8333333333333334,
+          "f1": 0.7317073170731708,
+          "tp": 15,
+          "fp": 8,
+          "fn": 3,
+          "support": 18
+        },
+        "LOCATION": {
+          "precision": 0.9117647058823529,
+          "recall": 0.8611111111111112,
+          "f1": 0.8857142857142858,
+          "tp": 31,
+          "fp": 3,
+          "fn": 5,
+          "support": 36
+        },
+        "ALL": {
+          "precision": 0.9064327485380117,
+          "recall": 0.8611111111111112,
+          "f1": 0.8831908831908832,
+          "tp": 155,
+          "fp": 16,
+          "fn": 25,
+          "support": 180
+        },
+        "ANY": {
+          "precision": 0.9415204678362573,
+          "recall": 0.8944444444444445,
+          "f1": 0.9173789173789174,
+          "tp": 161,
+          "fp": 10,
+          "fn": 19,
+          "support": 180
+        }
+      },
+      "overlap": {
+        "PERSON": {
+          "precision": 0.956140350877193,
+          "recall": 0.8650793650793651,
+          "f1": 0.9083333333333333,
+          "tp": 109,
+          "fp": 5,
+          "fn": 17,
+          "support": 126
+        },
+        "ORGANIZATION": {
+          "precision": 0.782608695652174,
+          "recall": 1,
+          "f1": 0.878048780487805,
+          "tp": 18,
+          "fp": 5,
+          "fn": 0,
+          "support": 18
+        },
+        "LOCATION": {
+          "precision": 0.9117647058823529,
+          "recall": 0.8611111111111112,
+          "f1": 0.8857142857142858,
+          "tp": 31,
+          "fp": 3,
+          "fn": 5,
+          "support": 36
+        },
+        "ALL": {
+          "precision": 0.9239766081871345,
+          "recall": 0.8777777777777778,
+          "f1": 0.9002849002849003,
+          "tp": 158,
+          "fp": 13,
+          "fn": 22,
+          "support": 180
+        },
+        "ANY": {
+          "precision": 0.9766081871345029,
+          "recall": 0.9277777777777778,
+          "f1": 0.9515669515669516,
+          "tp": 167,
+          "fp": 4,
+          "fn": 13,
+          "support": 180
+        }
+      }
+    },
+    "all": {
+      "exact": {
+        "PERSON": {
+          "precision": 0.9237668161434978,
+          "recall": 0.8273092369477911,
+          "f1": 0.8728813559322033,
+          "tp": 206,
+          "fp": 17,
+          "fn": 43,
+          "support": 249
+        },
+        "ORGANIZATION": {
+          "precision": 0.5416666666666666,
+          "recall": 0.7222222222222222,
+          "f1": 0.619047619047619,
+          "tp": 26,
+          "fp": 22,
+          "fn": 10,
+          "support": 36
+        },
+        "LOCATION": {
+          "precision": 0.9090909090909091,
+          "recall": 0.8450704225352113,
+          "f1": 0.8759124087591241,
+          "tp": 60,
+          "fp": 6,
+          "fn": 11,
+          "support": 71
+        },
+        "ALL": {
+          "precision": 0.8664688427299704,
+          "recall": 0.8202247191011236,
+          "f1": 0.8427128427128426,
+          "tp": 292,
+          "fp": 45,
+          "fn": 64,
+          "support": 356
+        },
+        "ANY": {
+          "precision": 0.9020771513353115,
+          "recall": 0.8539325842696629,
+          "f1": 0.8773448773448773,
+          "tp": 304,
+          "fp": 33,
+          "fn": 52,
+          "support": 356
+        }
+      },
+      "overlap": {
+        "PERSON": {
+          "precision": 0.9596412556053812,
+          "recall": 0.8594377510040161,
+          "f1": 0.9067796610169492,
+          "tp": 214,
+          "fp": 9,
+          "fn": 35,
+          "support": 249
+        },
+        "ORGANIZATION": {
+          "precision": 0.75,
+          "recall": 1,
+          "f1": 0.8571428571428571,
+          "tp": 36,
+          "fp": 12,
+          "fn": 0,
+          "support": 36
+        },
+        "LOCATION": {
+          "precision": 0.9090909090909091,
+          "recall": 0.8450704225352113,
+          "f1": 0.8759124087591241,
+          "tp": 60,
+          "fp": 6,
+          "fn": 11,
+          "support": 71
+        },
+        "ALL": {
+          "precision": 0.9198813056379822,
+          "recall": 0.8707865168539326,
+          "f1": 0.8946608946608947,
+          "tp": 310,
+          "fp": 27,
+          "fn": 46,
+          "support": 356
+        },
+        "ANY": {
+          "precision": 0.9673590504451038,
+          "recall": 0.9157303370786517,
+          "f1": 0.9408369408369408,
+          "tp": 326,
+          "fp": 11,
+          "fn": 30,
+          "support": 356
+        }
+      }
+    }
+  },
+  "byTag": {
+    "fr": {
+      "std": {
+        "exact": {
+          "PERSON": {
+            "precision": 0.95,
+            "recall": 0.95,
+            "f1": 0.9500000000000001,
+            "tp": 19,
+            "fp": 1,
+            "fn": 1,
+            "support": 20
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.9047619047619048,
+            "recall": 0.95,
+            "f1": 0.9268292682926829,
+            "tp": 19,
+            "fp": 2,
+            "fn": 1,
+            "support": 20
+          },
+          "ANY": {
+            "precision": 0.9047619047619048,
+            "recall": 0.95,
+            "f1": 0.9268292682926829,
+            "tp": 19,
+            "fp": 2,
+            "fn": 1,
+            "support": 20
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 20,
+            "fp": 0,
+            "fn": 0,
+            "support": 20
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.9523809523809523,
+            "recall": 1,
+            "f1": 0.975609756097561,
+            "tp": 20,
+            "fp": 1,
+            "fn": 0,
+            "support": 20
+          },
+          "ANY": {
+            "precision": 0.9523809523809523,
+            "recall": 1,
+            "f1": 0.975609756097561,
+            "tp": 20,
+            "fp": 1,
+            "fn": 0,
+            "support": 20
+          }
+        }
+      },
+      "swiss": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          }
+        }
+      },
+      "foreign": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0,
+            "support": 13
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 15,
+            "fp": 0,
+            "fn": 0,
+            "support": 15
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 15,
+            "fp": 0,
+            "fn": 0,
+            "support": 15
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0,
+            "support": 13
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 15,
+            "fp": 0,
+            "fn": 0,
+            "support": 15
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 15,
+            "fp": 0,
+            "fn": 0,
+            "support": 15
+          }
+        }
+      },
+      "first": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.9090909090909091,
+            "f1": 0.9523809523809523,
+            "tp": 10,
+            "fp": 0,
+            "fn": 1,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.9090909090909091,
+            "recall": 0.9090909090909091,
+            "f1": 0.9090909090909091,
+            "tp": 10,
+            "fp": 1,
+            "fn": 1,
+            "support": 11
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.9090909090909091,
+            "f1": 0.9523809523809523,
+            "tp": 10,
+            "fp": 0,
+            "fn": 1,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.9090909090909091,
+            "recall": 0.9090909090909091,
+            "f1": 0.9090909090909091,
+            "tp": 10,
+            "fp": 1,
+            "fn": 1,
+            "support": 11
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          }
+        }
+      },
+      "lower": {
+        "exact": {
+          "PERSON": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 9,
+            "support": 9
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "support": 1
+          },
+          "ALL": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 10,
+            "support": 10
+          },
+          "ANY": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 10,
+            "support": 10
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 9,
+            "support": 9
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "support": 1
+          },
+          "ALL": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 10,
+            "support": 10
+          },
+          "ANY": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 10,
+            "support": 10
+          }
+        }
+      },
+      "email": {
+        "exact": {
+          "PERSON": {
+            "precision": 0.8181818181818182,
+            "recall": 0.782608695652174,
+            "f1": 0.8,
+            "tp": 18,
+            "fp": 4,
+            "fn": 5,
+            "support": 23
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 2,
+            "fn": 1,
+            "support": 1
+          },
+          "LOCATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.72,
+            "recall": 0.75,
+            "f1": 0.7346938775510204,
+            "tp": 18,
+            "fp": 7,
+            "fn": 6,
+            "support": 24
+          },
+          "ANY": {
+            "precision": 0.76,
+            "recall": 0.7916666666666666,
+            "f1": 0.7755102040816326,
+            "tp": 19,
+            "fp": 6,
+            "fn": 5,
+            "support": 24
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 0.9090909090909091,
+            "recall": 0.8695652173913043,
+            "f1": 0.888888888888889,
+            "tp": 20,
+            "fp": 2,
+            "fn": 3,
+            "support": 23
+          },
+          "ORGANIZATION": {
+            "precision": 0.5,
+            "recall": 1,
+            "f1": 0.6666666666666666,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "support": 1
+          },
+          "LOCATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.84,
+            "recall": 0.875,
+            "f1": 0.8571428571428572,
+            "tp": 21,
+            "fp": 4,
+            "fn": 3,
+            "support": 24
+          },
+          "ANY": {
+            "precision": 0.88,
+            "recall": 0.9166666666666666,
+            "f1": 0.8979591836734694,
+            "tp": 22,
+            "fp": 3,
+            "fn": 2,
+            "support": 24
+          }
+        }
+      },
+      "title": {
+        "exact": {
+          "PERSON": {
+            "precision": 0.6363636363636364,
+            "recall": 0.5833333333333334,
+            "f1": 0.6086956521739131,
+            "tp": 7,
+            "fp": 4,
+            "fn": 5,
+            "support": 12
+          },
+          "ORGANIZATION": {
+            "precision": 0.5,
+            "recall": 1,
+            "f1": 0.6666666666666666,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "support": 1
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.6153846153846154,
+            "recall": 0.6153846153846154,
+            "f1": 0.6153846153846154,
+            "tp": 8,
+            "fp": 5,
+            "fn": 5,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.6153846153846154,
+            "recall": 0.6153846153846154,
+            "f1": 0.6153846153846154,
+            "tp": 8,
+            "fp": 5,
+            "fn": 5,
+            "support": 13
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.9166666666666666,
+            "f1": 0.9565217391304348,
+            "tp": 11,
+            "fp": 0,
+            "fn": 1,
+            "support": 12
+          },
+          "ORGANIZATION": {
+            "precision": 0.5,
+            "recall": 1,
+            "f1": 0.6666666666666666,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "support": 1
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.9230769230769231,
+            "recall": 0.9230769230769231,
+            "f1": 0.9230769230769231,
+            "tp": 12,
+            "fp": 1,
+            "fn": 1,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0,
+            "support": 13
+          }
+        }
+      },
+      "org": {
+        "exact": {
+          "PERSON": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": 0.5384615384615384,
+            "recall": 0.5833333333333334,
+            "f1": 0.5599999999999999,
+            "tp": 7,
+            "fp": 6,
+            "fn": 5,
+            "support": 12
+          },
+          "LOCATION": {
+            "precision": 0.5,
+            "recall": 1,
+            "f1": 0.6666666666666666,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 0.5333333333333333,
+            "recall": 0.6153846153846154,
+            "f1": 0.5714285714285715,
+            "tp": 8,
+            "fp": 7,
+            "fn": 5,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.5333333333333333,
+            "recall": 0.6153846153846154,
+            "f1": 0.5714285714285715,
+            "tp": 8,
+            "fp": 7,
+            "fn": 5,
+            "support": 13
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": 0.9230769230769231,
+            "recall": 1,
+            "f1": 0.9600000000000001,
+            "tp": 12,
+            "fp": 1,
+            "fn": 0,
+            "support": 12
+          },
+          "LOCATION": {
+            "precision": 0.5,
+            "recall": 1,
+            "f1": 0.6666666666666666,
+            "tp": 1,
+            "fp": 1,
+            "fn": 0,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 0.8666666666666667,
+            "recall": 1,
+            "f1": 0.9285714285714286,
+            "tp": 13,
+            "fp": 2,
+            "fn": 0,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.8666666666666667,
+            "recall": 1,
+            "f1": 0.9285714285714286,
+            "tp": 13,
+            "fp": 2,
+            "fn": 0,
+            "support": 13
+          }
+        }
+      },
+      "commune": {
+        "exact": {
+          "PERSON": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 2,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 0.8,
+            "f1": 0.888888888888889,
+            "tp": 16,
+            "fp": 0,
+            "fn": 4,
+            "support": 20
+          },
+          "ALL": {
+            "precision": 0.8421052631578947,
+            "recall": 0.8,
+            "f1": 0.8205128205128205,
+            "tp": 16,
+            "fp": 3,
+            "fn": 4,
+            "support": 20
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 0.95,
+            "f1": 0.9743589743589743,
+            "tp": 19,
+            "fp": 0,
+            "fn": 1,
+            "support": 20
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 2,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 0.8,
+            "f1": 0.888888888888889,
+            "tp": 16,
+            "fp": 0,
+            "fn": 4,
+            "support": 20
+          },
+          "ALL": {
+            "precision": 0.8421052631578947,
+            "recall": 0.8,
+            "f1": 0.8205128205128205,
+            "tp": 16,
+            "fp": 3,
+            "fn": 4,
+            "support": 20
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 0.95,
+            "f1": 0.9743589743589743,
+            "tp": 19,
+            "fp": 0,
+            "fn": 1,
+            "support": 20
+          }
+        }
+      },
+      "accent": {
+        "exact": {
+          "PERSON": {
+            "precision": 0.8,
+            "recall": 0.8,
+            "f1": 0.8000000000000002,
+            "tp": 4,
+            "fp": 1,
+            "fn": 1,
+            "support": 5
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "support": 5
+          },
+          "ALL": {
+            "precision": 0.9,
+            "recall": 0.9,
+            "f1": 0.9,
+            "tp": 9,
+            "fp": 1,
+            "fn": 1,
+            "support": 10
+          },
+          "ANY": {
+            "precision": 0.9,
+            "recall": 0.9,
+            "f1": 0.9,
+            "tp": 9,
+            "fp": 1,
+            "fn": 1,
+            "support": 10
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "support": 5
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "support": 5
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 10,
+            "fp": 0,
+            "fn": 0,
+            "support": 10
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 10,
+            "fp": 0,
+            "fn": 0,
+            "support": 10
+          }
+        }
+      },
+      "emoji": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.875,
+            "f1": 0.9333333333333333,
+            "tp": 7,
+            "fp": 0,
+            "fn": 1,
+            "support": 8
+          },
+          "ORGANIZATION": {
+            "precision": 0.25,
+            "recall": 0.5,
+            "f1": 0.3333333333333333,
+            "tp": 1,
+            "fp": 3,
+            "fn": 1,
+            "support": 2
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "support": 3
+          },
+          "ALL": {
+            "precision": 0.7692307692307693,
+            "recall": 0.7692307692307693,
+            "f1": 0.7692307692307693,
+            "tp": 10,
+            "fp": 3,
+            "fn": 3,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.8461538461538461,
+            "recall": 0.8461538461538461,
+            "f1": 0.8461538461538461,
+            "tp": 11,
+            "fp": 2,
+            "fn": 2,
+            "support": 13
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.875,
+            "f1": 0.9333333333333333,
+            "tp": 7,
+            "fp": 0,
+            "fn": 1,
+            "support": 8
+          },
+          "ORGANIZATION": {
+            "precision": 0.5,
+            "recall": 1,
+            "f1": 0.6666666666666666,
+            "tp": 2,
+            "fp": 2,
+            "fn": 0,
+            "support": 2
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
+            "tp": 2,
+            "fp": 0,
+            "fn": 1,
+            "support": 3
+          },
+          "ALL": {
+            "precision": 0.8461538461538461,
+            "recall": 0.8461538461538461,
+            "f1": 0.8461538461538461,
+            "tp": 11,
+            "fp": 2,
+            "fn": 2,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.9230769230769231,
+            "recall": 0.9230769230769231,
+            "f1": 0.9230769230769231,
+            "tp": 12,
+            "fp": 1,
+            "fn": 1,
+            "support": 13
+          }
+        }
+      },
+      "none": {
+        "exact": {
+          "PERSON": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ANY": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ANY": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          }
+        }
+      },
+      "trap": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.7272727272727273,
+            "f1": 0.8421052631578948,
+            "tp": 8,
+            "fp": 0,
+            "fn": 3,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 0.8,
+            "f1": 0.888888888888889,
+            "tp": 12,
+            "fp": 0,
+            "fn": 3,
+            "support": 15
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 0.8,
+            "f1": 0.888888888888889,
+            "tp": 12,
+            "fp": 0,
+            "fn": 3,
+            "support": 15
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.7272727272727273,
+            "f1": 0.8421052631578948,
+            "tp": 8,
+            "fp": 0,
+            "fn": 3,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 0.8,
+            "f1": 0.888888888888889,
+            "tp": 12,
+            "fp": 0,
+            "fn": 3,
+            "support": 15
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 0.8,
+            "f1": 0.888888888888889,
+            "tp": 12,
+            "fp": 0,
+            "fn": 3,
+            "support": 15
+          }
+        }
+      }
+    },
+    "en": {
+      "std": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 20,
+            "fp": 0,
+            "fn": 0,
+            "support": 20
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 20,
+            "fp": 0,
+            "fn": 0,
+            "support": 20
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 20,
+            "fp": 0,
+            "fn": 0,
+            "support": 20
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 20,
+            "fp": 0,
+            "fn": 0,
+            "support": 20
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 20,
+            "fp": 0,
+            "fn": 0,
+            "support": 20
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 20,
+            "fp": 0,
+            "fn": 0,
+            "support": 20
+          }
+        }
+      },
+      "swiss": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          }
+        }
+      },
+      "foreign": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.9230769230769231,
+            "f1": 0.9600000000000001,
+            "tp": 12,
+            "fp": 0,
+            "fn": 1,
+            "support": 13
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "ALL": {
+            "precision": 0.9333333333333333,
+            "recall": 0.9333333333333333,
+            "f1": 0.9333333333333333,
+            "tp": 14,
+            "fp": 1,
+            "fn": 1,
+            "support": 15
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 15,
+            "fp": 0,
+            "fn": 0,
+            "support": 15
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.9230769230769231,
+            "f1": 0.9600000000000001,
+            "tp": 12,
+            "fp": 0,
+            "fn": 1,
+            "support": 13
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "ALL": {
+            "precision": 0.9333333333333333,
+            "recall": 0.9333333333333333,
+            "f1": 0.9333333333333333,
+            "tp": 14,
+            "fp": 1,
+            "fn": 1,
+            "support": 15
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 15,
+            "fp": 0,
+            "fn": 0,
+            "support": 15
+          }
+        }
+      },
+      "first": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 11,
+            "fp": 0,
+            "fn": 0,
+            "support": 11
+          }
+        }
+      },
+      "lower": {
+        "exact": {
+          "PERSON": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 9,
+            "support": 9
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 0,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 10,
+            "support": 10
+          },
+          "ANY": {
+            "precision": 0,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 10,
+            "support": 10
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 9,
+            "support": 9
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 0,
+            "fn": 1,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 0,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 10,
+            "support": 10
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 0.1,
+            "f1": 0.18181818181818182,
+            "tp": 1,
+            "fp": 0,
+            "fn": 9,
+            "support": 10
+          }
+        }
+      },
+      "email": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.9130434782608695,
+            "f1": 0.9545454545454545,
+            "tp": 21,
+            "fp": 0,
+            "fn": 2,
+            "support": 23
+          },
+          "ORGANIZATION": {
+            "precision": 0,
+            "recall": 0,
+            "f1": 0,
+            "tp": 0,
+            "fp": 3,
+            "fn": 1,
+            "support": 1
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.875,
+            "recall": 0.875,
+            "f1": 0.875,
+            "tp": 21,
+            "fp": 3,
+            "fn": 3,
+            "support": 24
+          },
+          "ANY": {
+            "precision": 0.875,
+            "recall": 0.875,
+            "f1": 0.875,
+            "tp": 21,
+            "fp": 3,
+            "fn": 3,
+            "support": 24
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.9130434782608695,
+            "f1": 0.9545454545454545,
+            "tp": 21,
+            "fp": 0,
+            "fn": 2,
+            "support": 23
+          },
+          "ORGANIZATION": {
+            "precision": 0.3333333333333333,
+            "recall": 1,
+            "f1": 0.5,
+            "tp": 1,
+            "fp": 2,
+            "fn": 0,
+            "support": 1
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 0.9166666666666666,
+            "recall": 0.9166666666666666,
+            "f1": 0.9166666666666666,
+            "tp": 22,
+            "fp": 2,
+            "fn": 2,
+            "support": 24
+          },
+          "ANY": {
+            "precision": 0.9583333333333334,
+            "recall": 0.9583333333333334,
+            "f1": 0.9583333333333334,
+            "tp": 23,
+            "fp": 1,
+            "fn": 1,
+            "support": 24
+          }
+        }
+      },
+      "title": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          },
+          "ORGANIZATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "support": 1
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0,
+            "support": 13
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          },
+          "ORGANIZATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "support": 1
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 13,
+            "fp": 0,
+            "fn": 0,
+            "support": 13
+          }
+        }
+      },
+      "org": {
+        "exact": {
+          "PERSON": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": 0.9166666666666666,
+            "recall": 0.9166666666666666,
+            "f1": 0.9166666666666666,
+            "tp": 11,
+            "fp": 1,
+            "fn": 1,
+            "support": 12
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 0.8571428571428571,
+            "recall": 0.9230769230769231,
+            "f1": 0.888888888888889,
+            "tp": 12,
+            "fp": 2,
+            "fn": 1,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.8571428571428571,
+            "recall": 0.9230769230769231,
+            "f1": 0.888888888888889,
+            "tp": 12,
+            "fp": 2,
+            "fn": 1,
+            "support": 13
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 12,
+            "fp": 0,
+            "fn": 0,
+            "support": 12
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 1,
+            "fp": 0,
+            "fn": 0,
+            "support": 1
+          },
+          "ALL": {
+            "precision": 0.9285714285714286,
+            "recall": 1,
+            "f1": 0.962962962962963,
+            "tp": 13,
+            "fp": 1,
+            "fn": 0,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.9285714285714286,
+            "recall": 1,
+            "f1": 0.962962962962963,
+            "tp": 13,
+            "fp": 1,
+            "fn": 0,
+            "support": 13
+          }
+        }
+      },
+      "commune": {
+        "exact": {
+          "PERSON": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 4,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 0.85,
+            "f1": 0.9189189189189189,
+            "tp": 17,
+            "fp": 0,
+            "fn": 3,
+            "support": 20
+          },
+          "ALL": {
+            "precision": 0.8095238095238095,
+            "recall": 0.85,
+            "f1": 0.8292682926829269,
+            "tp": 17,
+            "fp": 4,
+            "fn": 3,
+            "support": 20
+          },
+          "ANY": {
+            "precision": 0.9047619047619048,
+            "recall": 0.95,
+            "f1": 0.9268292682926829,
+            "tp": 19,
+            "fp": 2,
+            "fn": 1,
+            "support": 20
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 0,
+            "recall": null,
+            "f1": 0,
+            "tp": 0,
+            "fp": 4,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 0.85,
+            "f1": 0.9189189189189189,
+            "tp": 17,
+            "fp": 0,
+            "fn": 3,
+            "support": 20
+          },
+          "ALL": {
+            "precision": 0.8095238095238095,
+            "recall": 0.85,
+            "f1": 0.8292682926829269,
+            "tp": 17,
+            "fp": 4,
+            "fn": 3,
+            "support": 20
+          },
+          "ANY": {
+            "precision": 0.9523809523809523,
+            "recall": 1,
+            "f1": 0.975609756097561,
+            "tp": 20,
+            "fp": 1,
+            "fn": 0,
+            "support": 20
+          }
+        }
+      },
+      "accent": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "support": 5
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "support": 5
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 10,
+            "fp": 0,
+            "fn": 0,
+            "support": 10
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 10,
+            "fp": 0,
+            "fn": 0,
+            "support": 10
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "support": 5
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 5,
+            "fp": 0,
+            "fn": 0,
+            "support": 5
+          },
+          "ALL": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 10,
+            "fp": 0,
+            "fn": 0,
+            "support": 10
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 10,
+            "fp": 0,
+            "fn": 0,
+            "support": 10
+          }
+        }
+      },
+      "emoji": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.875,
+            "f1": 0.9333333333333333,
+            "tp": 7,
+            "fp": 0,
+            "fn": 1,
+            "support": 8
+          },
+          "ORGANIZATION": {
+            "precision": 0.5,
+            "recall": 0.5,
+            "f1": 0.5,
+            "tp": 1,
+            "fp": 1,
+            "fn": 1,
+            "support": 2
+          },
+          "LOCATION": {
+            "precision": 0.6666666666666666,
+            "recall": 0.6666666666666666,
+            "f1": 0.6666666666666666,
+            "tp": 2,
+            "fp": 1,
+            "fn": 1,
+            "support": 3
+          },
+          "ALL": {
+            "precision": 0.8333333333333334,
+            "recall": 0.7692307692307693,
+            "f1": 0.8,
+            "tp": 10,
+            "fp": 2,
+            "fn": 3,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.8333333333333334,
+            "recall": 0.7692307692307693,
+            "f1": 0.8,
+            "tp": 10,
+            "fp": 2,
+            "fn": 3,
+            "support": 13
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.875,
+            "f1": 0.9333333333333333,
+            "tp": 7,
+            "fp": 0,
+            "fn": 1,
+            "support": 8
+          },
+          "ORGANIZATION": {
+            "precision": 1,
+            "recall": 1,
+            "f1": 1,
+            "tp": 2,
+            "fp": 0,
+            "fn": 0,
+            "support": 2
+          },
+          "LOCATION": {
+            "precision": 0.6666666666666666,
+            "recall": 0.6666666666666666,
+            "f1": 0.6666666666666666,
+            "tp": 2,
+            "fp": 1,
+            "fn": 1,
+            "support": 3
+          },
+          "ALL": {
+            "precision": 0.9166666666666666,
+            "recall": 0.8461538461538461,
+            "f1": 0.8799999999999999,
+            "tp": 11,
+            "fp": 1,
+            "fn": 2,
+            "support": 13
+          },
+          "ANY": {
+            "precision": 0.9166666666666666,
+            "recall": 0.8461538461538461,
+            "f1": 0.8799999999999999,
+            "tp": 11,
+            "fp": 1,
+            "fn": 2,
+            "support": 13
+          }
+        }
+      },
+      "none": {
+        "exact": {
+          "PERSON": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ANY": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ORGANIZATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "LOCATION": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ALL": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          },
+          "ANY": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "tp": 0,
+            "fp": 0,
+            "fn": 0,
+            "support": 0
+          }
+        }
+      },
+      "trap": {
+        "exact": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.7142857142857143,
+            "f1": 0.8333333333333333,
+            "tp": 10,
+            "fp": 0,
+            "fn": 4,
+            "support": 14
+          },
+          "ORGANIZATION": {
+            "precision": 0.6666666666666666,
+            "recall": 1,
+            "f1": 0.8,
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "support": 2
+          },
+          "LOCATION": {
+            "precision": 0.6,
+            "recall": 1,
+            "f1": 0.7499999999999999,
+            "tp": 3,
+            "fp": 2,
+            "fn": 0,
+            "support": 3
+          },
+          "ALL": {
+            "precision": 0.8333333333333334,
+            "recall": 0.7894736842105263,
+            "f1": 0.8108108108108109,
+            "tp": 15,
+            "fp": 3,
+            "fn": 4,
+            "support": 19
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 0.9473684210526315,
+            "f1": 0.972972972972973,
+            "tp": 18,
+            "fp": 0,
+            "fn": 1,
+            "support": 19
+          }
+        },
+        "overlap": {
+          "PERSON": {
+            "precision": 1,
+            "recall": 0.7142857142857143,
+            "f1": 0.8333333333333333,
+            "tp": 10,
+            "fp": 0,
+            "fn": 4,
+            "support": 14
+          },
+          "ORGANIZATION": {
+            "precision": 0.6666666666666666,
+            "recall": 1,
+            "f1": 0.8,
+            "tp": 2,
+            "fp": 1,
+            "fn": 0,
+            "support": 2
+          },
+          "LOCATION": {
+            "precision": 0.6,
+            "recall": 1,
+            "f1": 0.7499999999999999,
+            "tp": 3,
+            "fp": 2,
+            "fn": 0,
+            "support": 3
+          },
+          "ALL": {
+            "precision": 0.8333333333333334,
+            "recall": 0.7894736842105263,
+            "f1": 0.8108108108108109,
+            "tp": 15,
+            "fp": 3,
+            "fn": 4,
+            "support": 19
+          },
+          "ANY": {
+            "precision": 1,
+            "recall": 0.9473684210526315,
+            "f1": 0.972972972972973,
+            "tp": 18,
+            "fp": 0,
+            "fn": 1,
+            "support": 19
+          }
+        }
+      }
+    }
+  },
+  "reconstruction": {
+    "native": 0,
+    "search": 332,
+    "approx": 5,
+    "unlocated": 0,
+    "ignored": 0
+  },
+  "mismatches": [
+    {
+      "id": "fr-011-std",
+      "gold": [
+        {
+          "start": 8,
+          "end": 27,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 8,
+          "end": 17,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 18,
+          "end": 27,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-040-first",
+      "gold": [
+        {
+          "start": 14,
+          "end": 18,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 14,
+          "end": 18,
+          "type": "LOCATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-048-lower",
+      "gold": [
+        {
+          "start": 16,
+          "end": 27,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-049-lower",
+      "gold": [
+        {
+          "start": 20,
+          "end": 33,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-050-lower",
+      "gold": [
+        {
+          "start": 14,
+          "end": 26,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-051-lower",
+      "gold": [
+        {
+          "start": 8,
+          "end": 21,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-052-lower",
+      "gold": [
+        {
+          "start": 6,
+          "end": 13,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-053-lower",
+      "gold": [
+        {
+          "start": 0,
+          "end": 13,
+          "type": "PERSON"
+        },
+        {
+          "start": 23,
+          "end": 29,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-054-lower",
+      "gold": [
+        {
+          "start": 6,
+          "end": 16,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-055-lower",
+      "gold": [
+        {
+          "start": 15,
+          "end": 28,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-056-lower",
+      "gold": [
+        {
+          "start": 14,
+          "end": 31,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-058-email",
+      "gold": [
+        {
+          "start": 6,
+          "end": 11,
+          "type": "PERSON"
+        },
+        {
+          "start": 57,
+          "end": 63,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-059-email",
+      "gold": [
+        {
+          "start": 7,
+          "end": 12,
+          "type": "PERSON"
+        },
+        {
+          "start": 41,
+          "end": 46,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 6,
+          "type": "PERSON"
+        },
+        {
+          "start": 7,
+          "end": 12,
+          "type": "PERSON"
+        },
+        {
+          "start": 41,
+          "end": 46,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-060-email",
+      "gold": [
+        {
+          "start": 18,
+          "end": 28,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 37,
+          "end": 43,
+          "type": "PERSON"
+        },
+        {
+          "start": 76,
+          "end": 81,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 18,
+          "end": 25,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 37,
+          "end": 43,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 76,
+          "end": 81,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-062-email",
+      "gold": [
+        {
+          "start": 22,
+          "end": 28,
+          "type": "PERSON"
+        },
+        {
+          "start": 75,
+          "end": 82,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 22,
+          "end": 28,
+          "type": "PERSON"
+        },
+        {
+          "start": 75,
+          "end": 79,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-063-email",
+      "gold": [
+        {
+          "start": 6,
+          "end": 12,
+          "type": "PERSON"
+        },
+        {
+          "start": 34,
+          "end": 45,
+          "type": "PERSON"
+        },
+        {
+          "start": 49,
+          "end": 55,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 6,
+          "end": 12,
+          "type": "PERSON"
+        },
+        {
+          "start": 34,
+          "end": 38,
+          "type": "PERSON"
+        },
+        {
+          "start": 39,
+          "end": 45,
+          "type": "PERSON"
+        },
+        {
+          "start": 49,
+          "end": 55,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-066-email",
+      "gold": [
+        {
+          "start": 5,
+          "end": 19,
+          "type": "PERSON"
+        },
+        {
+          "start": 21,
+          "end": 34,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 1,
+          "type": "LOCATION"
+        },
+        {
+          "start": 5,
+          "end": 19,
+          "type": "PERSON"
+        },
+        {
+          "start": 21,
+          "end": 34,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-069-title",
+      "gold": [
+        {
+          "start": 3,
+          "end": 9,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 9,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-071-title",
+      "gold": [
+        {
+          "start": 6,
+          "end": 14,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 3,
+          "end": 14,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-077-title",
+      "gold": [
+        {
+          "start": 4,
+          "end": 10,
+          "type": "PERSON"
+        },
+        {
+          "start": 17,
+          "end": 22,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 4,
+          "end": 10,
+          "type": "PERSON"
+        },
+        {
+          "start": 15,
+          "end": 22,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-078-title",
+      "gold": [
+        {
+          "start": 7,
+          "end": 19,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 3,
+          "end": 19,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-079-title",
+      "gold": [
+        {
+          "start": 3,
+          "end": 12,
+          "type": "PERSON"
+        },
+        {
+          "start": 39,
+          "end": 61,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 12,
+          "type": "PERSON"
+        },
+        {
+          "start": 39,
+          "end": 61,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-081-org",
+      "gold": [
+        {
+          "start": 11,
+          "end": 34,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 11,
+          "end": 20,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 24,
+          "end": 34,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-086-org",
+      "gold": [
+        {
+          "start": 0,
+          "end": 26,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 15,
+          "end": 26,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-087-org",
+      "gold": [
+        {
+          "start": 0,
+          "end": 28,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 11,
+          "end": 28,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-088-org",
+      "gold": [
+        {
+          "start": 2,
+          "end": 46,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 2,
+          "end": 13,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 38,
+          "end": 46,
+          "type": "LOCATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-091-org",
+      "gold": [
+        {
+          "start": 0,
+          "end": 23,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 9,
+          "end": 20,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-093-commune",
+      "gold": [
+        {
+          "start": 13,
+          "end": 20,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-096-commune",
+      "gold": [
+        {
+          "start": 0,
+          "end": 6,
+          "type": "LOCATION"
+        },
+        {
+          "start": 10,
+          "end": 17,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 6,
+          "type": "PERSON"
+        },
+        {
+          "start": 10,
+          "end": 17,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-101-commune",
+      "gold": [
+        {
+          "start": 23,
+          "end": 32,
+          "type": "LOCATION"
+        },
+        {
+          "start": 47,
+          "end": 53,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 23,
+          "end": 32,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 47,
+          "end": 53,
+          "type": "LOCATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-104-accent",
+      "gold": [
+        {
+          "start": 0,
+          "end": 12,
+          "type": "PERSON"
+        },
+        {
+          "start": 22,
+          "end": 37,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 4,
+          "end": 12,
+          "type": "PERSON"
+        },
+        {
+          "start": 22,
+          "end": 37,
+          "type": "LOCATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-113-emoji",
+      "gold": [
+        {
+          "start": 2,
+          "end": 10,
+          "type": "LOCATION"
+        },
+        {
+          "start": 26,
+          "end": 38,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 26,
+          "end": 38,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "fr-114-emoji",
+      "gold": [
+        {
+          "start": 11,
+          "end": 14,
+          "type": "PERSON"
+        },
+        {
+          "start": 39,
+          "end": 62,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 11,
+          "end": 14,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 39,
+          "end": 48,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 52,
+          "end": 62,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "fr-139-trap",
+      "gold": [
+        {
+          "start": 0,
+          "end": 8,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-143-trap",
+      "gold": [
+        {
+          "start": 0,
+          "end": 7,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "fr-145-trap",
+      "gold": [
+        {
+          "start": 0,
+          "end": 5,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-029-foreign",
+      "gold": [
+        {
+          "start": 0,
+          "end": 14,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 14,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "en-048-lower",
+      "gold": [
+        {
+          "start": 12,
+          "end": 22,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-049-lower",
+      "gold": [
+        {
+          "start": 17,
+          "end": 29,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-050-lower",
+      "gold": [
+        {
+          "start": 0,
+          "end": 11,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 5,
+          "type": "ORGANIZATION"
+        }
+      ]
+    },
+    {
+      "id": "en-051-lower",
+      "gold": [
+        {
+          "start": 7,
+          "end": 20,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-052-lower",
+      "gold": [
+        {
+          "start": 5,
+          "end": 12,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-053-lower",
+      "gold": [
+        {
+          "start": 0,
+          "end": 13,
+          "type": "PERSON"
+        },
+        {
+          "start": 27,
+          "end": 37,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-054-lower",
+      "gold": [
+        {
+          "start": 5,
+          "end": 17,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-055-lower",
+      "gold": [
+        {
+          "start": 0,
+          "end": 17,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-056-lower",
+      "gold": [
+        {
+          "start": 0,
+          "end": 13,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-058-email",
+      "gold": [
+        {
+          "start": 6,
+          "end": 11,
+          "type": "PERSON"
+        },
+        {
+          "start": 62,
+          "end": 68,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 6,
+          "end": 11,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "en-060-email",
+      "gold": [
+        {
+          "start": 19,
+          "end": 29,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 33,
+          "end": 39,
+          "type": "PERSON"
+        },
+        {
+          "start": 63,
+          "end": 68,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 19,
+          "end": 26,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 27,
+          "end": 39,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 57,
+          "end": 61,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 63,
+          "end": 68,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "en-081-org",
+      "gold": [
+        {
+          "start": 0,
+          "end": 23,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 18,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 19,
+          "end": 23,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "en-096-commune",
+      "gold": [
+        {
+          "start": 0,
+          "end": 6,
+          "type": "LOCATION"
+        },
+        {
+          "start": 11,
+          "end": 18,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 6,
+          "type": "PERSON"
+        },
+        {
+          "start": 11,
+          "end": 18,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "en-103-commune",
+      "gold": [
+        {
+          "start": 0,
+          "end": 15,
+          "type": "LOCATION"
+        },
+        {
+          "start": 33,
+          "end": 39,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 6,
+          "type": "PERSON"
+        },
+        {
+          "start": 7,
+          "end": 15,
+          "type": "PERSON"
+        },
+        {
+          "start": 33,
+          "end": 39,
+          "type": "LOCATION"
+        }
+      ]
+    },
+    {
+      "id": "en-113-emoji",
+      "gold": [
+        {
+          "start": 2,
+          "end": 10,
+          "type": "LOCATION"
+        },
+        {
+          "start": 26,
+          "end": 38,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 26,
+          "end": 38,
+          "type": "PERSON"
+        }
+      ]
+    },
+    {
+      "id": "en-114-emoji",
+      "gold": [
+        {
+          "start": 6,
+          "end": 9,
+          "type": "PERSON"
+        },
+        {
+          "start": 35,
+          "end": 58,
+          "type": "ORGANIZATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 35,
+          "end": 53,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 54,
+          "end": 55,
+          "type": "LOCATION"
+        }
+      ]
+    },
+    {
+      "id": "en-143-trap",
+      "gold": [
+        {
+          "start": 0,
+          "end": 5,
+          "type": "PERSON"
+        }
+      ],
+      "pred": []
+    },
+    {
+      "id": "en-146-trap",
+      "gold": [
+        {
+          "start": 0,
+          "end": 6,
+          "type": "PERSON"
+        },
+        {
+          "start": 15,
+          "end": 21,
+          "type": "LOCATION"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 6,
+          "type": "LOCATION"
+        },
+        {
+          "start": 15,
+          "end": 21,
+          "type": "LOCATION"
+        }
+      ]
+    },
+    {
+      "id": "en-148-trap",
+      "gold": [
+        {
+          "start": 0,
+          "end": 8,
+          "type": "PERSON"
+        },
+        {
+          "start": 13,
+          "end": 20,
+          "type": "PERSON"
+        }
+      ],
+      "pred": [
+        {
+          "start": 0,
+          "end": 8,
+          "type": "ORGANIZATION"
+        },
+        {
+          "start": 13,
+          "end": 20,
+          "type": "LOCATION"
+        }
+      ]
+    }
+  ],
+  "criteria": {
+    "personRecallFr": 0.8536585365853658,
+    "size": "oui",
+    "recall": "oui",
+    "time": "oui"
+  }
+}

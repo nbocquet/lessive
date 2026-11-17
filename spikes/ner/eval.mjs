@@ -12,6 +12,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   predictText,
+  groupRawTokens,
   scoreRows,
   mean,
   percentile,
@@ -138,7 +139,9 @@ async function evaluateModel(modelId, opts, tf) {
   const rssAfterLoad = process.memoryUsage().rss;
   rssPeak = Math.max(rssPeak, rssAfterLoad);
 
-  const classify = (text) => pipe(text, { aggregation_strategy: "simple" });
+  // Pas d'agrégation Transformers.js : avec un étiquetage IO (I-PER seul, sans B-), elle fusionne
+  // deux entités séparées par d'autres mots. On regroupe nous-mêmes selon la contiguïté des jetons.
+  const classify = (text) => pipe(text).then(groupRawTokens);
   await classify("Échauffement : Marie Dupont habite à Lausanne."); // hors mesure
 
   // Phrases, une par une.

@@ -1,6 +1,6 @@
 // Worker : charge le modèle depuis /models/ et exécute le pipeline. Aucun accès réseau externe.
 import { pipeline, env } from "@huggingface/transformers";
-import { predictText, buildLongText } from "../lib.mjs";
+import { predictText, buildLongText, groupRawTokens } from "../lib.mjs";
 
 env.allowRemoteModels = false; // R4
 env.allowLocalModels = true;
@@ -29,7 +29,9 @@ self.onmessage = async ({ data }) => {
       const t0 = performance.now();
       const pipe = await pipeline("token-classification", data.model, { dtype: data.dtype, device: data.device });
       const loadMs = performance.now() - t0;
-      classify = (text) => pipe(text, { aggregation_strategy: "simple" });
+      // Pas d'agrégation Transformers.js : avec un étiquetage IO (I-PER seul, sans B-), elle fusionne
+      // deux entités séparées par d'autres mots. On regroupe nous-mêmes selon la contiguïté des jetons.
+      classify = (text) => pipe(text).then(groupRawTokens);
       self.postMessage({
         type: "loaded",
         loadMs,
