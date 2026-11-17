@@ -45,6 +45,8 @@ import { describe, expect, it } from "vitest";
 import { createAnalyzer, PackRegistry, type Language } from "../../src/core/index.ts";
 import { bundledPackDirs, loadPackDir } from "./load.ts";
 
+/** Temps maximal de l'analyse statique d'un motif : au-delà, le motif doit être simplifié. */
+const STATIC_CHECK_TIMEOUT_MS = 1500;
 const ADVERSARIAL_LENGTH = 20_000;
 const ADVERSARIAL_BUDGET_MS = 150;
 
@@ -110,6 +112,9 @@ describe("packs livrés", () => {
         const staticSafe =
           exceptions.has(globalId) ||
           isSafePattern(`^(?:${rule.pattern})`, {
+            // Garde-fou : un motif trop complexe à analyser échoue proprement (non sûr) au lieu
+            // d'épuiser la mémoire du processus de test (incident du 17 novembre 2026).
+            timeout: STATIC_CHECK_TIMEOUT_MS,
             caseInsensitive: flags.includes("i"),
             unicode: flags.includes("u"),
             dotAll: flags.includes("s"),

@@ -48,7 +48,8 @@ function chooseOperator(d: Detection, plan: TransformPlan): OperatorId {
  *
  * 1. Validation : toute détection hors du texte, vide, chevauchante ou dont
  *    une borne coupe une paire de substitution UTF-16 (R7) fait échouer l'appel (`TransformError`) avant tout remplacement.
- * 2. Résolution : les remplacements sont calculés dans l'ORDRE DU TEXTE, de
+ * 2. Résolution : les noms complets de personnes sont résolus d'abord (dans l'ordre du texte), puis
+ *    les remplacements sont calculés dans l'ORDRE DU TEXTE, de
  *    sorte que la première personne citée reçoive `PERSONNE_001`.
  * 3. Assemblage : le texte final est construit en une passe, chaque
  *    remplacement recevant sa position (`outputStart`/`outputEnd`) dans le
@@ -94,6 +95,18 @@ export function transform(
   // Choix des opérateurs avant toute résolution : un plan invalide ne laisse
   // aucune entité créée dans la session.
   const operators = sorted.map((d) => chooseOperator(d, plan));
+
+  // Les noms complets (« Sophie Bernard ») sont résolus avant les formes partielles : sinon un
+  // « Bonjour Sophie » placé avant le nom complet recevrait son propre pseudonyme, la session ne
+  // rattachant une forme partielle qu'à une entité déjà connue. La résolution est idempotente :
+  // l'opérateur retrouvera ensuite la même entité.
+  if (session) {
+    sorted.forEach((d, i) => {
+      if (operators[i] !== "pseudonymize" || d.entityType !== "PERSON") return;
+      const value = text.slice(d.start, d.end);
+      if (/\S\s+\S/u.test(value.trim())) session.resolve(value, d.entityType);
+    });
+  }
 
   const replacements = sorted.map((d, i) => {
     const operator = OPERATORS[operators[i] as OperatorId];

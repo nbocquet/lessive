@@ -19,6 +19,7 @@ import {
   type Rule,
 } from "../types/index.ts";
 import { getValidator } from "../validators/index.ts";
+import { mergeAddressParts } from "./merge-addresses.ts";
 import { mergeAdjacentPersons } from "./merge-persons.ts";
 import { collectAmbiguousNames, propagatePersonNames } from "./propagate-names.ts";
 
@@ -151,6 +152,8 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
 
       const { detections: contextual, dropped } = applyContext(text, raw, rulesById, language);
       const persons = mergeAdjacentPersons(text, contextual, ctx);
+      // Rue + code postal et localité (+ case postale) adjacents : une seule adresse.
+      const addresses = mergeAddressParts(text, contextual, ctx);
       const manualWithIds = manual.map((d, i) => ({
         ...d,
         id: `m${i + 1}`,
@@ -158,7 +161,7 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
       }));
       const minScore = options.minScore ?? DEFAULT_MIN_SCORE;
       // Propagation : prénoms seuls et identifiants dérivés de noms déjà sûrs, avant les conflits.
-      const known = [...contextual, ...persons, ...manualWithIds];
+      const known = [...contextual, ...persons, ...addresses, ...manualWithIds];
       const propagated = propagatePersonNames(text, known, ctx, {
         minScore,
         ...(options.knownPersons ? { knownPersons: options.knownPersons } : {}),

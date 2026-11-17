@@ -23,8 +23,8 @@
  * touchent une lettre ou un chiffre de l'autre côté (« CMARTIN. » en fin de phrase est pris,
  * « cmartin.exemple » ne l'est pas).
  *
- * Garde-fous : un prénom seul exige une majuscule initiale et n'est pas propagé s'il est ambigu
- * (« Pierre », « Rose »…) ; un nom de famille ambigu (règle `noms-famille-ambigus`) exige la
+ * Garde-fous : un prénom seul exige une majuscule initiale ; s'il est ambigu (« Pierre », « Rose »…),
+ * il n'est propagé que depuis un nom complet vu dans le texte, et jamais juste après une fin de phrase ; un nom de famille ambigu (règle `noms-famille-ambigus`) exige la
  * majuscule. Aucune occurrence n'est produite sur une détection déjà retenue au-dessus du seuil
  * (EMAIL, URL, même personne…) ni sur un ajout manuel.
  *
@@ -282,20 +282,23 @@ interface Form {
   kind: FormKind;
   score: number;
   capital: boolean;
+  /** Refusée juste après une fin de phrase (« . », « ! », « ? ») : prénom ambigu (« Claire »). */
+  midSentence: boolean;
 }
 
 class FormSet {
   readonly forms = new Map<string, Form>();
 
-  add(rawText: string, kind: FormKind, capital: boolean): void {
+  add(rawText: string, kind: FormKind, capital: boolean, midSentence = false): void {
     const text = foldString(rawText);
     if (text.length < 3) return;
     const score = kind === "given" ? PROPAGATED_GIVEN_NAME_SCORE : PROPAGATED_NAME_SCORE;
     const cur = this.forms.get(text);
     if (!cur) {
-      this.forms.set(text, { text, kind, score, capital });
+      this.forms.set(text, { text, kind, score, capital, midSentence });
       return;
     }
+    cur.midSentence = cur.midSentence || midSentence;
     // Même forme pour deux noms : on garde le plus fort score, la majuscule reste exigée si l'un l'exige.
     if (score > cur.score) {
       cur.score = score;
@@ -311,6 +314,17 @@ interface Ambiguity {
 }
 
 /** Variantes du nom de famille : « de la tour », « la tour » (suffixes commençant par une particule). */
+/** Vrai si la position suit une fin de phrase sur la même ligne (espaces ignorées). */
+function followsSentenceEnd(text: string, pos: number): boolean {
+  for (let k = pos - 1; k >= 0; k--) {
+    const c = text[k] as string;
+    if (c === "\n") return false;
+    if (/\s/u.test(c)) continue;
+    return c === "." || c === "!" || c === "?" || c === "…";
+  }
+  return false;
+}
+
 function familyVariants(family: readonly string[]): string[] {
   const out = new Set<string>();
   for (let i = 0; i < family.length; i++) {
@@ -345,8 +359,10 @@ function addName(forms: FormSet, parsed: ParsedName, amb: Ambiguity): void {
   const g0 = given[0];
   if (g0 !== undefined) {
     const allGiven = given.join(" ");
-    if (letterCount(g0) >= 3 && !ambiguous(amb.given, g0)) forms.add(g0, "given", true);
-    if (given.length > 1 && !ambiguous(amb.given, allGiven)) forms.add(allGiven, "given", true);
+    // Un prénom ambigu (« Claire », « Rose ») est propagé quand son nom complet est vu dans le texte,
+    // mais seulement avec une majuscule et hors début de phrase (« Claire et nette » reste intact).
+    if (letterCount(g0) >= 3) forms.add(g0, "given", true, ambiguous(amb.given, g0));
+    if (given.length > 1) forms.add(allGiven, "given", true, ambiguous(amb.given, allGiven));
     // Noms complets, dans les deux ordres.
     for (const v of variants) {
       for (const g of new Set([g0, allGiven])) {
@@ -494,6 +510,7 @@ export function propagatePersonNames(
           const o = text[s] as string;
           if (o === o.toLowerCase()) continue;
         }
+        if (f.midSentence && followsSentenceEnd(text, s)) continue;
         const e = end[j - 1] as number;
         if (overlapsCovered(s, e)) continue;
         out.push({

@@ -96,25 +96,34 @@ describe("propagation avec les packs livrés", () => {
     expect(out.text).not.toMatch(/cmartin/iu);
   });
 
-  it("limite connue : un prénom cité AVANT le nom complet reçoit un autre pseudonyme", async () => {
-    // La session résout dans l'ordre du texte et ne rattache que du connu vers le partiel
-    // (voir mapping/resolution.ts). Le prénom est masqué, mais sous un pseudonyme distinct.
+  it("un prénom cité AVANT le nom complet reçoit le même pseudonyme", async () => {
+    // transform résout d'abord les noms complets, puis les formes partielles.
     const text = "Bonjour Sophie, voici le dossier de Sophie Durand.";
     const result = await analyzer.analyze(text, { language: "fr" });
     const out = transform(text, result.detections, pseudo, createSession());
-    expect(out.text).toBe("Bonjour PERSONNE_001, voici le dossier de PERSONNE_002.");
+    expect(out.text).toBe("Bonjour PERSONNE_001, voici le dossier de PERSONNE_001.");
   });
 
-  it("n'agit pas sur un prénom ambigu sans contexte (« Rose »)", async () => {
-    const text = "Madame Rose Girard est venue. Plus tard, Rose est partie ; la rose est rouge.";
+  it("prénom ambigu (« Rose ») : propagé depuis le nom complet, avec majuscule, hors début de phrase", async () => {
+    const text =
+      "Madame Rose Girard est venue. Plus tard, Rose est partie ; la rose est rouge. Rose fanée.";
     const result = await analyzer.analyze(text, { language: "fr" });
     const values = result.detections.map((d) => text.slice(d.start, d.end));
     expect(values).toContain("Rose Girard");
-    expect(values.filter((v) => v === "Rose")).toHaveLength(0);
+    // « Plus tard, Rose » : oui ; « la rose » (minuscule) et « . Rose fanée » (début de phrase) : non.
+    expect(values.filter((v) => v === "Rose")).toHaveLength(1);
+    const rose = result.detections.find((d) => text.slice(d.start, d.end) === "Rose");
+    expect(rose?.start).toBe(text.indexOf("Rose est partie"));
   });
 
-  it("ambigus fournis par l'appelant : un prénom courant n'est pas propagé", async () => {
-    const text = "Madame Alice Girard est venue. Plus tard, Alice est partie.";
+  it("prénom ambigu non propagé sans nom complet dans le texte", async () => {
+    const text = "Plus tard, Rose est partie.";
+    const result = await analyzer.analyze(text, { language: "fr" });
+    expect(result.detections.some((d) => d.recognizerId === "core/name-propagation")).toBe(false);
+  });
+
+  it("ambigus fournis par l'appelant : pas propagés en début de phrase", async () => {
+    const text = "Madame Alice Girard est venue. Alice est partie.";
     const base = await analyzer.analyze(text, { language: "fr" });
     expect(base.detections.map((d) => text.slice(d.start, d.end))).toContain("Alice");
     const guarded = await analyzer.analyze(text, {
