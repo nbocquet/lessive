@@ -1,0 +1,63 @@
+/** Garde-fous de conventions sur les sources de src/web (R5, R6, R12), tests exclus. */
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+
+const ROOT = new URL(".", import.meta.url).pathname;
+
+function sources(dir = ROOT): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const path = join(dir, e.name);
+    if (e.isDirectory()) return sources(path);
+    return /\.(ts|svelte|html|css)$/.test(e.name) && !/\.test\.ts$/.test(e.name) ? [path] : [];
+  });
+}
+
+function offenders(pattern: RegExp, files = sources()): string[] {
+  return files
+    .filter((f) => pattern.test(readFileSync(f, "utf8")))
+    .map((f) => f.slice(ROOT.length));
+}
+
+describe("conventions de src/web", () => {
+  it("trouve des fichiers à contrôler", () => {
+    expect(sources().length).toBeGreaterThan(10);
+  });
+
+  it("R5 : aucun stockage navigateur ni console.log", () => {
+    expect(offenders(/\b(localStorage|sessionStorage|indexedDB)\b|console\.log/)).toEqual([]);
+  });
+
+  it("R6 : jamais « anonymisé » ou dérivés dans l'interface", () => {
+    expect(offenders(/anonymis/i)).toEqual([]);
+  });
+
+  it("R6 : l'avertissement permanent est présent dans App", () => {
+    const banner = readFileSync(join(ROOT, "components/LimitsBanner.svelte"), "utf8");
+    expect(banner).toContain(
+      "Lessive réduit le risque mais ne garantit pas l'anonymat : relisez le résultat.",
+    );
+    expect(readFileSync(join(ROOT, "App.svelte"), "utf8")).toContain("<LimitsBanner />");
+  });
+
+  it("R12 : syntaxe des runes uniquement", () => {
+    const svelte = sources().filter((f) => f.endsWith(".svelte") || f.endsWith(".svelte.ts"));
+    expect(offenders(/^\s*export let\b/m, svelte)).toEqual([]);
+    expect(offenders(/^\s*\$:/m, svelte)).toEqual([]);
+    expect(offenders(/svelte\/store|@sveltejs\/kit/, sources())).toEqual([]);
+  });
+
+  it("R1 : aucune API réseau dans le code de l'interface", () => {
+    expect(offenders(/\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b/)).toEqual([]);
+  });
+
+  it("R1 : la CSP interdit toute origine externe", () => {
+    const html = readFileSync(join(ROOT, "index.html"), "utf8");
+    const csp = /Content-Security-Policy"\s+content="([^"]+)"/.exec(html)?.[1] ?? "";
+    expect(csp).toContain("default-src 'self'");
+    expect(csp).toContain("connect-src 'self'");
+    expect(csp).toContain("worker-src 'self'");
+    expect(csp).not.toMatch(/https?:|\*/);
+    expect(csp).not.toMatch(/script-src[^;]*'unsafe-(inline|eval)'/);
+  });
+});

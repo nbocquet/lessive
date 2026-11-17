@@ -2,11 +2,22 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
+    <!--
+      CSP stricte (R1) : aucune origine externe, aucun script en ligne, aucun eval.
+      - connect-src 'self' : seules les requêtes vers l'origine de l'application (modèles NER locaux).
+      - script-src 'self' 'wasm-unsafe-eval' : les scripts viennent du bundle ; WebAssembly pour le NER.
+      - worker-src 'self' : le worker d'analyse est un module du bundle (même origine). Déjà couvert par
+        le repli sur script-src, écrit explicitement pour que l'intention soit lisible et durable.
+      - style-src 'unsafe-inline' : seulement pour les balises <style> que Vite injecte en développement ;
+        le build de production extrait le CSS dans un fichier. Les composants n'utilisent pas d'attribut style.
+      - object-src, base-uri, form-action fermés : ni plugin, ni <base>, ni envoi de formulaire.
+    -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
     <title>Lessive</title>
   </head>
   <body>
