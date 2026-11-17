@@ -11,3 +11,4 @@ export * from "./analyzer/index.ts";
 export * from "./transform/index.ts";
 export * from "./mapping/index.ts";
 export * from "./crypto/index.ts";
+export * from "./reidentify/index.ts";
