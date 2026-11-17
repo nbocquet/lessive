@@ -13,12 +13,12 @@
 </script>
 
 <details class="help">
-  <summary>Où trouver le modèle ?</summary>
+  <summary>Utiliser un autre modèle ?</summary>
   <p>
-    Lessive ne livre pas de modèle : vous le téléchargez une fois, depuis Hugging Face, puis vous le
-    chargez ici. Le modèle recommandé est <code>{RECOMMENDED}</code> (français et anglais, environ
-    138 Mo). Pour un texte uniquement en français, <code>Xenova/camembert-ner</code> est une alternative
-    (environ 114 Mo).
+    Vous pouvez aussi charger votre propre modèle : vous le téléchargez une fois, depuis Hugging
+    Face, puis vous le chargez ici. Le modèle recommandé est <code>{RECOMMENDED}</code> (français et
+    anglais, environ 138 Mo). Pour un texte uniquement en français,
+    <code>Xenova/camembert-ner</code> est une alternative (environ 114 Mo).
   </p>
   <p>Avec l'outil <code>hf</code> (paquet Python <code>huggingface_hub</code>) :</p>
   <pre><code>{command(RECOMMENDED, "distilbert-ner")}</code></pre>
@@ -30,9 +30,9 @@
   </p>
   <p class="hint">
     Chaque modèle a sa propre licence, que vous acceptez en le téléchargeant (le modèle recommandé
-    est sous AFL-3.0, <code>camembert-ner</code> sous MIT). Lessive ne le redistribue pas. Tout reste
-    local : les fichiers sont lus par votre navigateur, copiés dans le stockage de cette application sur
-    votre appareil, et ne sont envoyés nulle part.
+    est sous AFL-3.0, <code>camembert-ner</code> sous MIT). Tout reste local : les fichiers sont lus par
+    votre navigateur, copiés dans le stockage de cette application sur votre appareil, et ne sont envoyés
+    nulle part.
   </p>
 </details>
 

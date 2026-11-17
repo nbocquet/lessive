@@ -1,0 +1,39 @@
+Modèle fourni avec la version publiée de Lessive
+================================================
+
+Modèle : Xenova/camembert-ner
+  https://huggingface.co/Xenova/camembert-ner
+Conversion ONNX et quantification 8 bits (q8) par Xenova, à partir de :
+
+Modèle d'origine : Jean-Baptiste/camembert-ner
+  https://huggingface.co/Jean-Baptiste/camembert-ner
+  Licence déclarée par l'auteur : MIT.
+  Affiné à partir de CamemBERT (camembert-base, licence MIT) sur le corpus wikiner-fr.
+
+Modifications : aucune par Lessive. Les fichiers sont redistribués tels que publiés par Xenova
+(sommes SHA-256 vérifiées au build, voir scripts/bundled-model/camembert-ner.json dans le dépôt).
+
+Le reste de Lessive est sous licence Apache 2.0 : https://github.com/nbocquet/lessive
+
+
+MIT License
+
+Copyright (c) Jean-Baptiste, auteur de Jean-Baptiste/camembert-ner
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

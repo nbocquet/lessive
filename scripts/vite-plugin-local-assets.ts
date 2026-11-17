@@ -8,24 +8,42 @@
  *   Le modèle n'est pas livré (ADR 0003) : ni copié dans `dist/`, ni servi par `vite preview`. En
  *   développement, s'il est présent dans `models/`, il alimente le bouton « Utiliser le modèle de
  *   développement ». Absent, le serveur répond 404 (jamais la page d'accueil en repli).
+ * - `/models/bundled/` : modèle fourni (ADR 0004), seulement si `LESSIVE_BUNDLED_MODEL` désigne son
+ *   dossier. Vérifié (SHA-256) puis copié dans `dist/` au build, servi tel quel en développement.
  */
 import { createReadStream, cpSync, existsSync, statSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Plugin } from "vite";
+import {
+  ENV_VAR,
+  LICENSE_SOURCE,
+  manifestFor,
+  readDescriptor,
+  verifyModelDir,
+  writeBundle,
+} from "./bundled-model.ts";
 
 const REPO = fileURLToPath(new URL("..", import.meta.url));
 const ORT_DIR = join(REPO, "node_modules", "onnxruntime-web", "dist");
 const ORT_FILES = ["ort-wasm-simd-threaded.asyncify.mjs", "ort-wasm-simd-threaded.asyncify.wasm"];
 const MODEL_ID = "Xenova/distilbert-base-multilingual-cased-ner-hrl";
 const MODELS_DIR = join(REPO, "models");
+const BUNDLED_PREFIX = "/models/bundled/";
+
+/** Dossier du modèle fourni, ou `undefined` si le build n'en inclut pas. */
+function bundledDir(): string | undefined {
+  const dir = process.env[ENV_VAR];
+  return dir ? resolve(dir) : undefined;
+}
 
 const MIME: Record<string, string> = {
   ".mjs": "text/javascript",
   ".json": "application/json",
   ".wasm": "application/wasm",
   ".onnx": "application/octet-stream",
+  ".txt": "text/plain; charset=utf-8",
 };
 
 /** Dossier réel d'une URL `/ort/…` ou `/models/…`, ou `undefined` si elle ne sort pas de la liste blanche. */
@@ -39,6 +57,13 @@ function resolveAsset(pathname: string): string | undefined {
   if (decoded.startsWith("/ort/")) {
     const name = decoded.slice("/ort/".length);
     return ORT_FILES.includes(name) ? join(ORT_DIR, name) : undefined;
+  }
+  const bundled = bundledDir();
+  if (bundled && decoded.startsWith(BUNDLED_PREFIX)) {
+    const name = decoded.slice(BUNDLED_PREFIX.length);
+    const descriptor = readDescriptor();
+    if (name === descriptor.licenseFile) return LICENSE_SOURCE;
+    return descriptor.files.some((f) => f.name === name) ? join(bundled, name) : undefined;
   }
   const prefix = `/models/${MODEL_ID}/`;
   if (decoded.startsWith(prefix)) {
@@ -60,6 +85,13 @@ function serve(req: IncomingMessage, res: ServerResponse, next: Next, serveModel
   const pathname = new URL(req.url ?? "/", "http://local").pathname;
   if (!pathname.startsWith("/ort/") && !(serveModels && pathname.startsWith("/models/"))) {
     return next();
+  }
+  const bundled = bundledDir();
+  if (bundled && pathname === `${BUNDLED_PREFIX}bundle.json`) {
+    const body = JSON.stringify(manifestFor(verifyModelDir(bundled)));
+    res.setHeader("Content-Type", "application/json");
+    res.end(body);
+    return;
   }
   const file = resolveAsset(pathname);
   if (!file || !existsSync(file) || !statSync(file).isFile()) {
@@ -98,6 +130,8 @@ export function localAssets(): Plugin {
       for (const name of ORT_FILES) {
         cpSync(join(ORT_DIR, name), join(outDir, "ort", name));
       }
+      const bundled = bundledDir();
+      if (bundled) writeBundle(outDir, bundled);
     },
   };
 }

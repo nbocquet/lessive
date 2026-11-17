@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AnalysisResult, Detection } from "../core/index.ts";
 import {
   AnalysisCancelledError,
@@ -535,5 +535,67 @@ describe("AppState : modèle local (ADR 0003)", () => {
     calls[0]?.resolve(RESULT);
     await run;
     expect(app.modelStatus).toBe("ready");
+  });
+
+  describe("modèle fourni (ADR 0004)", () => {
+    afterEach(() => vi.unstubAllGlobals());
+
+    const bundled = {
+      "config.json": CONFIG,
+      "tokenizer.json": "{}",
+      "tokenizer_config.json": "{}",
+      "onnx/model_quantized.onnx": new Uint8Array(2048),
+    };
+    const manifest = {
+      name: "Xenova/exemple-ner",
+      license: "MIT",
+      attribution: "Modèle d'exemple.",
+      licenseFile: "LICENSE.txt",
+      files: Object.entries(bundled).map(([name, v]) => ({
+        name,
+        size: typeof v === "string" ? v.length : v.length,
+      })),
+    };
+
+    it("ne fait rien sans modèle fourni", async () => {
+      const { app, models } = withModelService();
+      expect(await app.installBundledModel()).toBe(false);
+      expect(models).toEqual([]);
+    });
+
+    it("installe le modèle fourni, active la reconnaissance des noms et remet la progression à zéro", async () => {
+      const urls: string[] = [];
+      vi.stubGlobal(
+        "fetch",
+        vi.fn((u: URL) => {
+          urls.push(String(u));
+          const name = String(u).split("/models/bundled/")[1] ?? "";
+          return Promise.resolve(new Response(bundled[name as keyof typeof bundled]));
+        }),
+      );
+      const { app, models } = withModelService();
+      app.bundledModel = manifest;
+      expect(await app.installBundledModel()).toBe(true);
+      expect(app.modelInfo).toMatchObject({ name: "Xenova/exemple-ner", origin: "memory" });
+      expect(app.modelStatus).toBe("stored");
+      expect(app.ner).toBe(true);
+      expect(app.bundledProgress).toBeNull();
+      expect(app.modelBusy).toBe(false);
+      expect(models[0]).toMatchObject({ kind: "memory", name: "Xenova/exemple-ner" });
+      expect(urls).toHaveLength(4);
+    });
+
+    it("rapporte un échec sans toucher au modèle", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(() => Promise.resolve(new Response("", { status: 404 }))),
+      );
+      const { app, models } = withModelService();
+      app.bundledModel = manifest;
+      expect(await app.installBundledModel()).toBe(false);
+      expect(app.modelError).toContain("introuvable");
+      expect(app.modelStatus).toBe("absent");
+      expect(models).toEqual([]);
+    });
   });
 });

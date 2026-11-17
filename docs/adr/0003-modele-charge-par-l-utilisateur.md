@@ -4,6 +4,7 @@
 - **Date** : 2026-11-17
 - **Décideur** : Nico
 - **Remplace** : la partie « modèle livré dans `dist/` » de l'ADR 0001 (le choix du modèle recommandé reste valable)
+- **Complété par** : ADR 0004 (la version en ligne fournit `Xenova/camembert-ner`, MIT ; le chargement depuis le disque reste possible)
 
 ## Contexte
 

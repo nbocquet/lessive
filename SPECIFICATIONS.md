@@ -27,6 +27,7 @@
 | A18 | Limite affichée | L'identification indirecte (fonction, lieu, date combinés) n'est pas traitée par le MVP et figure parmi les limites affichées à l'utilisateur. | 3.1, 21 |
 | A19 | Méthode | Les sections 22 et 23 sont remplacées par `PLAN.md`. | 22, 23 |
 | A20 | Modèle NER | Le modèle NER n'est pas livré avec l'application : l'utilisateur le télécharge et le charge depuis son disque, l'application le garde en cache local. Le projet ne redistribue donc pas le modèle (taille > 100 Mo, licence propre au modèle). Voir ADR 0003. | 8.4, NF-06 |
+| A21 | Modèle NER | La version publiée (GitHub Pages) fournit `Xenova/camembert-ner` (MIT), téléchargé au build et vérifié par SHA-256, jamais versionné, servi par la même origine et installé dans le cache de l'application seulement au clic de l'utilisateur. Le chargement depuis le disque (A20) reste possible. Voir ADR 0004. | 8.4, NF-06 |
 
 ---
 

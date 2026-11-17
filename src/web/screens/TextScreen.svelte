@@ -7,6 +7,7 @@
 <script lang="ts">
   import { MAX_INPUT_LENGTH } from "../../core/index.ts";
   import AnalysisStatus from "../components/AnalysisStatus.svelte";
+  import BundledModelOffer from "../components/BundledModelOffer.svelte";
   import LanguageSelect from "../components/LanguageSelect.svelte";
   import ModeSelect from "../components/ModeSelect.svelte";
   import { checkImportFile, normalizeImportedText } from "../components/review-import.ts";
@@ -63,6 +64,7 @@
 
 <section aria-labelledby="h-text">
   <h2 id="h-text">1. Texte</h2>
+  <BundledModelOffer />
   <form onsubmit={submit}>
     <div class="field">
       <label for="source-text"><strong>Texte à protéger</strong></label>

@@ -49,8 +49,11 @@ describe("conventions de src/web", () => {
 
   it("R1 : aucune API réseau dans le code de l'interface", () => {
     // `dev-model.ts` (raccourci de développement, même origine) est exclu : il n'entre pas dans le build
-    // de production, ce que vérifie le test suivant.
-    const files = sources().filter((f) => !f.endsWith("/dev-model.ts"));
+    // de production, ce que vérifie le test suivant. `bundled-model.ts` (modèle fourni, ADR 0004) est
+    // exclu : il ne lit que des URL relatives à la racine de l'application, ce que vérifie un autre test.
+    const files = sources().filter(
+      (f) => !f.endsWith("/dev-model.ts") && !f.endsWith("/bundled-model.ts"),
+    );
     expect(offenders(/\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b/, files)).toEqual(
       [],
     );
@@ -65,6 +68,14 @@ describe("conventions de src/web", () => {
       "ner-provider.ts",
       "state.svelte.ts",
     ]);
+  });
+
+  it("R1 : bundled-model.ts ne lit que des URL relatives à la racine de l'application", () => {
+    const src = readFileSync(join(ROOT, "bundled-model.ts"), "utf8");
+    const calls = [...src.matchAll(/fetch\(([^)]*)\)/g)].map((m) => m[1]);
+    expect(calls.length).toBeGreaterThan(0);
+    for (const arg of calls) expect(arg).toMatch(/^new URL\(`\$\{BUNDLED_DIR\}[^`]*`, appRoot$/);
+    expect(src).not.toMatch(/https?:\/\//);
   });
 
   it("R1 : la CSP interdit toute origine externe", () => {

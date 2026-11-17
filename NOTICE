@@ -23,9 +23,17 @@ Copyright (c) Microsoft Corporation) a servi de référence fonctionnelle et
 d'architecture. Les motifs de détection et le code de Lessive ont été écrits
 pour le projet ; aucun fichier de Presidio n'est inclus.
 
-Modèle de reconnaissance d'entités (NER) : il n'est pas distribué avec
-Lessive. L'utilisateur le télécharge lui-même et l'accepte sous sa propre
-licence (voir docs/adr/0003-modele-charge-par-l-utilisateur.md).
+Modèle de reconnaissance d'entités (NER)
+  Le dépôt ne contient aucun modèle. La version publiée en ligne fournit
+  Xenova/camembert-ner (https://huggingface.co/Xenova/camembert-ner), conversion
+  ONNX quantifiée par Xenova du modèle Jean-Baptiste/camembert-ner
+  (https://huggingface.co/Jean-Baptiste/camembert-ner), licence MIT, affiné à
+  partir de CamemBERT (licence MIT) sur le corpus wikiner-fr. Redistribué sans
+  modification ; mention de copyright et texte de la licence dans
+  scripts/bundled-model/LICENSE-camembert-ner.txt, servis avec le modèle
+  (models/bundled/LICENSE.txt). Voir docs/adr/0004-modele-fourni-pages.md.
+  Tout autre modèle est chargé par l'utilisateur depuis son disque et reste
+  soumis à sa propre licence (docs/adr/0003-modele-charge-par-l-utilisateur.md).
 
 Les dépendances npm incluses dans le build (Svelte, Zod, Transformers.js,
 ONNX Runtime Web) sont sous licences MIT ou Apache 2.0 ; leurs notices

@@ -53,6 +53,7 @@ import {
   type PickedFile,
   type PreparedModel,
 } from "./model-store.ts";
+import { fetchBundledModel, probeBundledModel, type BundledManifest } from "./bundled-model.ts";
 import { loadBundledRegistry } from "./packs.ts";
 
 export type LanguageChoice = Language | "auto";
@@ -718,6 +719,10 @@ export class AppState {
   modelBusy = $state(false);
   /** Développement seulement : `models/` du dépôt est servi par Vite. */
   devModelAvailable = $state(false);
+  /** Modèle fourni par cette version publiée (ADR 0004), `null` si elle n'en contient pas. */
+  bundledModel = $state.raw<BundledManifest | null>(null);
+  /** Téléchargement du modèle fourni en cours : entre 0 et 1 ; `null` sinon. */
+  bundledProgress = $state<number | null>(null);
 
   /** Fichiers gardés en mémoire quand Cache Storage est indisponible. */
   #memoryModel: PreparedModel | undefined;
@@ -740,9 +745,40 @@ export class AppState {
       // activée d'office (recette T6.6). L'utilisateur peut toujours la décocher.
       if (!this.ner) this.setNer(true);
     }
+    if (import.meta.env.MODE !== "test") {
+      this.bundledModel = (await probeBundledModel(this.#appRoot())) ?? null;
+    }
     if (import.meta.env.DEV && import.meta.env.MODE !== "test") {
       const { probeDevModel } = await import("./dev-model.ts");
       this.devModelAvailable = await probeDevModel(this.#appRoot());
+    }
+  }
+
+  /**
+   * Installe le modèle fourni (ADR 0004) : téléchargement depuis l'origine de l'application, validation,
+   * puis conservation comme un modèle chargé depuis le disque. Toujours à la demande de l'utilisateur.
+   */
+  async installBundledModel(): Promise<boolean> {
+    const manifest = this.bundledModel;
+    if (!manifest || this.modelBusy) return false;
+    this.modelBusy = true;
+    this.modelError = null;
+    this.bundledProgress = 0;
+    try {
+      const prepared = await fetchBundledModel(this.#appRoot(), manifest, (p) => {
+        this.bundledProgress = p;
+      });
+      if (!prepared.ok) {
+        this.modelError = prepared.error;
+        return false;
+      }
+      return await this.#adoptPrepared(prepared.value);
+    } catch {
+      this.modelError = "Le modèle fourni n'a pas pu être installé. Réessayez plus tard.";
+      return false;
+    } finally {
+      this.modelBusy = false;
+      this.bundledProgress = null;
     }
   }
 
@@ -759,21 +795,7 @@ export class AppState {
         this.modelError = prepared.error;
         return false;
       }
-      const outcome = await storeModel(prepared.value, this.#appRoot());
-      this.#memoryModel = outcome.where === "memory" ? prepared.value : undefined;
-      this.modelNotice =
-        outcome.where === "memory"
-          ? `${outcome.reason} Le modèle est gardé en mémoire pour cette session seulement : il faudra le recharger à la prochaine visite.`
-          : null;
-      this.modelInfo = {
-        ...prepared.value.info,
-        origin: outcome.where === "cache" ? "cache" : "memory",
-      };
-      this.modelStatus = "stored";
-      this.#sendModelSource();
-      if (this.ner) this.#analysisInputsChanged();
-      else this.setNer(true); // charger un modèle, c'est vouloir s'en servir
-      return true;
+      return await this.#adoptPrepared(prepared.value);
     } catch {
       this.modelError =
         "Le modèle n'a pas pu être lu : fichiers illisibles ou déplacés pendant la lecture.";
@@ -781,6 +803,22 @@ export class AppState {
     } finally {
       this.modelBusy = false;
     }
+  }
+
+  /** Conserve un modèle validé (Cache Storage, sinon mémoire de la session) et l'active. */
+  async #adoptPrepared(prepared: PreparedModel): Promise<boolean> {
+    const outcome = await storeModel(prepared, this.#appRoot());
+    this.#memoryModel = outcome.where === "memory" ? prepared : undefined;
+    this.modelNotice =
+      outcome.where === "memory"
+        ? `${outcome.reason} Le modèle est gardé en mémoire pour cette session seulement : il faudra le recharger à la prochaine visite.`
+        : null;
+    this.modelInfo = { ...prepared.info, origin: outcome.where === "cache" ? "cache" : "memory" };
+    this.modelStatus = "stored";
+    this.#sendModelSource();
+    if (this.ner) this.#analysisInputsChanged();
+    else this.setNer(true); // charger un modèle, c'est vouloir s'en servir
+    return true;
   }
 
   /** Oublie le modèle : vide Cache Storage et la mémoire de la session. */

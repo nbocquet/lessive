@@ -2,6 +2,7 @@
 <script lang="ts">
   import { formatBytes, type PickedFile } from "../model-store.ts";
   import { app } from "../state.svelte.ts";
+  import BundledModelOffer from "./BundledModelOffer.svelte";
   import SettingsModelHelp from "./SettingsModelHelp.svelte";
 
   let folderInput = $state<HTMLInputElement>();
@@ -33,9 +34,11 @@
   {#if app.ner && (app.modelStatus === "absent" || app.modelStatus === "error")}
     <p class="warn" role="alert">
       La reconnaissance des noms est activée, mais aucun modèle utilisable n'est chargé : elle sera
-      ignorée à l'analyse. Chargez d'abord le modèle (bouton ci-dessous).
+      ignorée à l'analyse. Installez ou chargez d'abord un modèle (boutons ci-dessous).
     </p>
   {/if}
+
+  <BundledModelOffer compact />
 
   {#if app.modelError}<p class="error" role="alert">{app.modelError}</p>{/if}
   {#if app.modelNotice}<p class="hint">{app.modelNotice}</p>{/if}

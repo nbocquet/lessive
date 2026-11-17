@@ -15,10 +15,10 @@
     <strong>Reconnaître les noms de personnes, lieux et organisations (NER)</strong>
   </label>
   <p id="settings-ner-help" class="hint">
-    Utilise un modèle de reconnaissance de noms (environ 138 Mo) que vous chargez vous-même depuis
-    votre ordinateur : il n'est pas livré avec l'application. Il est conservé une fois pour toutes
-    dans ce navigateur. Tout reste local : le modèle s'exécute dans ce navigateur et votre texte
-    n'est envoyé nulle part.
+    Utilise un modèle de reconnaissance de noms : celui fourni par ce site quand il en propose un,
+    ou un modèle que vous chargez vous-même depuis votre ordinateur. Il est conservé une fois pour
+    toutes dans ce navigateur. Tout reste local : le modèle s'exécute dans ce navigateur et votre
+    texte n'est envoyé nulle part.
   </p>
   <SettingsModel />
 </div>

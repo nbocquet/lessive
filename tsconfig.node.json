@@ -6,6 +6,8 @@
   },
   "include": [
     "packs/_tools/**/*.ts",
+    "scripts/bundled-model.ts",
+    "scripts/fetch-bundled-model.ts",
     "src/core/**/*.ts",
     "tests/e2e/**/*.ts",
     "tests/regression/**/*.ts"

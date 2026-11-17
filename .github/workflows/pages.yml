@@ -1,0 +1,71 @@
+name: Publication (GitHub Pages)
+
+# Publie l'application sur GitHub Pages avec le modèle fourni (ADR 0004).
+# Le modèle est téléchargé au build depuis Hugging Face, vérifié par ses sommes SHA-256
+# (scripts/bundled-model/camembert-ner.json) puis servi par le site lui-même : à l'exécution,
+# l'application ne contacte que sa propre origine (R1).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+        env:
+          ONNXRUNTIME_NODE_INSTALL: skip
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+      - name: Cache du modèle fourni
+        uses: actions/cache@v4
+        with:
+          path: models/Xenova/camembert-ner
+          key: bundled-model-${{ hashFiles('scripts/bundled-model/camembert-ner.json') }}
+      - name: Téléchargement et vérification du modèle fourni
+        run: |
+          if [ ! -f models/Xenova/camembert-ner/onnx/model_quantized.onnx ]; then
+            node scripts/fetch-bundled-model.ts models/Xenova/camembert-ner
+          fi
+
+      - name: Tests de bout en bout (dont le modèle fourni)
+        run: npm run test:e2e
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+
+      - name: Build avec le modèle fourni
+        run: npm run build
+        env:
+          LESSIVE_BUNDLED_MODEL: models/Xenova/camembert-ner
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

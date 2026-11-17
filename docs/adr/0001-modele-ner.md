@@ -1,5 +1,6 @@
 # ADR 0001 — Modèle NER
 
+- **Version en ligne : `Xenova/camembert-ner` (MIT) est fourni par GitHub Pages, voir ADR 0004.**
 - **Statut : Accepté le 2026-11-17 par Nico — modèle recommandé : `Xenova/distilbert-base-multilingual-cased-ner-hrl` (q8). Mesure de vitesse dans le navigateur encore à faire (docs/performances.md).**
 - Date de rédaction : 2026-11-16
 - Décideur : Nico (porte G0)

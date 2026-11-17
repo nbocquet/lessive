@@ -35,6 +35,10 @@ La liste complète, en langage simple : **[docs/limites.md](docs/limites.md)**.
 
 Le traitement a lieu dans votre navigateur ; l'application ne se connecte qu'à son propre site pour charger ses fichiers, et une politique de sécurité du navigateur (CSP) interdit toute autre connexion. Le texte original et la table des correspondances ne sont écrits ni dans le stockage du navigateur, ni dans des journaux. Détails : **[docs/confidentialite.md](docs/confidentialite.md)** et, pour les chercheurs en sécurité, [SECURITY.md](SECURITY.md).
 
+## Version en ligne
+
+Lessive est publié sur **https://nbocquet.github.io/lessive/** (GitHub Pages). Tout s'exécute dans votre navigateur ; la page fonctionne ensuite hors ligne. La version en ligne propose un modèle de reconnaissance des noms prêt à l'emploi (bouton « Installer le modèle fourni », environ 114 Mo, téléchargé une fois depuis le site puis conservé dans le navigateur) : [`camembert-ner`](https://huggingface.co/Jean-Baptiste/camembert-ner), sous licence MIT, surtout performant en français. GitHub, qui héberge la page, voit l'adresse IP des visiteurs et les fichiers demandés, jamais votre texte (voir [docs/confidentialite.md](docs/confidentialite.md)).
+
 ## Installation et lancement local
 
 Prérequis : [Node.js](https://nodejs.org/) 22 ou plus récent.
@@ -58,7 +62,14 @@ npm run preview
 
 ### Le modèle de reconnaissance des noms (NER)
 
-Les règles (courriels, IBAN, AVS, téléphones, dates, prénoms courants…) fonctionnent seules. Pour mieux repérer les noms de personnes, de lieux et d'organisations, Lessive utilise un petit modèle d'apprentissage automatique qui s'exécute localement. **Ce modèle n'est pas livré avec l'application** : vous le téléchargez vous-même une fois, puis vous le chargez dans Lessive.
+Les règles (courriels, IBAN, AVS, téléphones, dates, prénoms courants…) fonctionnent seules. Pour mieux repérer les noms de personnes, de lieux et d'organisations, Lessive utilise un petit modèle d'apprentissage automatique qui s'exécute localement. **Le dépôt ne contient aucun modèle.** La version en ligne fournit `Xenova/camembert-ner` ; pour une installation locale, vous le téléchargez vous-même une fois, puis vous le chargez dans Lessive.
+
+Pour produire un site qui fournit le modèle, comme la version en ligne (téléchargement et vérification des sommes SHA-256, voir [docs/adr/0004-modele-fourni-pages.md](docs/adr/0004-modele-fourni-pages.md)) :
+
+```bash
+node scripts/fetch-bundled-model.ts models/Xenova/camembert-ner
+LESSIVE_BUNDLED_MODEL=models/Xenova/camembert-ner npm run build
+```
 
 | Modèle | Usage | Taille |
 |---|---|---|
@@ -78,7 +89,7 @@ Les fichiers peuvent aussi être téléchargés à la main depuis la page du mod
 
 - **Utilisation** : dans l'application, ouvrez Réglages, puis « Charger le modèle depuis mon ordinateur » et sélectionnez le dossier du modèle. L'application le garde ensuite dans le cache du navigateur : une seule sélection suffit, tant que ce cache n'est pas vidé.
 - **En développement**, un modèle placé dans `models/` (dossier non versionné, voir [models/README.md](models/README.md)) est servi automatiquement (bouton « Utiliser le modèle de développement »).
-- **Licence** : le modèle n'est pas redistribué par Lessive. Il est soumis à sa propre licence (AFL-3.0 pour le modèle DistilBERT d'origine), que vous acceptez en le téléchargeant. Les réserves sur les licences sont consignées dans [docs/adr/0001-modele-ner.md](docs/adr/0001-modele-ner.md) ; la décision de ne pas livrer le modèle est dans [docs/adr/0003-modele-charge-par-l-utilisateur.md](docs/adr/0003-modele-charge-par-l-utilisateur.md).
+- **Licence** : seul `camembert-ner` (MIT) est redistribué, par la version en ligne. Tout autre modèle reste soumis à sa propre licence (AFL-3.0 pour le modèle DistilBERT d'origine), que vous acceptez en le téléchargeant. Les réserves sur les licences sont consignées dans [docs/adr/0001-modele-ner.md](docs/adr/0001-modele-ner.md) ; la décision de ne pas livrer le modèle est dans [docs/adr/0003-modele-charge-par-l-utilisateur.md](docs/adr/0003-modele-charge-par-l-utilisateur.md).
 - Sans modèle, Lessive fonctionne avec les règles seules et le dit clairement : les noms de personnes, de lieux et d'organisations risquent de manquer bien plus souvent (voir [docs/limites.md](docs/limites.md)).
 
 ## Pour les développeurs
