@@ -1,6 +1,6 @@
 # ADR 0002 — Format des jetons de pseudonymisation
 
-- **Statut** : Proposé — en attente des réponses LLM
+- **Statut** : Accepté le 2026-11-17 — format A, critère atteint pour les deux LLM testés (procédure validée par Nico : `spikes/tokens/consignes.md` §0)
 - **Date** : 2026-11-16
 - **Tâche** : S2 (PLAN.md, phase 0) ; à valider à la porte G0
 - **Décideur** : Nico
@@ -113,9 +113,23 @@ Texte à joindre au prompt, adapté au format retenu (versions exactes dans `spi
 
 ## Résultats
 
-_À remplir après l'expérience._
+Expérience du 17 novembre 2026, lot court (`spikes/tokens/consignes.md` §0) : 5 textes synthétiques × format A × {traduire en anglais, reformuler}, soit 10 essais par LLM, chacun en un appel d'API isolé via OpenRouter (`run-api.mjs`), réponses enregistrées sans retouche dans `spikes/tokens/reponses/`. Rapport complet : `spikes/tokens/results.md`.
 
-## Recommandation a priori
+| LLM | Modèle | Réponses | Jetons attendus | Strict | Tolérant | Inconnus |
+| --- | --- | --- | --- | --- | --- | --- |
+| GPT (OpenAI) | alias `~openai/gpt-latest` (version servie non enregistrée : essai lancé avant l'ajout de cette trace) | 10 | 78 | 100 % | 100 % | 0 |
+| Claude (Anthropic) | `anthropic/claude-sonnet-5.5` (alias `~anthropic/claude-sonnet-latest`) | 10 | 78 | 100 % | 100 % | 0 |
+
+- **Critère atteint** : ≥ 98 % en tolérant pour chaque LLM, et même 100 % en strict : aucun jeton perdu, traduit ou déformé, y compris en traduction vers l'anglais (le cas jugé le plus risqué : « PERSONNE » n'a jamais été traduit).
+- **Seule variation observée** : le possessif anglais accolé (`PERSONNE_001's`), 4 occurrences chez GPT et 3 chez Claude ; le jeton est intact et l'analyseur tolérant le gère déjà (le `'s` reste après le nom remis).
+- **Formats B et C non testés** : inutile, A atteint le seuil (procédure : B seulement si A < 98 %).
+- **Limites** : deux LLM seulement, par API et non dans les interfaces de chat grand public (réglages et instructions système des interfaces non reproduits) ; textes courts (7 à 8 jetons) ; consigne système jointe dans tous les essais (le témoin sans consigne n'a pas été mesuré). Un contrôle ponctuel dans une interface de chat reste recommandé avant publication.
+
+## Décision
+
+**Format A, `PERSONNE_001`**, avec la consigne système proposée ci-dessus, que l'application fournit déjà au bouton « Copier avec la consigne pour l'IA ». Les formats B et C sont abandonnés.
+
+## Recommandation a priori (avant mesure)
 
 Avant toute mesure : **A**, avec la consigne système, est le meilleur candidat de départ (lisible, ASCII, tapable, collision nulle, et c'est la valeur par défaut du plan). **B** est le repli naturel si les LLM traduisent ou déforment le tiret bas ; son risque propre est l'effet « emplacement à remplir ». **C** supprime le risque de traduction mais coûte en lisibilité, en saisie et probablement en fiabilité de recopie du caractère rare ; il ne devrait être retenu que si A et B échouent à cause de la traduction du type. Cette recommandation n'a pas de valeur tant que `results.md` n'existe pas.
 
