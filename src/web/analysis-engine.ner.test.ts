@@ -49,7 +49,7 @@ describe("worker d'analyse : modèle chargé par l'utilisateur", () => {
     ner: true,
   });
 
-  it("avertit « chargez d'abord le modèle » et signale l'état `missing`", async () => {
+  it("explique le modèle manquant sans avertissement en double et signale l'état `missing`", async () => {
     const out: WorkerResponse[] = [];
     const handler = createAnalysisHandler(
       loadBundledRegistry,
@@ -59,9 +59,8 @@ describe("worker d'analyse : modèle chargé par l'utilisateur", () => {
     handler.handle(request(1));
     await expect.poll(() => out.find((r) => r.type === "result")).toBeDefined();
     const result = out.find((r) => r.type === "result");
-    expect(result?.type === "result" && result.result.warnings.join(" ")).toContain(
-      "chargez d'abord le modèle",
-    );
+    expect(result?.type === "result" && result.result.warnings).toHaveLength(1);
+    expect(result?.type === "result" && result.result.warnings[0]).toContain("Chargez un modèle");
     expect(result).toMatchObject({ nerStatus: "missing" });
   });
 

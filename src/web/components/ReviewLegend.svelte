@@ -22,8 +22,9 @@
   <ul class="legend" aria-label="Légende des catégories">
     {#each entries as e (e.type)}
       <li>
-        <span class="mark" style:--h={e.token.hue} style:--ul={e.token.underline}>Abc</span>
-        {typeName(e.type)} <span class="count">({e.count})</span>
+        <span class="mark" style:--h={e.token.hue} style:--ul={e.token.underline}
+          >{typeName(e.type)}</span
+        > <span class="count">({e.count})</span>
       </li>
     {/each}
   </ul>
@@ -34,10 +35,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem 1rem;
-    margin: 0 0 0.75rem;
+    margin: 0 0 1.25rem;
     padding: 0;
     list-style: none;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   .count {

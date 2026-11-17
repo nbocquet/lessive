@@ -113,7 +113,8 @@ describe("analysis-engine", () => {
     const { handler, request, final } = setup();
     handler.handle(request({ ner: true }));
     const res = await final(1);
-    expect(res.type === "result" && res.result.warnings.join(" ")).toContain("NER");
+    expect(res.type === "result" && res.result.warnings).toHaveLength(1);
+    expect(res.type === "result" && res.result.warnings[0]).toContain("Vérifiez le modèle");
   });
 
   it("annule une analyse sur demande", async () => {

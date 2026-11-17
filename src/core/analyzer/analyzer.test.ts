@@ -97,6 +97,8 @@ describe("createAnalyzer", () => {
   it("signale l'absence de NER", async () => {
     const res = await analyzer().analyze("rien");
     expect(res.warnings).toHaveLength(1);
+    expect(res.warnings[0]).toContain("seules les règles intégrées");
+    expect(res.warnings[0]).toContain("peuvent rester en clair");
   });
 
   it("donne la priorité aux ajouts manuels", async () => {
@@ -188,7 +190,7 @@ describe("createAnalyzer", () => {
     const res = await analyzer().analyze("à Lausanne", { language: "fr", ner });
     expect(res.detections.map((d) => d.entityType)).toEqual(["LOCATION"]);
     expect(res.warnings).toHaveLength(1);
-    expect(res.warnings[0]).toContain("NER");
+    expect(res.warnings[0]).toContain("reconnaissance des noms a échoué");
     expect(res.warnings[0]).not.toContain("boum");
   });
 

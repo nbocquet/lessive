@@ -7,10 +7,10 @@
   );
   const countLabel = $derived(
     app.detectionCount === 0
-      ? "Aucune détection."
+      ? "Aucune donnée personnelle repérée. Cela ne signifie pas que le texte n’en contient pas."
       : app.detectionCount === 1
-        ? "1 détection."
-        : `${app.detectionCount} détections.`,
+        ? "1 passage à vérifier."
+        : `${app.detectionCount} passages à vérifier.`,
   );
 </script>
 

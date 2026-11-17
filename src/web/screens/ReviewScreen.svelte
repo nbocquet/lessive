@@ -1,60 +1,122 @@
 <!--
-  Écran 2 — Vérification. Fichier figé en T5.1 : il assemble trois composants et ne change plus.
-  T5.2 complète HighlightedText.svelte et DetectionDetail.svelte ;
-  T5.3 complète CorrectionsToolbar.svelte. Chacun ne travaille que dans ses fichiers.
+  Écran 2 — texte à relire et panneau de correction contextuel.
 -->
 <script lang="ts">
+  import { tick } from "svelte";
   import CorrectionsToolbar from "../components/CorrectionsToolbar.svelte";
   import DetectionDetail from "../components/DetectionDetail.svelte";
   import HighlightedText from "../components/HighlightedText.svelte";
+  import ReviewLegend from "../components/ReviewLegend.svelte";
   import { app } from "../state.svelte.ts";
+
+  let side: HTMLElement | undefined = $state();
+
+  // Chaque clic rend les commandes visibles, même si le passage était déjà sélectionné.
+  async function showCorrections(): Promise<void> {
+    await tick();
+    if (!side) return;
+    side.scrollTo({ top: 0 });
+    if (window.matchMedia("(max-width: 54rem)").matches) {
+      side.scrollIntoView({ block: "start" });
+    }
+  }
 </script>
 
 <section aria-labelledby="h-review">
-  <h2 id="h-review">2. Vérification</h2>
   {#if app.analysis}
-    <p>
-      {app.detectionCount === 1 ? "1 détection" : `${app.detectionCount} détections`} à vérifier avant
-      de continuer.
-    </p>
-    <div class="layout">
-      <div class="text"><HighlightedText /></div>
-      <div class="side">
-        <DetectionDetail />
-        <CorrectionsToolbar />
+    <div class="review-header">
+      <div>
+        <h2 id="h-review">Vérification</h2>
+        <p class="hint">
+          {app.detectionCount === 1
+            ? "1 passage repéré"
+            : `${app.detectionCount} passages repérés`}. Relisez aussi les passages non surlignés.
+        </p>
+      </div>
+      <div class="actions">
+        <button type="button" onclick={() => app.goTo("text")}>Retour au texte</button>
+        <button
+          type="button"
+          class="primary"
+          disabled={app.analysisStale || app.analysisStatus === "running"}
+          onclick={() => app.goTo("result")}>Voir le résultat</button
+        >
       </div>
     </div>
-    <div class="actions">
-      <button type="button" onclick={() => app.goTo("text")}>Retour au texte</button>
-      <button
-        type="button"
-        class="primary"
-        disabled={app.analysisStale}
-        onclick={() => app.goTo("result")}
-      >
-        Voir le résultat
-      </button>
-      {#if app.analysisStale}
-        <span class="hint">Relancez l'analyse (écran 1) : les réglages ont changé.</span>
-      {/if}
+    {#if app.analysisStale}
+      <p class="notice" role="status">
+        Les réglages ont changé. Revenez au texte et relancez l’analyse avant de continuer.
+      </p>
+    {/if}
+    <ReviewLegend />
+    <div class="layout">
+      <section class="document" aria-labelledby="h-review-document">
+        <h3 id="h-review-document">Texte original</h3>
+        <p class="hint instructions">
+          Cliquez sur un passage surligné pour le modifier. Sélectionnez du texte pour ajouter une
+          donnée manquante.
+        </p>
+        <HighlightedText onSelect={() => void showCorrections()} />
+      </section>
+      <aside class="side" aria-label="Correction des passages" bind:this={side}>
+        <DetectionDetail><CorrectionsToolbar /></DetectionDetail>
+      </aside>
     </div>
   {:else}
+    <h2 id="h-review">Vérification</h2>
     <p class="notice">Aucune analyse : commencez par l'écran « Texte ».</p>
     <button type="button" onclick={() => app.goTo("text")}>Aller au texte</button>
   {/if}
 </section>
 
 <style>
+  .review-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  h2 {
+    margin: 0 0 0.35rem;
+  }
+
+  .review-header p {
+    margin: 0;
+  }
+
   .layout {
+    --review-text-height: clamp(22rem, 57dvh, 44rem);
     display: grid;
-    gap: 1rem;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.48fr);
+    align-items: start;
+  }
+
+  .document {
+    min-width: 0;
+  }
+
+  h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+  }
+
+  .instructions {
+    margin: 0 0 0.75rem;
+    font-size: 0.8rem;
   }
 
   .side {
-    display: grid;
-    gap: 1rem;
-    align-content: start;
+    min-width: 0;
+    scroll-margin-top: 1rem;
+    max-height: calc(var(--review-text-height) + 5rem);
+    overflow-y: auto;
+    padding: 0 0.5rem 0 1.25rem;
+    border-left: 1px solid var(--border-soft);
+    scrollbar-gutter: stable;
   }
 
   .actions {
@@ -62,12 +124,19 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 1rem;
   }
 
-  @media (max-width: 48rem) {
+  @media (max-width: 54rem) {
     .layout {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .side {
+      max-height: none;
+      overflow: visible;
+      padding: 1rem 0 0;
+      border-left: 0;
+      border-top: 1px solid var(--border-soft);
     }
   }
 </style>

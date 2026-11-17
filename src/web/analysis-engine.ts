@@ -12,6 +12,7 @@ import {
   type PackRegistry,
 } from "../core/index.ts";
 import { LocalModelMissingError } from "../ner/local-files.ts";
+import { NER_INACTIVE_WARNING } from "../core/analyzer/analyzer.ts";
 import type {
   AnalysisErrorCode,
   AnalyzeRequest,
@@ -105,7 +106,7 @@ export function createAnalysisHandler(
         if (!ner) {
           nerStatus = "error";
           extraWarnings.push(
-            "La reconnaissance des noms (NER) a été demandée mais n'est pas disponible dans cette version.",
+            "Le modèle de reconnaissance des noms n’a pas pu être utilisé. Seules les règles intégrées ont été appliquées : des noms peuvent rester en clair. Vérifiez le modèle dans les Réglages, puis relancez l’analyse.",
           );
         }
       } catch (err) {
@@ -113,13 +114,13 @@ export function createAnalysisHandler(
         if (err instanceof LocalModelMissingError) {
           nerStatus = "missing";
           extraWarnings.push(
-            "La reconnaissance des noms (NER) est activée mais aucun modèle n'est chargé : chargez d'abord le modèle dans les Réglages. Seuls les détecteurs par règles ont été appliqués.",
+            "Aucun modèle de reconnaissance des noms n’est chargé. Seules les règles intégrées ont été appliquées : des noms peuvent rester en clair. Chargez un modèle dans les Réglages, puis relancez l’analyse.",
           );
         } else {
           nerStatus = "error";
           // Message volontairement générique : l'erreur d'origine peut citer des chemins, jamais le texte (R5).
           extraWarnings.push(
-            "La reconnaissance des noms (NER) n'est pas disponible : modèle introuvable ou illisible. Seuls les détecteurs par règles ont été appliqués.",
+            "La reconnaissance des noms a échoué : modèle introuvable ou illisible. Seules les règles intégrées ont été appliquées : des noms peuvent rester en clair. Rechargez le modèle dans les Réglages, puis relancez l’analyse.",
           );
         }
       }
@@ -142,7 +143,15 @@ export function createAnalysisHandler(
     post({
       type: "result",
       id: req.id,
-      result: { ...result, warnings: [...extraWarnings, ...result.warnings] },
+      result: {
+        ...result,
+        warnings: [
+          ...extraWarnings,
+          ...result.warnings.filter(
+            (warning) => extraWarnings.length === 0 || warning !== NER_INACTIVE_WARNING,
+          ),
+        ],
+      },
       ...(nerStatus ? { nerStatus } : {}),
     });
   }

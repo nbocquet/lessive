@@ -34,6 +34,11 @@
   let message = $state("");
   let flip = false;
   let awaitingUpdate = $state(false);
+  let adding = $state(false);
+
+  $effect(() => {
+    if (app.textSelection) adding = true;
+  });
 
   const busy = $derived(app.analysisStatus === "running");
   const operators = $derived(operatorsForMode(app.mode));
@@ -167,10 +172,8 @@
   );
 </script>
 
-<section class="tools" aria-labelledby="h-corrections">
-  <h3 id="h-corrections">Corrections</h3>
-
-  <p class="status" role="status" aria-live="polite">{message}</p>
+<section class="tools" aria-label="Corrections">
+  <p class="status" class:empty={!message} role="status" aria-live="polite">{message}</p>
   {#if busy}
     <p class="hint" role="status">Mise à jour de l'analyse en cours…</p>
   {/if}
@@ -178,129 +181,132 @@
     <p class="notice error" role="alert">{app.errorMessage}</p>
   {/if}
 
-  <fieldset disabled={busy}>
-    <legend>Ajouter une donnée manquante</legend>
-    <p class="hint">
-      Sélectionnez du texte dans la vue de gauche, ou saisissez-le ci-dessous (équivalent clavier).
-    </p>
-    <p class="selection" aria-live="polite">
-      {#if usingQuery}
-        Texte saisi utilisé à la place de la sélection.
-      {:else if selectionText}
-        Sélection : « {excerpt(selectionText, 60)} »
-      {:else}
-        Aucune sélection.
-      {/if}
-    </p>
+  {#if selected}
+    <fieldset disabled={busy || selected === null}>
+      <legend>Modifier ce passage</legend>
 
-    <div class="field">
-      <label for="rv-query">Texte à ajouter (facultatif)</label>
-      <input id="rv-query" type="text" autocomplete="off" spellcheck="false" bind:value={query} />
-    </div>
-
-    <div class="field">
-      <label for="rv-new-type">Catégorie</label>
-      <select id="rv-new-type" bind:value={newType}>
-        {#each ENTITY_TYPES as t (t)}
-          <option value={t}>{typeNameWithTag(t)}</option>
-        {/each}
-      </select>
-    </div>
-
-    <label class="check">
-      <input type="checkbox" bind:checked={applyAll} />
-      Appliquer à toutes les occurrences
-    </label>
-    <p class="hint">
-      {#if applyAll}
-        Sans tenir compte de la casse, mots entiers.
-      {:else if usingQuery}
-        Seule la première occurrence sera ajoutée.
-      {:else}
-        Seule la sélection sera ajoutée.
-      {/if}
-      {#if plan && plan.found > 0}
-        {plan.found === 1 ? "1 occurrence trouvée." : `${plan.found} occurrences trouvées.`}
-      {/if}
-      {#if plan?.truncated}
-        Liste limitée aux premières occurrences.
-      {/if}
-    </p>
-
-    <button type="button" class="primary" onclick={addManual}>Ajouter</button>
-  </fieldset>
-
-  <fieldset disabled={busy || selected === null}>
-    <legend>Détection sélectionnée</legend>
-    {#if selected}
-      <p class="hint">
-        {typeName(selected.entityType)} : « {excerpt(
-          app.text.slice(selected.start, selected.end),
-          40,
-        )} »
-      </p>
-    {:else}
-      <p class="hint">Sélectionnez une détection dans le texte pour la corriger.</p>
-    {/if}
-
-    <div class="field">
-      <label for="rv-type">Catégorie</label>
-      <select id="rv-type" bind:value={typeChoice}>
-        {#each ENTITY_TYPES as t (t)}
-          <option value={t}>{typeNameWithTag(t)}</option>
-        {/each}
-      </select>
-      <div class="row">
-        <button
-          type="button"
-          onclick={changeType}
-          disabled={!selected || typeChoice === selected.entityType}
-        >
-          Changer la catégorie
-        </button>
-        {#if typeOverridden}
-          <button type="button" onclick={resetType}>Rétablir l'origine</button>
-        {/if}
+      <div class="field">
+        <label for="rv-type">Catégorie</label>
+        <select id="rv-type" bind:value={typeChoice}>
+          {#each ENTITY_TYPES as t (t)}
+            <option value={t}>{typeNameWithTag(t)}</option>
+          {/each}
+        </select>
+        <div class="row">
+          <button
+            type="button"
+            onclick={changeType}
+            disabled={!selected || typeChoice === selected.entityType}
+          >
+            Changer la catégorie
+          </button>
+          {#if typeOverridden}
+            <button type="button" onclick={resetType}>Rétablir l'origine</button>
+          {/if}
+        </div>
       </div>
-    </div>
 
-    <div class="field">
-      <label for="rv-op">Transformation</label>
-      <select id="rv-op" bind:value={opChoice}>
-        <option value="default">Par défaut du mode</option>
-        {#each operators as op (op)}
-          <option value={op}>{OPERATOR_NAMES[op]}</option>
-        {/each}
-      </select>
-      <label class="check">
-        <input type="radio" name="rv-scope" value="one" bind:group={scope} />
-        Cette détection
-      </label>
-      <label class="check">
-        <input type="radio" name="rv-scope" value="type" bind:group={scope} />
-        Toutes les détections de la catégorie{selected
-          ? ` « ${typeName(selected.entityType)} »`
-          : ""}
-      </label>
-      <button type="button" onclick={applyOperator}>Appliquer la transformation</button>
-    </div>
+      <details class="advanced">
+        <summary>Changer le remplacement</summary>
+        <div class="field">
+          <label for="rv-op">Transformation</label>
+          <select id="rv-op" bind:value={opChoice}>
+            <option value="default">Par défaut du mode</option>
+            {#each operators as op (op)}
+              <option value={op}>{OPERATOR_NAMES[op]}</option>
+            {/each}
+          </select>
+          <label class="check">
+            <input type="radio" name="rv-scope" value="one" bind:group={scope} />
+            Cette détection
+          </label>
+          <label class="check">
+            <input type="radio" name="rv-scope" value="type" bind:group={scope} />
+            Toutes les détections de la catégorie{selected
+              ? ` « ${typeName(selected.entityType)} »`
+              : ""}
+          </label>
+          <button type="button" onclick={applyOperator}>Appliquer la transformation</button>
+        </div>
+      </details>
+      <button type="button" class="danger" onclick={removeSelected}
+        >Laisser ce passage en clair</button
+      >
+    </fieldset>
+  {/if}
 
-    <button type="button" class="danger" onclick={removeSelected}>Supprimer la détection</button>
-  </fieldset>
+  <details class="add-missing" bind:open={adding}>
+    <summary>Ajouter une donnée manquante</summary>
+    <fieldset disabled={busy}>
+      <legend class="visually-hidden">Donnée manquante</legend>
+      <p class="hint">
+        Sélectionnez du texte dans le document ou saisissez la valeur à ajouter ci-dessous.
+      </p>
+      <p class="selection" aria-live="polite">
+        {#if usingQuery}
+          Texte saisi utilisé à la place de la sélection.
+        {:else if selectionText}
+          Sélection : « {excerpt(selectionText, 60)} »
+        {:else}
+          Aucune sélection.
+        {/if}
+      </p>
+
+      <div class="field">
+        <label for="rv-query">Texte à ajouter (facultatif)</label>
+        <input id="rv-query" type="text" autocomplete="off" spellcheck="false" bind:value={query} />
+      </div>
+
+      <div class="field">
+        <label for="rv-new-type">Catégorie</label>
+        <select id="rv-new-type" bind:value={newType}>
+          {#each ENTITY_TYPES as t (t)}
+            <option value={t}>{typeNameWithTag(t)}</option>
+          {/each}
+        </select>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" bind:checked={applyAll} />
+        Appliquer à toutes les occurrences
+      </label>
+      <p class="hint">
+        {#if applyAll}
+          Sans tenir compte de la casse, mots entiers.
+        {:else if usingQuery}
+          Seule la première occurrence sera ajoutée.
+        {:else}
+          Seule la sélection sera ajoutée.
+        {/if}
+        {#if plan && plan.found > 0}
+          {plan.found === 1 ? "1 occurrence trouvée." : `${plan.found} occurrences trouvées.`}
+        {/if}
+        {#if plan?.truncated}
+          Liste limitée aux premières occurrences.
+        {/if}
+      </p>
+
+      <button type="button" class="primary" onclick={addManual}>Ajouter</button>
+    </fieldset>
+  </details>
 
   {#if removed.length > 0}
-    <fieldset disabled={busy}>
-      <legend>Détections supprimées ({removed.length})</legend>
-      <ul>
-        {#each removed as d (d.id)}
-          <li>
-            <span>{typeName(d.entityType)} : « {excerpt(app.text.slice(d.start, d.end), 30)} »</span
-            >
-            <button type="button" onclick={() => restore(d)}>Restaurer</button>
-          </li>
-        {/each}
-      </ul>
-    </fieldset>
+    <details>
+      <summary>Passages laissés en clair ({removed.length})</summary>
+      <fieldset disabled={busy}>
+        <legend class="visually-hidden">Restaurer les remplacements</legend>
+        <ul>
+          {#each removed as d (d.id)}
+            <li>
+              <span
+                >{typeName(d.entityType)} : « {excerpt(app.text.slice(d.start, d.end), 30)} »</span
+              >
+              <button type="button" onclick={() => restore(d)}>Restaurer</button>
+            </li>
+          {/each}
+        </ul>
+      </fieldset>
+    </details>
   {/if}
 </section>
 
@@ -308,11 +314,6 @@
   .tools {
     display: grid;
     gap: 1rem;
-  }
-
-  h3 {
-    margin: 0;
-    font-size: 1.1rem;
   }
 
   fieldset {
@@ -329,7 +330,7 @@
   input[type="text"] {
     width: 100%;
     padding: 0.5rem;
-    border: 2px solid var(--border);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--bg);
   }
@@ -358,12 +359,44 @@
 
   .hint {
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   .status {
-    min-height: 1.5rem;
     font-weight: 600;
+  }
+
+  .status.empty {
+    margin: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  details > fieldset,
+  .advanced .field {
+    margin-top: 0.75rem;
+  }
+
+  fieldset {
+    padding: 0;
+    border: 0;
+  }
+
+  legend {
+    padding: 0;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .add-missing {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-soft);
   }
 
   .selection {

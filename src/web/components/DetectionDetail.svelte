@@ -5,6 +5,7 @@
   qu'à l'écran, relue dans le texte original.
 -->
 <script lang="ts">
+  import type { Snippet } from "svelte";
   import { categoryLabel, type Detection } from "../../core/index.ts";
   import { app } from "../state.svelte.ts";
   import {
@@ -18,6 +19,7 @@
 
   type Kind = "kept" | "removed" | "discarded";
 
+  let { children }: { children?: Snippet } = $props();
   let showDiscarded = $state(false);
 
   const removed = $derived.by<Detection[]>(() => {
@@ -68,7 +70,7 @@
 </script>
 
 <section class="detail" aria-labelledby="h-detail">
-  <h3 id="h-detail">Détail de la détection</h3>
+  <h3 id="h-detail">Passage sélectionné</h3>
 
   <p class="visually-hidden" role="status" aria-live="polite">
     {#if selected}
@@ -87,44 +89,11 @@
 
       <dt>Catégorie</dt>
       <dd>
-        <span class="swatch" style:--h={token.hue} style:--ul={token.underline} aria-hidden="true"
-          >Abc</span
+        <span class="swatch" style:--h={token.hue} style:--ul={token.underline}
+          >{typeName(d.entityType)}</span
         >
-        {typeName(d.entityType)}
         {#if originalType}
           <span class="hint">(modifiée ; le moteur proposait « {typeName(originalType)} »)</span>
-        {/if}
-      </dd>
-
-      <dt>Score</dt>
-      <dd>
-        {formatScore(d.score)}
-        <span class="hint"
-          >Indicatif : ce n'est pas une probabilité (0,90 ne signifie pas 90 % de chances).</span
-        >
-      </dd>
-
-      <dt>Origine</dt>
-      <dd>
-        {SOURCE_NAMES[d.source]}
-        {#if d.source !== "manual"}
-          <span class="hint">règle « {d.recognizerId} », pack « {d.packId} »</span>
-        {/if}
-        {#if d.validated}
-          <span class="hint">Contrôle algorithmique réussi.</span>
-        {/if}
-      </dd>
-
-      <dt>Explication</dt>
-      <dd>
-        {#if d.explanation.length > 0}
-          <ol class="explain">
-            {#each d.explanation as line, i (i)}
-              <li>{line}</li>
-            {/each}
-          </ol>
-        {:else}
-          <span class="hint">Aucune explication fournie.</span>
         {/if}
       </dd>
 
@@ -151,15 +120,56 @@
   {:else}
     <p class="hint">
       Sélectionnez une détection dans le texte (clic, ou Entrée au clavier) pour voir sa catégorie,
-      son score et son origine.
+      son remplacement et les actions de correction.
     </p>
   {/if}
 
-  <div class="discarded">
-    <label>
-      <input type="checkbox" bind:checked={showDiscarded} />
-      Montrer les détections écartées ({app.discarded.length})
-    </label>
+  {@render children?.()}
+  {#if selected}
+    {@const d = selected.detection}
+    <details class="technical">
+      <summary>Pourquoi ce passage a été repéré ?</summary>
+      <dl>
+        <dt>Score</dt>
+        <dd>
+          {formatScore(d.score)}
+          <span class="hint"
+            >Indicatif : ce n'est pas une probabilité (0,90 ne signifie pas 90 % de chances).</span
+          >
+        </dd>
+
+        <dt>Origine</dt>
+        <dd>
+          {SOURCE_NAMES[d.source]}
+          {#if d.source !== "manual"}
+            <span class="hint">règle « {d.recognizerId} », pack « {d.packId} »</span>
+          {/if}
+          {#if d.validated}
+            <span class="hint">Contrôle algorithmique réussi.</span>
+          {/if}
+        </dd>
+
+        <dt>Explication</dt>
+        <dd>
+          {#if d.explanation.length > 0}
+            <ol class="explain">
+              {#each d.explanation as line, i (i)}
+                <li>{line}</li>
+              {/each}
+            </ol>
+          {:else}
+            <span class="hint">Aucune explication fournie.</span>
+          {/if}
+        </dd>
+      </dl>
+    </details>
+  {/if}
+
+  <details class="discarded" bind:open={showDiscarded}>
+    <summary>Passages écartés par l’analyse ({app.discarded.length})</summary>
+    <p class="hint">
+      Ces passages ne seront pas remplacés. Consultez les raisons de leur exclusion si nécessaire.
+    </p>
     {#if showDiscarded}
       {#if app.discarded.length === 0}
         <p class="hint">Aucune détection écartée.</p>
@@ -181,28 +191,33 @@
         </ul>
       {/if}
     {/if}
-  </div>
+  </details>
 </section>
 
 <style>
   .detail {
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
+    display: grid;
+    gap: 0.85rem;
   }
 
   h3 {
-    margin: 0 0 0.5rem;
-    font-size: 1.1rem;
+    margin: 0;
+    font-size: 1rem;
   }
 
   dl {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.4rem 0.65rem;
     margin: 0;
+    font-size: 0.875rem;
   }
 
   dt {
-    margin-top: 0.5rem;
-    font-weight: 700;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 500;
   }
 
   dd {
@@ -215,10 +230,14 @@
     white-space: pre-wrap;
   }
 
+  .detail > p {
+    margin: 0;
+  }
+
   .hint {
     display: block;
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   .explain {
@@ -238,9 +257,23 @@
   }
 
   .discarded {
-    margin-top: 1rem;
     padding-top: 0.75rem;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  summary {
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .technical {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .technical dl {
+    margin-top: 0.75rem;
   }
 
   .discarded ul {

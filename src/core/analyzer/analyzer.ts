@@ -26,6 +26,9 @@ import { collectAmbiguousNames, propagatePersonNames } from "./propagate-names.t
 /** Seuil par défaut de l'analyse (aligné sur la résolution des conflits). */
 const DEFAULT_MIN_SCORE = 0.5;
 
+export const NER_INACTIVE_WARNING =
+  "Analyse sans modèle de reconnaissance des noms : seules les règles intégrées ont été utilisées. Des noms de personnes, de lieux ou d’organisations peuvent rester en clair. Vérifiez-les avant de copier le résultat.";
+
 export interface AnalyzeOptions {
   /** Langue principale du texte. Absente : tous les détecteurs s'appliquent. */
   language?: Language;
@@ -141,13 +144,11 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
         } catch (err) {
           if (signal?.aborted || (err instanceof Error && err.name === "AbortError")) throw err;
           warnings.push(
-            "La reconnaissance des noms (NER) a échoué : seuls les détecteurs par règles ont été appliqués.",
+            "La reconnaissance des noms a échoué pendant l’analyse. Seules les règles intégrées ont été utilisées : des noms de personnes, de lieux ou d’organisations peuvent rester en clair. Relancez l’analyse ou vérifiez-les à la main.",
           );
         }
       } else {
-        warnings.push(
-          "La reconnaissance des noms (NER) n'est pas active : les noms de personnes, lieux et organisations peuvent manquer.",
-        );
+        warnings.push(NER_INACTIVE_WARNING);
       }
 
       const { detections: contextual, dropped } = applyContext(text, raw, rulesById, language);

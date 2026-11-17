@@ -1,21 +1,24 @@
-/* Style global de Lessive (T5.1). Sobre, sans bibliothèque. Les composants ajoutent leur CSS local. */
+/* Styles communs de l’interface, sans ressource externe. */
 :root {
   color-scheme: light dark;
   --bg: #ffffff;
-  --surface: #f4f6f8;
-  --text: #1a1d21;
-  --muted: #4a5159;
-  --border: #8a929b;
-  --accent: #0b4f8a;
+  --canvas: #ffffff;
+  --surface: #f4f5f6;
+  --text: #24272b;
+  --muted: #5c626b;
+  --border: #8a919a;
+  --border-soft: #dadde2;
+  --accent: #285aa3;
+  --accent-soft: #edf2fa;
   --accent-text: #ffffff;
   --focus: #b45309;
-  --warn-bg: #fff4d6;
-  --warn-border: #8a5a00;
-  --warn-text: #3d2a00;
+  --warn-bg: #f8f2df;
+  --warn-border: #b69245;
+  --warn-text: #65501f;
   --danger-bg: #fde8e8;
   --danger-border: #a31919;
   --danger-text: #5c0d0d;
-  --radius: 6px;
+  --radius: 4px;
   font-family:
     system-ui,
     -apple-system,
@@ -28,17 +31,20 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14171a;
-    --surface: #1e2328;
-    --text: #eef1f4;
-    --muted: #b7bec6;
-    --border: #7d8791;
-    --accent: #7db8f0;
-    --accent-text: #0b1620;
+    --bg: #1b1d21;
+    --canvas: #1b1d21;
+    --surface: #24272c;
+    --text: #e8eaed;
+    --muted: #b0b5be;
+    --border: #7f8792;
+    --border-soft: #3b414a;
+    --accent: #9cbbec;
+    --accent-soft: #26344a;
+    --accent-text: #172438;
     --focus: #f5b14c;
-    --warn-bg: #3a2d0a;
-    --warn-border: #e0a82e;
-    --warn-text: #fbe9b7;
+    --warn-bg: #302b1c;
+    --warn-border: #aa8d50;
+    --warn-text: #e4d3a8;
     --danger-bg: #3d1414;
     --danger-border: #f08080;
     --danger-text: #fbd0d0;
@@ -53,7 +59,7 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--canvas);
   color: var(--text);
 }
 
@@ -61,6 +67,17 @@ h1,
 h2,
 h3 {
   line-height: 1.25;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text);
 }
 
 a {
@@ -82,18 +99,29 @@ input {
 }
 
 button {
-  min-height: 2.5rem;
-  padding: 0.4rem 1rem;
-  border: 2px solid var(--accent);
+  min-height: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg);
   color: var(--accent);
   cursor: pointer;
+  font-weight: 500;
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
 }
 
 button.primary {
   background: var(--accent);
   color: var(--accent-text);
+  border-color: var(--accent);
+}
+
+button.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 88%, var(--text));
 }
 
 button:disabled {
@@ -106,20 +134,43 @@ button:disabled {
 textarea,
 select {
   width: 100%;
-  padding: 0.5rem;
-  border: 2px solid var(--border);
+  padding: 0.75rem;
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg);
 }
 
 textarea {
   resize: vertical;
+  line-height: 1.7;
+}
+
+input[type="radio"],
+input[type="checkbox"],
+progress {
+  accent-color: var(--accent);
+}
+
+input[type="file"] {
+  max-width: 100%;
+  font-size: 0.875rem;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
 }
 
 fieldset {
   margin: 0;
   padding: 0.75rem 1rem;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius);
 }
 
@@ -146,6 +197,7 @@ legend {
   padding: 0.5rem 1rem;
   background: var(--accent);
   color: var(--accent-text);
+  z-index: 10;
 }
 
 .skip-link:focus {
@@ -154,12 +206,12 @@ legend {
 
 .hint {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 .notice {
   padding: 0.6rem 0.9rem;
-  border: 2px solid var(--warn-border);
+  border: 1px solid var(--warn-border);
   border-radius: var(--radius);
   background: var(--warn-bg);
   color: var(--warn-text);

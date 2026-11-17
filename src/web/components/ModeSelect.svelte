@@ -7,17 +7,17 @@
     {
       id: "masking",
       label: "Masquage",
-      help: "Remplace chaque donnée par un masque ou une catégorie, par exemple [PERSONNE]. Pas de réidentification.",
+      help: "Remplacement par un masque ou une catégorie : [PERSONNE]. Les valeurs ne peuvent pas être restituées.",
     },
     {
       id: "pseudonymization",
       label: "Pseudonymisation",
-      help: "Remplace chaque donnée par un jeton stable, par exemple PERSONNE_001, pour retrouver les valeurs dans la réponse du LLM, en local.",
+      help: "Remplacement par un pseudonyme stable : PERSONNE_001. Les valeurs peuvent être restituées dans la réponse du LLM.",
     },
   ];
 </script>
 
-<fieldset>
+<fieldset class="modes">
   <legend>Mode de traitement</legend>
   {#each modes as m (m.id)}
     <div class="option">
@@ -37,17 +37,41 @@
 </fieldset>
 
 <style>
+  .modes {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  legend {
+    margin-bottom: 0.65rem;
+    padding: 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
   .option + .option {
-    margin-top: 0.5rem;
+    margin-top: 1rem;
   }
 
   .option p {
     margin: 0.1rem 0 0 1.7rem;
+    font-size: 0.8rem;
+    line-height: 1.6;
   }
 
   input[type="radio"] {
     width: 1.1rem;
     height: 1.1rem;
     margin-right: 0.5rem;
+    flex: none;
   }
 </style>

@@ -10,18 +10,19 @@
 -->
 <script lang="ts">
   import { app } from "../state.svelte.ts";
-  import ReviewLegend from "./ReviewLegend.svelte";
   import { typeName, typeToken } from "./review-labels.ts";
   import { buildSegments } from "./review-segments.ts";
   import { boundaryPosition, resolveSelection, rootBoundaryPosition } from "./review-selection.ts";
 
   let root: HTMLElement | undefined = $state();
+  let { onSelect }: { onSelect?: () => void } = $props();
 
   const segments = $derived(buildSegments(app.text.length, app.detections));
   const byId = $derived(new Map(app.detections.map((d) => [d.id, d])));
 
   function select(id: string): void {
     app.selectDetection(id);
+    onSelect?.();
   }
 
   function onKey(event: KeyboardEvent, id: string): void {
@@ -72,7 +73,6 @@
 
 <svelte:document onselectionchange={onSelectionChange} />
 
-<ReviewLegend />
 <div
   id="review-text"
   class="text"
@@ -109,12 +109,14 @@
 <style>
   .text {
     padding: 0.75rem 1rem;
-    border: 2px solid var(--border);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--bg);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    max-height: 32rem;
+    height: var(--review-text-height, 32rem);
+    line-height: 1.8;
+    scrollbar-gutter: stable;
     overflow-y: auto;
   }
 

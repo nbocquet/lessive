@@ -26,6 +26,7 @@
 </script>
 
 <div class="model" aria-live="polite">
+  <h3 id="settings-model" tabindex="-1">Modèle de reconnaissance des noms</h3>
   <p class="status" data-status={app.modelStatus}>
     <strong>{statusLabel[app.modelStatus]}</strong>
     {#if app.modelBusy}— lecture et vérification des fichiers…{/if}
@@ -120,6 +121,12 @@
 
   p {
     margin: 0;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    scroll-margin-top: 1rem;
   }
 
   .warn,
