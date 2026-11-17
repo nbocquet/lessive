@@ -59,7 +59,7 @@ Sources : ISO/IEC 7812-1 (structure du numéro, IIN) et clé de Luhn ; plages de
 
 ## Valeurs de test publiées
 
-IBAN d'exemple publiés dans le registre IBAN de SWIFT et par les banques centrales (CH93 0076 2011 6238 5295 7, DE89 3704 0044 0532 0130 00, FR76 3000 6000 0112 3456 7890 189, GB82 WEST 1234 5698 7654 32, BE68 5390 0754 7034, ES91…, IT60…, LI21…) ; cartes de test publiées par les prestataires de paiement (4111 1111 1111 1111, 5555 5555 5555 4444, 3782 822463 10005, 3056 930902 5904…) ; clé AWS d'exemple de la documentation AWS (`AKIAIOSFODNN7EXAMPLE`). Le IBAN `DE77 3704 0044 0532 0008 00` a été fabriqué (script jetable hors dépôt) pour que quatre blocs consécutifs passent Luhn. Les autres secrets sont fictifs (`EXAMPLE`, zéros).
+IBAN d'exemple publiés dans le registre IBAN de SWIFT et par les banques centrales (CH93 0076 2011 6238 5295 7, DE89 3704 0044 0532 0130 00, FR76 3000 6000 0112 3456 7890 189, GB82 WEST 1234 5698 7654 32, BE68 5390 0754 7034, ES91…, IT60…, LI21…) ; cartes de test publiées par les prestataires de paiement (4111 1111 1111 1111, 5555 5555 5555 4444, 3782 822463 10005, 3056 930902 5904…) ; clé AWS d'exemple de la documentation AWS (`clé d'exemple de la documentation AWS (préfixe AKIA suivi de IOSFODNN7EXAMPLE)`). Le IBAN `DE77 3704 0044 0532 0008 00` a été fabriqué (script jetable hors dépôt) pour que quatre blocs consécutifs passent Luhn. Les autres secrets sont fictifs (`EXAMPLE`, zéros).
 
 ## Sources des formats (à revérifier avant publication, non consultées en ligne lors de la rédaction)
 
