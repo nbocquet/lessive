@@ -1,0 +1,154 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "fr-street",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3},?[ \\u00a0\\u202f](?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-])?(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Adresse de rue française, numéro d'abord : « 7 avenue du Léman », « 12, rue Victor Hugo », « 3 place de l'Hôtel de Ville ». Numéro de 1 à 4 chiffres, virgule facultative, type de voie (rue, route, avenue, boulevard, chemin, place, impasse, allée, quai, passage, sentier, voie, lotissement, résidence, hameau, lieu-dit, faubourg, esplanade, promenade, montée, traverse, cité, ruelle ; abréviations av., bd, bvd, rte, imp., ch., pl., r. ; première lettre en majuscule ou en minuscule), puis nom de voie capitalisé (jusqu'à 6 mots, particules minuscules de, du, des, la, le, les, d', l'). Retenue sans contexte (0,8)."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-street-other",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3},?[ \\u00a0\\u202f](?=(?:[sS]entier|[vV]oie|[lL]otissement|[rR](?:[ée]sidence|uelle)|[hH]ameau|[fF]aubourg|[eE]splanade|[pP]romenade|[mM]ont[ée]e|[tT]raverse|[cC]it[ée])(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Comme fr-street pour les types moins courants : sentier, voie, lotissement, résidence, hameau, lieu-dit, faubourg, esplanade, promenade, montée, traverse, cité, ruelle. Pas de particule entre deux mots du nom."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-street-hyphen",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3},?[ \\u00a0\\u202f](?:[lL]ieu[ \\u00a0\\u202f-]dit|[rR]ond[ \\u00a0\\u202f-]point)[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Comme fr-street pour lieu-dit et rond-point : « 5 lieu-dit Les Granges », « 2 rond-point de la Paix »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-street-abbr",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3},?[ \\u00a0\\u202f](?=(?:[aA]v\\.?|[bB](?:d\\.?|vd\\.?)|[rR](?:te\\.?|\\.)|[iI]mp\\.?|[cC]h\\.|[pP]l\\.)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Comme fr-street avec les abréviations : av., bd, bvd, rte, imp. (point facultatif), ch., pl., r. (point obligatoire). Pas de particule entre deux mots du nom."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-street-letter",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3}[A-Da-d],?[ \\u00a0\\u202f](?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Comme fr-street avec une lettre collée au numéro : « 4B chemin des Vignes » (lettres A à D). Pas de particule entre deux mots du nom."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-street-range",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3}[-–][0-9]{1,3},?[ \\u00a0\\u202f](?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Comme fr-street avec une plage de numéros : « 22-24 boulevard Haussmann ». Pas de particule entre deux mots du nom."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-street-bis",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3}[ \\u00a0\\u202f](?:bis|ter),?[ \\u00a0\\u202f](?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Comme fr-street avec bis, ter ou quater : « 12 bis, rue Victor Hugo », « 3 ter avenue de la Gare ». Pas de particule entre deux mots du nom."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-street-caps",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3},?[ \\u00a0\\u202f](?=(?:R(?:UE(?:LLE)?|OUTE|[ÉE]SIDENCE|TE\\.?|\\.)|A(?:V(?:ENUE|\\.)?|LL[ÉE]E)|B(?:OULEVARD|D\\.?|VD\\.?)|C(?:H(?:EMIN|\\.)|IT[ÉE])|P(?:L(?:ACE|\\.)|ASSAGE|ROMENADE)|IMP(?:ASSE|\\.)?|QUAI|SENTIER|VOIE|LOTISSEMENT|HAMEAU|FAUBOURG|ESPLANADE|MONT[ÉE]E|TRAVERSE)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f][A-ZÀ-ÖØ-ÞŒ]{1,30}(?:[ \u00a0\u202f'’-][A-ZÀ-ÖØ-ÞŒ]{1,30}){0,7}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Voie écrite en capitales, apostrophes comprises : « 7 RUE DE L'EUROPE », « 12 AVENUE D'ITALIE »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-street-date",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3},?[ \\u00a0\\u202f](?=(?:[rR](?:ue|oute)|[pP](?:lace|assage)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[qQ]uai|[cC]hemin|[iI]mpasse)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f][a-zàâçéèêîôû]{2}[ \\u00a0\\u202f][0-9]{1,2}(?:er)?[ \\u00a0\\u202f-](?:[jJ](?:anvier|ui(?:n|llet))|[fF][ée]vrier|[mM]a(?:rs|i)|[aA](?:vril|o[ûu]t)|[sS]eptembre|[oO]ctobre|[nN]ovembre|[dD][ée]cembre)(?:[ \\u00a0\\u202f][0-9]{4})?(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Voie dont le nom est une date : « 5 rue du 8 Mai 1945 », « 2 place du 14-Juillet », « 9 avenue du 11 novembre 1918 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-postal-code-city",
+      "entityType": "LOCATION",
+      "score": 0.5,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?!00|96|99)[0-9]{5}[ \\u00a0\\u202f](?:[A-ZÀ-ÖØ-ÞŒ][a-z]{1,2}[ \\u00a0\\u202f])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[-/](?:[a-zàâçéèêîôû]{1,3}[-/])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,5}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "context": {
+        "required": true,
+        "words": {
+          "fr": [
+            "adresse",
+            "rue",
+            "avenue",
+            "boulevard",
+            "chemin",
+            "impasse",
+            "allee",
+            "place",
+            "route",
+            "quai",
+            "cours",
+            "passage",
+            "square",
+            "residence",
+            "lieu-dit",
+            "hameau",
+            "domicile",
+            "code postal",
+            "cp",
+            "bp",
+            "cedex"
+          ],
+          "en": ["address", "street", "postal code", "zip"]
+        }
+      },
+      "description": "Code postal à 5 chiffres suivi d'une commune en casse normale (« 74100 Annemasse », « 74160 Saint-Julien-en-Genevois »), avec mot de contexte d'adresse obligatoire. Complète fr-postal-code-commune (communes en capitales) : rattrape le code postal et la commune derrière les voies que les règles fr-address ne couvrent pas en une seule détection (numéro bis, voie à particule interne…)."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-postal-code-city-after-comma",
+      "entityType": "LOCATION",
+      "score": 0.55,
+      "pattern": "(?<=[,\\n][ \\u00a0\\u202f]{0,2})(?!00|96|99)[0-9]{5}[ \\u00a0\\u202f](?:[A-ZÀ-ÖØ-ÞŒ][a-z]{1,2}[ \\u00a0\\u202f])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[-/](?:[a-zàâçéèêîôû]{1,3}[-/])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,5}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])",
+      "description": "Code postal à 5 chiffres suivi d'une commune en casse normale, juste après une virgule ou un retour à la ligne, sans mot de contexte (« …, 74100 Annemasse »). Sert à la fusion avec la rue qui précède (le moteur réunit les morceaux d'adresse adjacents) quand le mot d'adresse est trop loin pour le contexte de fr-postal-code-city."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-postbox",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?:[Bb]o[iî]te[ \\u00a0\\u202f][Pp]ostale|BO[IÎ]TE[ \\u00a0\\u202f]POSTALE)(?:[ \\u00a0\\u202f](?:n°|N°))?[ \\u00a0\\u202f][0-9]{1,6}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Boîte postale, forme longue : « Boîte postale 45 », « boite postale n° 12 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-postbox-short",
+      "entityType": "LOCATION",
+      "score": 0.4,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?:BP|B\\.P\\.?)[ \\u00a0\\u202f][0-9]{1,6}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "context": {
+        "required": true,
+        "words": {
+          "fr": [
+            "adresse",
+            "rue",
+            "avenue",
+            "boulevard",
+            "cedex",
+            "code postal",
+            "domicile",
+            "courrier",
+            "siege"
+          ],
+          "en": ["address", "street", "mail"]
+        }
+      },
+      "description": "Boîte postale, forme courte : « BP 45 », « B.P. 45 ». Score 0,4 : retenue seulement avec un mot de contexte d'adresse (BP désigne aussi autre chose)."
+    }
+  ]
+}

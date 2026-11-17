@@ -13,11 +13,30 @@
       "expectAll": [
         {
           "type": "LOCATION",
-          "value": "1204 Genève"
+          "value": "Rue du Rhône 1, 1204 Genève"
         },
         {
           "type": "PHONE",
           "value": "022 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "rue-npa-telephone-courriel-anglais",
+      "language": "en",
+      "text": "Contact: sales@example.ch, Avenue de la Gare 10, 1003 Lausanne, phone 021 123 45 67.",
+      "expectAll": [
+        {
+          "type": "EMAIL",
+          "value": "sales@example.ch"
+        },
+        {
+          "type": "LOCATION",
+          "value": "Avenue de la Gare 10, 1003 Lausanne"
+        },
+        {
+          "type": "PHONE",
+          "value": "021 123 45 67"
         }
       ]
     }

@@ -368,7 +368,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "74160 SAINT-JULIEN-EN-GENEVOIS"
+          "value": "12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS"
         }
       ]
     },
@@ -390,7 +390,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "42000 SAINT-ÉTIENNE"
+          "value": "13 avenue Victor Hugo, 42000 SAINT-ÉTIENNE"
         }
       ]
     },
@@ -414,7 +414,7 @@
     {
       "id": "code-postal-commune-en-minuscules",
       "language": "fr",
-      "text": "Adresse : 12 rue de la Paix, 75002 Paris",
+      "text": "Adresse : code postal 75002 paris",
       "expect": []
     },
     {
@@ -442,7 +442,7 @@
         },
         {
           "type": "LOCATION",
-          "value": "74160 SAINT-JULIEN-EN-GENEVOIS"
+          "value": "12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS"
         }
       ]
     },
@@ -598,7 +598,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "74160\u00a0SAINT-JULIEN-EN-GENEVOIS"
+          "value": "12 rue des Lilas, 74160\u00a0SAINT-JULIEN-EN-GENEVOIS"
         }
       ]
     },
@@ -697,7 +697,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "74160\u202fSAINT-JULIEN-EN-GENEVOIS"
+          "value": "12 rue des Lilas, 74160\u202fSAINT-JULIEN-EN-GENEVOIS"
         }
       ]
     },
@@ -708,7 +708,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "74800\u00a0LA\u202fROCHE-SUR-FORON"
+          "value": "3 place du Marché, 74800\u00a0LA\u202fROCHE-SUR-FORON"
         }
       ]
     },
@@ -722,6 +722,369 @@
           "value": "41234567000019"
         }
       ]
+    },
+    {
+      "id": "nico-avenue-du-leman",
+      "language": "fr",
+      "text": "7 avenue du Léman, 74100 Annemasse",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "7 avenue du Léman, 74100 Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "nico-dans-un-courriel",
+      "language": "fr",
+      "text": "Bonjour,\nJe n'ai pas reçu le colis envoyé au 7 avenue du Léman, 74100 Annemasse. Merci.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "7 avenue du Léman, 74100 Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "rue-seule-virgule-apres-numero",
+      "language": "fr",
+      "text": "Ils habitent 12, rue Victor Hugo depuis dix ans.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "12, rue Victor Hugo"
+        }
+      ]
+    },
+    {
+      "id": "rue-bis-et-code-postal",
+      "language": "fr",
+      "text": "Il habite au 12 bis, rue Victor Hugo, 74100 Annemasse.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "12 bis, rue Victor Hugo, 74100 Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "rue-ter",
+      "language": "fr",
+      "text": "Rendez-vous au 3 ter avenue de la Gare demain.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "3 ter avenue de la Gare"
+        }
+      ]
+    },
+    {
+      "id": "rue-numero-avec-lettre",
+      "language": "fr",
+      "text": "Elle loge au 4B chemin des Vignes ce mois-ci.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "4B chemin des Vignes"
+        }
+      ]
+    },
+    {
+      "id": "rue-plage-de-numeros",
+      "language": "fr",
+      "text": "Siège : 22-24 boulevard Haussmann, 75009 Paris",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "22-24 boulevard Haussmann, 75009 Paris"
+        }
+      ]
+    },
+    {
+      "id": "rue-en-capitales-avec-code-postal",
+      "language": "fr",
+      "text": "12 AVENUE D'ITALIE, 74100 ANNEMASSE",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "12 AVENUE D'ITALIE, 74100 ANNEMASSE"
+        }
+      ]
+    },
+    {
+      "id": "rue-en-capitales-apostrophe",
+      "language": "fr",
+      "text": "ADRESSE : 7 RUE DE L'EUROPE",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "7 RUE DE L'EUROPE"
+        }
+      ]
+    },
+    {
+      "id": "rue-nom-date",
+      "language": "fr",
+      "text": "Le dépôt est au 5 rue du 8 Mai 1945 ce lundi.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "5 rue du 8 Mai 1945"
+        }
+      ]
+    },
+    {
+      "id": "place-nom-date-tiret",
+      "language": "fr",
+      "text": "Retrouvons-nous au 2 place du 14-Juillet à midi.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "2 place du 14-Juillet"
+        }
+      ]
+    },
+    {
+      "id": "rue-abreviation-av-point",
+      "language": "fr",
+      "text": "Livrer au 3 av. de la Gare, 74100 Annemasse.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "3 av. de la Gare, 74100 Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "rue-abreviation-bd",
+      "language": "fr",
+      "text": "Le cabinet est au 4 bd Voltaire depuis mars.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "4 bd Voltaire"
+        }
+      ]
+    },
+    {
+      "id": "rue-abreviation-ch-point",
+      "language": "fr",
+      "text": "Maison au 9 ch. des Vignes, vue sur le lac.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "9 ch. des Vignes"
+        }
+      ]
+    },
+    {
+      "id": "rue-impasse",
+      "language": "fr",
+      "text": "Elle vit au 8 impasse des Lilas.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "8 impasse des Lilas"
+        }
+      ]
+    },
+    {
+      "id": "rue-lieu-dit",
+      "language": "fr",
+      "text": "La ferme est au 5 lieu-dit Les Granges.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "5 lieu-dit Les Granges"
+        }
+      ]
+    },
+    {
+      "id": "rue-particule-interne",
+      "language": "fr",
+      "text": "Le rendez-vous est au 3 place de l'Hôtel de Ville, 74100 Annemasse.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "3 place de l'Hôtel de Ville, 74100 Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "rue-code-postal-sur-deux-lignes",
+      "language": "fr",
+      "text": "4B chemin des Vignes\n74160 Saint-Julien-en-Genevois",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "4B chemin des Vignes\n74160 Saint-Julien-en-Genevois"
+        }
+      ]
+    },
+    {
+      "id": "rue-sans-virgule-avant-le-code-postal",
+      "language": "fr",
+      "text": "Adresse : 7 avenue du Léman 74100 Annemasse",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "7 avenue du Léman 74100 Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "rue-espaces-insecables",
+      "language": "fr",
+      "text": "J'habite au 7\u00a0avenue\u00a0du\u00a0Léman,\u00a074100\u00a0Annemasse.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "7\u00a0avenue\u00a0du\u00a0Léman,\u00a074100\u00a0Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "rue-fines-insecables",
+      "language": "fr",
+      "text": "J'habite au 7\u202favenue\u202fdu\u202fLéman,\u202f74100\u202fAnnemasse.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "7\u202favenue\u202fdu\u202fLéman,\u202f74100\u202fAnnemasse"
+        }
+      ]
+    },
+    {
+      "id": "rue-insecables-mixtes",
+      "language": "fr",
+      "text": "Chez eux : 12\u00a0rue\u202fde\u00a0la\u202fPaix,\u00a074100\u202fAnnemasse",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "12\u00a0rue\u202fde\u00a0la\u202fPaix,\u00a074100\u202fAnnemasse"
+        }
+      ]
+    },
+    {
+      "id": "rue-type-en-majuscule-initiale",
+      "language": "fr",
+      "text": "Ils vivent 7 Avenue du Léman en été.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "7 Avenue du Léman"
+        }
+      ]
+    },
+    {
+      "id": "rue-texte-anglais",
+      "language": "en",
+      "text": "Please send it to 7 avenue du Léman, 74100 Annemasse before Friday.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "7 avenue du Léman, 74100 Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "boite-postale-forme-longue",
+      "language": "fr",
+      "text": "Boîte postale 45, 74161 Saint-Julien-en-Genevois",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Boîte postale 45, 74161 Saint-Julien-en-Genevois"
+        }
+      ]
+    },
+    {
+      "id": "boite-postale-sans-accent-et-numero",
+      "language": "fr",
+      "text": "Courrier : boite postale n° 12.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "boite postale n° 12"
+        }
+      ]
+    },
+    {
+      "id": "boite-postale-courte-avec-contexte",
+      "language": "fr",
+      "text": "Adresse : BP 45",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "BP 45"
+        }
+      ]
+    },
+    {
+      "id": "boite-postale-courte-sans-contexte",
+      "language": "fr",
+      "text": "Le BP 45 a baissé hier.",
+      "expect": []
+    },
+    {
+      "id": "negatif-la-route-est-longue",
+      "language": "fr",
+      "text": "La route est longue et la rue est calme.",
+      "expect": []
+    },
+    {
+      "id": "negatif-places-disponibles",
+      "language": "fr",
+      "text": "Il reste 3 places disponibles pour la visite.",
+      "expect": []
+    },
+    {
+      "id": "negatif-place-publique",
+      "language": "fr",
+      "text": "En 2023 sur la place publique, chapitre 4 rue.",
+      "expect": []
+    },
+    {
+      "id": "negatif-article-de-loi",
+      "language": "fr",
+      "text": "Voir l'article 12 de la loi et l'art. 3 du code.",
+      "expect": []
+    },
+    {
+      "id": "negatif-avenues-heure-montant",
+      "language": "fr",
+      "text": "Il y a 10 avenues, rendez-vous à 14 h pour 7 CHF.",
+      "expect": []
+    },
+    {
+      "id": "negatif-mots-isoles",
+      "language": "fr",
+      "text": "Une avenue, la rue, 2 Chemins et un cours de Python.",
+      "expect": []
+    },
+    {
+      "id": "negatif-cours-de-python",
+      "language": "fr",
+      "text": "Je donne 3 cours de Python et 5 cours de Cuisine.",
+      "expect": []
+    },
+    {
+      "id": "negatif-annee-devant-rue",
+      "language": "fr",
+      "text": "Le budget 2025 Rue de Lausanne est validé.",
+      "expect": []
+    },
+    {
+      "id": "negatif-titre-douvrage",
+      "language": "fr",
+      "text": "Le roman Rue Cases-Nègres 1983 et le film 3 Rues Mortes.",
+      "expect": []
+    },
+    {
+      "id": "negatif-numero-sans-nom-de-voie",
+      "language": "fr",
+      "text": "Il habite au 7 avenue et au 12 rue.",
+      "expect": []
     }
   ]
 }

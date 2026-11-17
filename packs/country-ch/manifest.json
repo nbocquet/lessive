@@ -4,6 +4,11 @@
   "engineVersion": "0.1.0",
   "type": "country",
   "name": "Suisse",
-  "description": "Identifiants et coordonnées suisses : numéro AVS, IDE, téléphones, codes postaux.",
-  "rules": ["rules/identifiers.json", "rules/phones.json", "rules/postal.json"]
+  "description": "Identifiants et coordonnées suisses : numéro AVS, IDE, téléphones, codes postaux, adresses postales (rues, cases postales).",
+  "rules": [
+    "rules/identifiers.json",
+    "rules/phones.json",
+    "rules/postal.json",
+    "rules/addresses.json"
+  ]
 }

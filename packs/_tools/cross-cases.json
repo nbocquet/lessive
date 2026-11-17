@@ -150,7 +150,7 @@
       "expectAll": [
         {
           "type": "LOCATION",
-          "value": "1950 Sion"
+          "value": "Chemin des Roses 4\n1950 Sion"
         },
         {
           "type": "PHONE",
@@ -257,7 +257,7 @@
       "expectAll": [
         {
           "type": "LOCATION",
-          "value": "74160 SAINT-JULIEN-EN-GENEVOIS"
+          "value": "12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS"
         },
         {
           "type": "PHONE",
@@ -306,7 +306,110 @@
         },
         {
           "type": "LOCATION",
-          "value": "74800 LA\u00a0ROCHE-SUR-FORON"
+          "value": "3 place du Marché, 74800 LA\u00a0ROCHE-SUR-FORON"
+        }
+      ]
+    },
+    {
+      "id": "adresse-nom-courriel-telephone-ch",
+      "language": "fr",
+      "text": "Bonjour, je suis Claire Müller. Mon courriel est claire.muller@example.org, mon tél. est le 079 123 45 67 et j'habite Rue du Rhône 14, 1204 Genève.",
+      "expectAll": [
+        {
+          "type": "PERSON",
+          "value": "Claire Müller"
+        },
+        {
+          "type": "EMAIL",
+          "value": "claire.muller@example.org"
+        },
+        {
+          "type": "PHONE",
+          "value": "079 123 45 67"
+        },
+        {
+          "type": "LOCATION",
+          "value": "Rue du Rhône 14, 1204 Genève"
+        }
+      ]
+    },
+    {
+      "id": "adresse-nom-courriel-telephone-fr",
+      "language": "fr",
+      "text": "Mme Keller, tél. 06 39 98 12 34, courriel keller@example.org, 7 avenue du Léman, 74100 Annemasse.",
+      "expectAll": [
+        {
+          "type": "PERSON",
+          "value": "Keller"
+        },
+        {
+          "type": "PHONE",
+          "value": "06 39 98 12 34"
+        },
+        {
+          "type": "EMAIL",
+          "value": "keller@example.org"
+        },
+        {
+          "type": "LOCATION",
+          "value": "7 avenue du Léman, 74100 Annemasse"
+        }
+      ]
+    },
+    {
+      "id": "adresse-nom-telephone-anglais",
+      "language": "en",
+      "text": "Please deliver to Paul Martin, Chemin des Roses 4, 1950 Sion, phone +41 79 123 45 67.",
+      "expectAll": [
+        {
+          "type": "PERSON",
+          "value": "Paul Martin"
+        },
+        {
+          "type": "LOCATION",
+          "value": "Chemin des Roses 4, 1950 Sion"
+        },
+        {
+          "type": "PHONE",
+          "value": "+41 79 123 45 67"
+        }
+      ]
+    },
+    {
+      "id": "adresse-alemanique-telephone-courriel",
+      "language": "de",
+      "text": "Herr Keller wohnt Bahnhofstrasse 12, 8001 Zürich, Tel. 044 123 45 67, E-Mail keller@example.ch.",
+      "expectAll": [
+        {
+          "type": "LOCATION",
+          "value": "Bahnhofstrasse 12, 8001 Zürich"
+        },
+        {
+          "type": "PHONE",
+          "value": "044 123 45 67"
+        },
+        {
+          "type": "EMAIL",
+          "value": "keller@example.ch"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-nom-courriel",
+      "language": "fr",
+      "text": "Écrire à Paul Martin, Case postale 123, 1211 Genève ou à paul.martin@example.ch",
+      "expectAll": [
+        {
+          "type": "PERSON",
+          "value": "Paul Martin"
+        },
+        {
+          "type": "LOCATION",
+          "value": "Case postale 123, 1211 Genève"
+        },
+        {
+          "type": "EMAIL",
+          "value": "paul.martin@example.ch"
         }
       ]
     }

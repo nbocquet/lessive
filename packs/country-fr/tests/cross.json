@@ -21,6 +21,21 @@
           "value": "0639981234"
         }
       ]
+    },
+    {
+      "id": "nico-adresse-et-telephone",
+      "language": "fr",
+      "text": "Le colis part au 7 avenue du Léman, 74100 Annemasse (tél. 04 50 12 34 56).",
+      "expectAll": [
+        {
+          "type": "LOCATION",
+          "value": "7 avenue du Léman, 74100 Annemasse"
+        },
+        {
+          "type": "PHONE",
+          "value": "04 50 12 34 56"
+        }
+      ]
     }
   ]
 }

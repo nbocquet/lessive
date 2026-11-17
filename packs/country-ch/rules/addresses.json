@@ -1,0 +1,166 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "street-romand",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-])?(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])[ \\u00a0\\u202f][1-9][0-9]{0,2}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Adresse de rue, ordre suisse romand : « Rue du Rhône 14 », « Avenue de la Gare 10 », « Place de la Gare 2 ». Type de voie (mêmes types et abréviations que fr-street de country-fr), nom capitalisé (jusqu'à 6 mots, particules minuscules), numéro de 1 à 3 chiffres. Retenue sans contexte (0,8)."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-romand-other",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?=(?:[sS]entier|[vV]oie|[lL]otissement|[rR](?:[ée]sidence|uelle)|[hH]ameau|[fF]aubourg|[eE]splanade|[pP]romenade|[mM]ont[ée]e|[tT]raverse|[cC]it[ée])(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])[ \\u00a0\\u202f][1-9][0-9]{0,2}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Comme street-romand pour les types moins courants (sentier, voie, lotissement, résidence, hameau, lieu-dit, faubourg, esplanade, promenade, montée, traverse, cité, ruelle)."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-romand-hyphen",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?:[lL]ieu[ \\u00a0\\u202f-]dit|[rR]ond[ \\u00a0\\u202f-]point)[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])[ \\u00a0\\u202f][1-9][0-9]{0,2}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Comme street-romand pour lieu-dit et rond-point : « Lieu-dit Les Granges 5 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-romand-abbr",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?=(?:[aA]v\\.?|[bB](?:d\\.?|vd\\.?)|[rR](?:te\\.?|\\.)|[iI]mp\\.?|[cC]h\\.|[pP]l\\.)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])[ \\u00a0\\u202f][1-9][0-9]{0,2}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Comme street-romand avec les abréviations : « Av. de la Gare 10 », « Ch. des Vignes 3 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-romand-letter",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])[ \\u00a0\\u202f][1-9][0-9]{0,2}[A-Za-z](?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Comme street-romand avec une lettre collée au numéro : « Chemin des Vignes 3B »."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-romand-range",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])[ \\u00a0\\u202f][1-9][0-9]{0,2}[-–/][1-9][0-9]{0,2}[A-Za-z]?(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Comme street-romand avec une plage de numéros : « Route de Chancy 12-14 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-romand-bis",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])[ \\u00a0\\u202f][1-9][0-9]{0,2}[ \\u00a0\\u202f](?:bis|ter|Bis|Ter|BIS|TER)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Comme street-romand avec bis ou ter : « Rue du Lac 5 bis »."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-grand-rue",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?:[Gg]rand[-'’ ]?[Rr]ue|GRAND[-'’ ]?RUE)[ \\u00a0\\u202f][1-9][0-9]{0,2}(?:[A-Za-z]|[-–/][1-9][0-9]{0,2}[A-Za-z]?|[ \\u00a0\\u202f](?:bis|ter|Bis|Ter|BIS|TER))?(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "« Grand-Rue 5 » : le type et le nom ne font qu'un."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-number-first",
+      "entityType": "LOCATION",
+      "score": 0.75,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9.,'’/])[0-9]{1,3},?[ \\u00a0\\u202f](?=(?:[rR](?:ue|oute)|[aA](?:venue|ll[ée]e)|[bB]oulevard|[cC]hemin|[pP](?:lace|assage)|[iI]mpasse|[qQ]uai)(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])\\.?[ \\u00a0\\u202f])[A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,11}\\.?[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,3}[ \\u00a0\\u202f-]){0,2}(?:[dl]['’])?[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,3}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])(?=[, \u00a0\u202f\\n]{1,3}[1-9][0-9]{3}[ \\u00a0\\u202f][A-ZÀ-ÖØ-ÞŒ])",
+      "description": "Adresse de rue, ordre « 14, rue du Rhône, 1204 Genève » (numéro d'abord), seulement quand un NPA et une localité suivent. Même motif que fr-street du pack country-fr, plus l'assertion sur le NPA : sans NPA, c'est country-fr qui couvre la rue (détection identique ; évite deux détecteurs sur le même texte quand les deux packs sont actifs)."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-de",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])[A-ZÄÖÜ][a-zäöüéèàß]{1,11}(?:strasse|straße|str\\.?|gasse|weg|platz)[ \\u00a0\\u202f][1-9][0-9]{0,2}(?:[A-Za-z]|[-–/][1-9][0-9]{0,2}[A-Za-z]?|[ \\u00a0\\u202f](?:bis|ter|Bis|Ter|BIS|TER))?(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Adresse alémanique : mot en -strasse, -straße, -str., -gasse, -weg, -platz, -allee suivi d'un numéro (« Bahnhofstrasse 12 », « Seestrasse 5a », « Kirchweg 3 », « Dorfplatz 1 », « Bergstr. 7 »). Le mot « Strasse » seul n'est pas détecté."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-de-allee",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])[A-ZÄÖÜ][a-zäöüéèàß]{1,11}[Aa]llee[ \\u00a0\\u202f][1-9][0-9]{0,2}(?:[A-Za-z]|[-–/][1-9][0-9]{0,2}[A-Za-z]?|[ \\u00a0\\u202f](?:bis|ter|Bis|Ter|BIS|TER))?(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Adresse alémanique en -allee suivie d'un numéro (« Parkallee 8 »)."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-de-adj",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])[A-ZÄÖÜ][a-zäöüéèàß]{2,15}er[ \\u00a0\\u202f](?:Strasse|Straße|Str\\.|Gasse|Weg|Platz|Allee)[ \\u00a0\\u202f][1-9][0-9]{0,2}(?:[A-Za-z]|[-–/][1-9][0-9]{0,2}[A-Za-z]?|[ \\u00a0\\u202f](?:bis|ter|Bis|Ter|BIS|TER))?(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Adresse alémanique en deux mots : adjectif en -er suivi de Strasse, Gasse, Weg, Platz, Allee, Str. et d'un numéro (« Zürcher Strasse 9 », « Berner Weg 4 »). Le mot « Strasse » seul n'est pas détecté."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-de-weak",
+      "entityType": "LOCATION",
+      "score": 0.4,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])[A-ZÄÖÜ][a-zäöüéèàß]{1,11}(?:ring|rain|halde|matte|hof|steig)[ \\u00a0\\u202f][1-9][0-9]{0,2}(?:[A-Za-z]|[-–/][1-9][0-9]{0,2}[A-Za-z]?|[ \\u00a0\\u202f](?:bis|ter|Bis|Ter|BIS|TER))?(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "context": {
+        "required": true,
+        "words": {
+          "fr": ["adresse", "domicile", "rue", "npa", "localite"],
+          "en": ["address", "street", "postal"],
+          "any": [
+            "Adresse",
+            "Anschrift",
+            "wohnhaft",
+            "wohnt",
+            "PLZ",
+            "Postfach",
+            "Wohnort",
+            "Absender"
+          ]
+        }
+      },
+      "description": "Adresse alémanique en -ring, -rain, -halde, -matte, -hof, -steig suivi d'un numéro (« Bahnhofring 3 »). Ces mots sont plus courants (« Spring 25 ») : score 0,4, mot de contexte d'adresse obligatoire."
+    },
+    {
+      "kind": "pattern",
+      "id": "street-it",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?=(?:[vV]i(?:a(?:le)?|colo)|[pP]iazza(?:le)?|[cC]orso|[sS](?:trada|alita))[ \\u00a0\\u202f])[A-Za-z]{3,8}[ \\u00a0\\u202f](?:[a-zàâçéèêîôû]{2,4}[ \\u00a0\\u202f-]){0,2}[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[ \\u00a0\\u202f-][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,2}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ])[ \\u00a0\\u202f][1-9][0-9]{0,2}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Adresse italophone : Via, Viale, Piazza, Piazzale, Corso, Vicolo, Strada, Salita, nom puis numéro (« Via Cantonale 2 », « Piazza Grande 5 »)."
+    },
+    {
+      "kind": "pattern",
+      "id": "postal-code-after-comma",
+      "entityType": "LOCATION",
+      "score": 0.55,
+      "flags": "m",
+      "pattern": "(?<=[,\\n][ \\u00a0\\u202f]{0,2})(?:CH-)?(?:[1-8][0-9]{3}|9[0-6][0-9]{2})[ \\u00a0\\u202f](?!(?:Rue|Route|Chemin|Avenue|Place|CHF|EUR|Fr)(?![A-Za-zÀ-ÿ]))(?![A-Za-zÀ-ÿ]+s(?![A-Za-zÀ-ÿ]))[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[-/][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,2}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ'’-])",
+      "description": "NPA et localité (comme postal-code), juste après une virgule ou un retour à la ligne, sans mot de contexte : « …, 1204 Genève ». Sert à la fusion avec la rue qui précède. Même garde-fous que postal-code (localité capitalisée en fin de groupe, pas de mot de voirie ni de pluriel en -s comme « Personnes » ou « Euros »)."
+    },
+    {
+      "kind": "pattern",
+      "id": "postbox",
+      "entityType": "LOCATION",
+      "score": 0.8,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?:[Cc]ase[ \\u00a0\\u202f][Pp]ostale|CASE[ \\u00a0\\u202f]POSTALE|[Pp]ostfach|POSTFACH|[Cc]asella[ \\u00a0\\u202f][Pp]ostale|CASELLA[ \\u00a0\\u202f]POSTALE)(?:[ \\u00a0\\u202f](?:n°|N°))?[ \\u00a0\\u202f][0-9]{1,6}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "description": "Case postale, forme longue : « Case postale 123 », « Postfach 123 », « Casella postale 12 »."
+    },
+    {
+      "kind": "pattern",
+      "id": "postbox-short",
+      "entityType": "LOCATION",
+      "score": 0.4,
+      "pattern": "(?<![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9-])(?:CP|C\\.P\\.)[ \\u00a0\\u202f][0-9]{1,6}(?![A-Za-zÀ-ÖØ-öø-ÿŒœ0-9])",
+      "context": {
+        "required": true,
+        "words": {
+          "fr": ["adresse", "rue", "npa", "domicile", "localite"],
+          "en": ["address", "street", "postal"],
+          "any": ["Adresse", "Anschrift", "PLZ", "Postfach"]
+        }
+      },
+      "description": "Case postale, forme courte : « CP 123 », « C.P. 123 ». Score 0,4 : retenue seulement avec un mot de contexte d'adresse (« CP » signifie aussi code postal en France)."
+    }
+  ]
+}

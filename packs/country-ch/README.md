@@ -1,6 +1,6 @@
 # Pack `country-ch` (Suisse)
 
-Identifiants et coordonnées suisses. Pack de type `country`, moteur 0.1.0. Les règles ne
+Identifiants et coordonnées suisses (dont adresses postales). Pack de type `country`, moteur 0.1.0. Les règles ne
 dépendent d'aucune langue (`languages` absent) : un numéro AVS est détecté de la même façon
 dans un texte français, anglais ou allemand. Les mots de contexte allemands et italiens sont
 rangés dans la liste `any`, le schéma des packs ne connaissant que `fr` et `en`.
@@ -21,6 +21,7 @@ compris. Les règles de téléphone écartent les IBAN suisses (voir « Limites 
 | `phone-national-compact` | `PHONE` | 0,4 | aucun | rehausse, et nécessaire pour passer le seuil de 0,5 |
 | `postal-code` | `LOCATION` | 0,5 | aucun | **obligatoire** |
 | `postal-code-ch-prefix` | `LOCATION` | 0,6 | aucun | non (le préfixe `CH-` suffit) |
+| adresses (rues, NPA, case postale) | `LOCATION` | 0,4 à 0,8 | aucun | voir « Adresses postales » |
 
 Un validateur réussi porte le score à 1,0 ; un validateur échoué supprime la détection.
 
@@ -74,6 +75,41 @@ La valeur détectée est le code **et la localité** (comme `fr-postal-code-comm
 
 La règle est livrée **activée**. Voir « Limites ».
 
+### Adresses postales (`LOCATION`, `rules/addresses.json`)
+
+Mêmes principes que le pack français : motifs courts, un par famille, et réunion par le moteur
+(`src/core/analyzer/merge-addresses.ts`) des morceaux adjacents rue + NPA et localité en une seule détection (« Rue du Rhône 14, 1204 Genève »).
+Le score de la détection réunie est le meilleur score des morceaux + 0,1 ; elle garde le pack du premier morceau.
+
+| Règle (`country-ch/…`) | Entité | Score | Contexte |
+|---|---|---|---|
+| `street-romand` | `LOCATION` | 0,8 | non |
+| `street-romand-other` | `LOCATION` | 0,8 | non |
+| `street-romand-hyphen` | `LOCATION` | 0,8 | non |
+| `street-romand-abbr` | `LOCATION` | 0,8 | non |
+| `street-romand-letter` | `LOCATION` | 0,8 | non |
+| `street-romand-range` | `LOCATION` | 0,8 | non |
+| `street-romand-bis` | `LOCATION` | 0,8 | non |
+| `street-grand-rue` | `LOCATION` | 0,8 | non |
+| `street-number-first` | `LOCATION` | 0,75 | non |
+| `street-de` | `LOCATION` | 0,8 | non |
+| `street-de-allee` | `LOCATION` | 0,8 | non |
+| `street-de-adj` | `LOCATION` | 0,8 | non |
+| `street-de-weak` | `LOCATION` | 0,4 | **obligatoire** |
+| `street-it` | `LOCATION` | 0,8 | non |
+| `postal-code-after-comma` | `LOCATION` | 0,55 | non |
+| `postbox` | `LOCATION` | 0,8 | non |
+| `postbox-short` | `LOCATION` | 0,4 | **obligatoire** |
+
+- **Ordre suisse romand** (`street-romand*`, 0,8) : type de voie + nom + numéro : « Rue du Rhône 14 », « Chemin des Vignes 3B » (lettre, `street-romand-letter`), « Route de Chancy 12-14 » (`street-romand-range`), « Rue du Lac 5 bis » (`street-romand-bis`), « Avenue de la Gare 10 », « Place de la Gare 2 ». Mêmes types que le pack français (rue, route, avenue, boulevard, chemin, place, impasse, allée, quai, passage ; `-other` : sentier, voie, lotissement, résidence, hameau, faubourg, esplanade, promenade, montée, traverse, cité, ruelle ; `-hyphen` : lieu-dit, rond-point ; `-abbr` : av., bd, rte, imp., ch., pl., r.). `street-grand-rue` : « Grand-Rue 5 ». Numéro de 1 à 3 chiffres ; un nombre de 4 chiffres (« Rue Cases-Nègres 1983 ») n'est pas un numéro.
+- **Ordre « 14, rue du Rhône »** (`street-number-first`, 0,75) : même motif que `fr-street`, mais seulement quand un NPA suisse suit. Sans NPA, c'est `country-fr` qui lit la rue : avec les deux packs actifs, une même détection n'est produite qu'une fois. **Limite** : avec `country-ch` seul, « 14, rue du Rhône » sans NPA n'est pas détecté.
+- **Ordre alémanique** (`street-de`, 0,8) : mot capitalisé terminé par -strasse, -straße, -str., -gasse, -weg ou -platz suivi d'un numéro (lettre collée admise, plage, bis) : « Bahnhofstrasse 12 », « Seestrasse 5a », « Kirchweg 3 », « Dorfplatz 1 », « Bergstr. 7 » ; `street-de-allee` (« Parkallee 8 ») ; `street-de-adj` : adjectif en -er + Strasse, Gasse, Weg, Platz, Allee, Str. (« Zürcher Strasse 9 »). Le mot « Strasse » ou « Weg » seul n'est pas détecté.
+- **Terminaisons ambiguës** (`street-de-weak`, 0,4, contexte obligatoire) : -ring, -rain, -halde, -matte, -hof, -steig (« Bahnhofring 3 ») : « Spring 25 » ou « Bahnhof 5 » seraient des faux positifs ; mot de contexte d'adresse obligatoire (Adresse, Anschrift, wohnhaft, PLZ, adresse, address…). Les terminaisons -graben, -acker, -hang ne sont pas couvertes.
+- **Italien** (`street-it`, 0,8) : Via, Viale, Piazza, Piazzale, Corso, Vicolo, Strada, Salita + nom + numéro : « Via Cantonale 2 », « Piazza Grande 5 ».
+- **NPA et localité** : `postal-code` (existant, contexte obligatoire), `postal-code-ch-prefix` (existant) et `postal-code-after-comma` (0,55, sans contexte, seulement juste après une virgule ou un retour à la ligne ; refuse un mot de voirie ou de montant et tout premier mot terminé par « s » comme « Personnes » ou « Euros » ; pour la fusion avec la rue qui précède).
+- **Case postale** : `postbox` (0,8) : « Case postale 123 », « Postfach 123 », « Casella postale 12 » (et variantes de casse) ; `postbox-short` (0,4, mot de contexte d'adresse obligatoire) : « CP 123 », « C.P. 123 ». Un numéro de 1 à 6 chiffres, éventuellement précédé de « n° ».
+- Faux positifs écartés par les tests : « la route est longue », « 3 places disponibles », « Rue de Lausanne » sans numéro, « Strasse » et « Weg » isolés, « Spring 25 », « 1204 Genève est une belle ville », « En 2023, 2024 Personnes ont voté ».
+
 ## Validateurs
 
 `ean13` et `ch_uid_mod11` sont fournis par le moteur (`src/core/validators/`). `ean13` ne vérifie
@@ -81,7 +117,7 @@ que les 13 chiffres et la clé : le préfixe 756 et la présentation sont contr�
 
 ## Tests
 
-`tests/cases.json` : 72 cas (fr, en, allemand ; positifs, négatifs, pièges, espaces insécables U+00A0 et U+202F pour téléphones, AVS, IDE et codes postaux) ; `tests/cross.json` : 2 cas croisés, tous packs actifs. Toutes les
+`tests/cases.json` : 114 cas (fr, en, allemand ; positifs, négatifs, pièges, espaces insécables U+00A0 et U+202F pour téléphones, AVS, IDE et codes postaux) ; `tests/cross.json` : 3 cas croisés, tous packs actifs. Toutes les
 valeurs sont synthétiques ; les clés EAN-13 et modulo 11 ont été calculées, ce ne sont pas de vrais
 numéros. Le banc commun (`packs/_tools/packs.test.ts`) vérifie aussi l'absence de ReDoS.
 
@@ -127,3 +163,6 @@ motifs n'imposent volontairement aucune liste d'indicatifs : un indicatif inexis
 - Les mots de contexte sont comparés mot entier : « Bahnhofstrasse » ne déclenche pas « Strasse ».
 - Un numéro AVS ou IDE à clé fausse (faute de frappe) n'est pas signalé : c'est le choix du
   validateur. À signaler à l'interface si l'utilisateur veut un mode plus prudent.
+- Adresses : voies sans numéro (« Rue du Rhône »), noms de voie en minuscules (« rue du lac 5 »), noms de plus de 4 mots, numéro à 4 chiffres, mots alémaniques en capitales (« BAHNHOFSTRASSE 12 »), -graben, -acker, -hang, adjectifs allemands hors liste « -er » (« Obere Dorfstrasse 4 » : seule « Dorfstrasse 4 » est détectée), adresses romandes à deux mots collés (« Ch. »). `street-it` n'accepte que les formes avec majuscule (« via Lyon 2 » n'est pas lu). Les adresses sur une ligne suivies d'un NPA hors plage 1000-9699 ne sont pas fusionnées.
+- Localités de plusieurs mots séparés par des espaces : seul un premier mot court capitalisé est admis (« Le Locle »), les autres mots sont liés par un tiret ; « Biel/Bienne » est géré par la barre oblique.
+- Contexte de `postal-code` : la rue doit être à moins de 5 mots du code ; au-delà, `postal-code-after-comma` prend le relais si le code suit une virgule ou un retour à la ligne.

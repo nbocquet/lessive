@@ -1,6 +1,6 @@
 # Pack `country-fr`
 
-Identifiants français : NIR, SIRET, SIREN, téléphones, codes postaux suivis d'une commune.
+Identifiants français : NIR, SIRET, SIREN, téléphones, codes postaux suivis d'une commune, adresses postales (rue, boîte postale).
 Pack de type `country`, moteur 0.1.0. Les packs `country-fr` et `country-ch` peuvent être actifs ensemble.
 
 **Pas de règle IBAN.** Le pack `global` détecte tous les IBAN, français compris. Un IBAN FR n'est donc
@@ -21,6 +21,7 @@ ou collés à des lettres, pour ne pas lire un fragment d'IBAN comme un téléph
 | `fr-phone-international-compact` | `PHONE` | 0,8 | aucun | facultatif (+0,35) |
 | `fr-phone-international-paren` | `PHONE` | 0,8 | aucun | facultatif (+0,35) |
 | `fr-postal-code-commune` | `LOCATION` | 0,5 | aucun | **obligatoire** |
+| adresses (rues, code postal et commune, boîte postale) | `LOCATION` | 0,4 à 0,8 | aucun | voir « Adresses postales » |
 
 Un validateur réussi porte le score à 1,0 ; un validateur échoué supprime la détection. Seuil par défaut : 0,5.
 Mots de contexte : fenêtre de 5 mots de chaque côté, sans tenir compte de la casse ni des accents.
@@ -72,6 +73,42 @@ boulevard, chemin, impasse, allée, place, route, résidence, cedex, BP ; en ang
 road. La règle est activée, car la double exigence (majuscules + mot de contexte) la rend assez sélective ;
 elle reste la plus fragile du pack.
 
+### Adresses postales (`LOCATION`, `rules/addresses.json`)
+
+Retour de test : « 7 avenue du Léman, 74100 Annemasse » restait en clair. Les adresses sont détectées par des
+motifs **courts**, un par famille, et le moteur (`src/core/analyzer/merge-addresses.ts`) **réunit** deux morceaux
+adjacents (rue, puis virgule, espace ou retour à la ligne, puis code postal et commune) en une seule détection
+LOCATION : « 7 avenue du Léman, 74100 Annemasse » devient un seul lieu. Un motif unique rue + code postal + ville
+dépasse le budget du contrôle ReDoS statique (mémoire et temps) : il n'est pas livré.
+
+| Règle | Entité | Score | Contexte |
+|---|---|---|---|
+| `fr-street` | `LOCATION` | 0,8 | non |
+| `fr-street-other` | `LOCATION` | 0,8 | non |
+| `fr-street-hyphen` | `LOCATION` | 0,8 | non |
+| `fr-street-abbr` | `LOCATION` | 0,8 | non |
+| `fr-street-letter` | `LOCATION` | 0,8 | non |
+| `fr-street-range` | `LOCATION` | 0,8 | non |
+| `fr-street-bis` | `LOCATION` | 0,8 | non |
+| `fr-street-caps` | `LOCATION` | 0,8 | non |
+| `fr-street-date` | `LOCATION` | 0,8 | non |
+| `fr-postal-code-city` | `LOCATION` | 0,5 | **obligatoire** |
+| `fr-postal-code-city-after-comma` | `LOCATION` | 0,55 | non |
+| `fr-postbox` | `LOCATION` | 0,8 | non |
+| `fr-postbox-short` | `LOCATION` | 0,4 | **obligatoire** |
+
+- **Rue** (`fr-street*`, 0,8, sans contexte) : numéro de 1 à 3 chiffres, virgule facultative, type de voie, nom capitalisé.
+  - Types : rue, route, avenue, boulevard, chemin, place, impasse, allée, quai, passage (`fr-street`) ; sentier, voie, lotissement, résidence, hameau, faubourg, esplanade, promenade, montée, traverse, cité, ruelle (`fr-street-other`) ; lieu-dit, rond-point (`fr-street-hyphen`) ; abréviations av., bd, bvd, rte, imp. (point facultatif), ch., pl., r. (point obligatoire) (`fr-street-abbr`). Première lettre en majuscule ou en minuscule ; une lettre accentuée accepte la forme sans accent.
+  - Numéro : `7`, `4B` (lettres A-D, `fr-street-letter`), `12 bis`, `3 ter`, `quater` (`fr-street-bis`), `22-24` (`fr-street-range`). La virgule après le numéro est facultative (`12, rue Victor Hugo`).
+  - Nom : 1 à 4 mots capitalisés (jusqu'à 20 lettres chacun), séparés par espace, espace insécable (U+00A0), fine insécable (U+202F) ou tiret ; jusqu'à 2 particules minuscules de 2 à 3 lettres en tête (« de la », « du », « des », « de l' », « d' ») ; une particule entre deux mots (« place de l'Hôtel de Ville ») seulement dans `fr-street`. S'arrête à la virgule, au point, au retour à la ligne, avant un chiffre.
+  - `fr-street-caps` : voie écrite en capitales avec apostrophes (« 7 RUE DE L'EUROPE »).
+  - `fr-street-date` : nom qui est une date (« 5 rue du 8 Mai 1945 », « 2 place du 14-Juillet »).
+- **Code postal et commune** : `fr-postal-code-commune` (communes en capitales, contexte obligatoire, existant), `fr-postal-code-city` (commune en casse normale, mot de contexte d'adresse obligatoire, 0,5) et `fr-postal-code-city-after-comma` (même motif, sans contexte mais seulement juste après une virgule ou un retour à la ligne, 0,55). Cette dernière règle existe pour la fusion : la rue qui précède est trop loin pour servir de mot de contexte quand elle est longue. Seul le premier mot de la commune peut être précédé d'un mot court capitalisé (« Le Havre », « La Roche-sur-Foron ») ; les autres mots sont liés par un tiret ou une barre oblique.
+- **Boîte postale** : `fr-postbox` (« Boîte postale 45 », « boite postale n° 12 », 0,8) ; `fr-postbox-short` (« BP 45 », « B.P. 45 », 0,4, mot de contexte d'adresse obligatoire : adresse, rue, cedex, courrier…). « CP » n'est pas une boîte postale en France (code postal) : seul le pack suisse le lit ainsi.
+- **Score de la fusion** : meilleur score des morceaux + 0,1. L'adresse réunie garde l'identifiant de pack du premier morceau (la rue).
+- Choix de conception : les packs `country-fr` et `country-ch` lisent tous deux « 14, rue du Rhône » ; pour éviter deux détecteurs sur le même texte, la règle suisse n'agit que si un NPA suisse suit (voir le pack suisse).
+- Faux positifs écartés par les tests : « la route est longue », « 3 places disponibles », « sur la place publique », « chapitre 4 rue », « article 12 de la loi », « 10 avenues », « 14 h », « 7 CHF », « la rue », « une avenue », « 2 Chemins », « 3 cours de Python », « Le budget 2025 Rue de Lausanne ». Le type « cours » n'est pas reconnu (« 3 cours de Python » serait lu comme une adresse), ni « square » (« 3 Square Feet »).
+
 ## Sources
 
 - INSEE, définition du NIR : <https://www.insee.fr/fr/metadonnees/definition/c1409> (13 chiffres + clé de 2 chiffres ;
@@ -109,6 +146,10 @@ une entreprise réelle. Les téléphones ont été choisis dans des plages que l
 - Les autres pays et les territoires d'outre-mer à indicatif propre (+262, +590, +594, +596…) ne sont pas couverts.
 - Codes postaux : communes écrites en minuscules ou en casse mixte ignorées ; `CEDEX` est inclus dans la détection
   mais pas son numéro ; une ligne tout en majuscules précédée d'un nombre de 5 chiffres près d'un mot comme « place »
-  peut donner un faux positif. Les adresses postales complètes (rue, numéro) restent hors MVP.
+  peut donner un faux positif.
 - Les motifs sont écrits pour passer le contrôle ReDoS du banc (alternatives à longueur fixe, pas de séparateurs
   facultatifs successifs) : c'est la raison de la multiplication des règles NIR et téléphone.
+
+- Adresses : voies sans numéro (« rue Victor Hugo »), lieux-dits sans numéro, noms de voie de plus de 4 mots, particule entre deux mots du nom hors `fr-street`, numéro avec une lettre au-delà de D, « 12 B rue » (lettre séparée), noms de voie en casse mixte avec apostrophe en capitale (« D'ITALIE » seulement en capitales complètes), types « cours » et « square », adresses d'autres pays, étages et bâtiments (« bât. B, 3e étage »), cedex (« Cedex 9 » reste hors de la détection si la commune est en casse normale). Une phrase où un nom capitalisé suit une voie sans ponctuation (« 7 rue Victor Hugo Paul est venu ») rattache ce nom à la voie. « 3 Place Forte » ou « 25 Voie Rapide » (type avec majuscule, expression courante) sont lus comme des adresses.
+- Fusion : le moteur ne réunit que des morceaux séparés par une virgule, un point-virgule, des espaces ou un seul retour à la ligne, au plus trois morceaux. Une commune à plusieurs mots séparés par des espaces au-delà du premier mot court (« Saint Julien en Genevois » avec espaces) est coupée au premier espace.
+- Tests des adresses : 38 cas ajoutés dans `tests/cases.json` (positifs, négatifs, espaces insécables U+00A0 et U+202F, texte anglais) et un cas croisé dans `tests/cross.json`.

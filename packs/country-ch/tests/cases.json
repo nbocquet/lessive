@@ -338,7 +338,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "1204 Genève"
+          "value": "Rue du Rhône 12, 1204 Genève"
         }
       ]
     },
@@ -405,7 +405,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "1950 Sion"
+          "value": "chemin des Roses 4, 1950 Sion"
         },
         {
           "type": "PHONE",
@@ -470,7 +470,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "1204 Genève"
+          "value": "Rue du Rhône 1\n1204 Genève"
         }
       ]
     },
@@ -481,7 +481,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "1204 Genève"
+          "value": "Rue du Rhône 1, 1204 Genève"
         }
       ]
     },
@@ -503,7 +503,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "2300 La Chaux-de-Fonds"
+          "value": "Rue Neuve 3, 2300 La Chaux-de-Fonds"
         }
       ]
     },
@@ -513,7 +513,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "8005 Zürich"
+          "value": "Postfach 123, 8005 Zürich"
         }
       ]
     },
@@ -545,7 +545,7 @@
       "expect": [
         {
           "type": "LOCATION",
-          "value": "1204\u202fGenève"
+          "value": "Rue du Rhône 1, 1204\u202fGenève"
         }
       ]
     },
@@ -680,6 +680,419 @@
           "value": "CHE\u202f100.000.006"
         }
       ]
+    },
+    {
+      "id": "rue-romand-simple",
+      "language": "fr",
+      "text": "Il habite Rue du Rhône 14 depuis longtemps.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Rue du Rhône 14"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-avenue",
+      "language": "fr",
+      "text": "Rendez-vous à l'Avenue de la Gare 10 demain.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Avenue de la Gare 10"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-place",
+      "language": "fr",
+      "text": "Le bureau est à la Place de la Gare 2 ce mois-ci.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Place de la Gare 2"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-lettre",
+      "language": "fr",
+      "text": "Elle loge Chemin des Vignes 3B cet été.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Chemin des Vignes 3B"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-plage",
+      "language": "fr",
+      "text": "Le dépôt est Route de Chancy 12-14 pour l'instant.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Route de Chancy 12-14"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-bis",
+      "language": "fr",
+      "text": "Ils sont Rue du Lac 5 bis jusqu'en mai.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Rue du Lac 5 bis"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-grand-rue",
+      "language": "fr",
+      "text": "La boutique est Grand-Rue 5 depuis hier.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Grand-Rue 5"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-abreviation",
+      "language": "fr",
+      "text": "Il loge Av. de la Gare 10 en ce moment.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Av. de la Gare 10"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-et-npa-meme-ligne",
+      "language": "fr",
+      "text": "Rue du Rhône 14, 1204 Genève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Rue du Rhône 14, 1204 Genève"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-et-npa-ligne-suivante",
+      "language": "fr",
+      "text": "Avenue de la Gare 10\n1003 Lausanne",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Avenue de la Gare 10\n1003 Lausanne"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-npa-sans-contexte-de-mot",
+      "language": "fr",
+      "text": "Chemin de la Grande Ferme 4, 1260 Nyon",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Chemin de la Grande Ferme 4, 1260 Nyon"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-insecables",
+      "language": "fr",
+      "text": "Rue\u00a0du\u00a0Rhône\u00a014,\u00a01204\u00a0Genève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Rue\u00a0du\u00a0Rhône\u00a014,\u00a01204\u00a0Genève"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-fines-insecables",
+      "language": "fr",
+      "text": "Rue\u202fdu\u202fRhône\u202f14,\u202f1204\u202fGenève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Rue\u202fdu\u202fRhône\u202f14,\u202f1204\u202fGenève"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-texte-anglais",
+      "language": "en",
+      "text": "Please ship to Rue de Lausanne 12, 1003 Lausanne, Switzerland.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Rue de Lausanne 12, 1003 Lausanne"
+        }
+      ]
+    },
+    {
+      "id": "rue-romand-texte-anglais-sion",
+      "language": "en",
+      "text": "Send it to Chemin des Roses 4, 1950 Sion before Monday.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Chemin des Roses 4, 1950 Sion"
+        }
+      ]
+    },
+    {
+      "id": "rue-numero-d-abord-avec-npa",
+      "language": "fr",
+      "text": "14, rue du Rhône, 1204 Genève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "14, rue du Rhône, 1204 Genève"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-strasse",
+      "language": "de",
+      "text": "Herr Keller wohnt Bahnhofstrasse 12 seit Jahren.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Bahnhofstrasse 12"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-lettre",
+      "language": "de",
+      "text": "Er wohnt in der Seestrasse 5a.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Seestrasse 5a"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-weg",
+      "language": "de",
+      "text": "Treffen am Kirchweg 3 um acht.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Kirchweg 3"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-platz",
+      "language": "de",
+      "text": "Das Büro liegt am Dorfplatz 1.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Dorfplatz 1"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-abreviation",
+      "language": "de",
+      "text": "Sie wohnt Bergstr. 7 im dritten Stock.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Bergstr. 7"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-adjectif",
+      "language": "de",
+      "text": "Wir treffen uns Zürcher Strasse 9 morgen.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Zürcher Strasse 9"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-allee",
+      "language": "de",
+      "text": "Das Haus steht Parkallee 8 am Rand.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Parkallee 8"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-et-plz",
+      "language": "de",
+      "text": "Bahnhofstrasse 12, 8001 Zürich",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Bahnhofstrasse 12, 8001 Zürich"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-ring-avec-contexte",
+      "language": "de",
+      "text": "Adresse: Bahnhofring 3",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Bahnhofring 3"
+        }
+      ]
+    },
+    {
+      "id": "rue-alemanique-ring-sans-contexte",
+      "language": "de",
+      "text": "Spring 25 ist die neue Kollektion.",
+      "expect": []
+    },
+    {
+      "id": "rue-italienne-via",
+      "text": "Abita in Via Cantonale 2 da anni.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Via Cantonale 2"
+        }
+      ]
+    },
+    {
+      "id": "rue-italienne-piazza",
+      "text": "L'incontro è in Piazza Grande 5 domani.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Piazza Grande 5"
+        }
+      ]
+    },
+    {
+      "id": "rue-italienne-et-npa",
+      "text": "Via Cantonale 2, 6900 Lugano",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Via Cantonale 2, 6900 Lugano"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-longue",
+      "language": "fr",
+      "text": "Écrire à Case postale 123 avant lundi.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 123"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-et-npa",
+      "language": "fr",
+      "text": "Case postale 123, 1211 Genève",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 123, 1211 Genève"
+        }
+      ]
+    },
+    {
+      "id": "postfach-long",
+      "language": "de",
+      "text": "Senden Sie es an Postfach 123 bitte.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Postfach 123"
+        }
+      ]
+    },
+    {
+      "id": "casella-postale",
+      "text": "Scrivere a Casella postale 12 entro lunedì.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Casella postale 12"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-courte-avec-contexte",
+      "language": "fr",
+      "text": "Adresse : CP 123",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "CP 123"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-courte-sans-contexte",
+      "language": "fr",
+      "text": "Le CP 123 du client est ouvert.",
+      "expect": []
+    },
+    {
+      "id": "negatif-la-route-est-longue",
+      "language": "fr",
+      "text": "La route est longue et la rue est calme.",
+      "expect": []
+    },
+    {
+      "id": "negatif-places-disponibles",
+      "language": "fr",
+      "text": "Il reste 3 places disponibles. Rue de Lausanne est fermée.",
+      "expect": []
+    },
+    {
+      "id": "negatif-strasse-weg-isoles",
+      "language": "de",
+      "text": "Das Wort Strasse und das Wort Weg stehen allein.",
+      "expect": []
+    },
+    {
+      "id": "negatif-numero-sans-nom",
+      "language": "fr",
+      "text": "Il habite au 7 avenue et la rue 12.",
+      "expect": []
+    },
+    {
+      "id": "negatif-annee-apres-rue",
+      "language": "fr",
+      "text": "Rue Cases-Nègres 1983 est un roman.",
+      "expect": []
+    },
+    {
+      "id": "negatif-npa-seul-sans-virgule",
+      "language": "fr",
+      "text": "1204 Genève est une belle ville.",
+      "expect": []
+    },
+    {
+      "id": "negatif-annee-et-pluriel",
+      "language": "fr",
+      "text": "En 2023, 2024 Personnes ont voté.",
+      "expect": []
     }
   ]
 }
