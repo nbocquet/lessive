@@ -69,3 +69,8 @@ Une tâche est terminée quand `npm run lint`, `npm run typecheck` et `npm test`
 ## Environnement des agents
 
 Le réseau passe par une liste blanche : le registre npm et GitHub répondent, Hugging Face non. Ne tente pas de télécharger de modèle ; les modèles sont déposés à la main dans `models/`.
+
+- `npm ci` / `npm install` : préfixer par `ONNXRUNTIME_NODE_INSTALL=skip` (onnxruntime-node tente de télécharger des binaires CUDA depuis nuget.org, bloqué).
+- Modèles disponibles pour les tests : `/mnt/user-data/uploads/lessive/models/` (copie de `models/` de Nico), s'il existe. Modèle recommandé : `Xenova/distilbert-base-multilingual-cased-ner-hrl` (ADR 0001).
+- Transformers.js 4.3.2 : ne pas utiliser `aggregation_strategy` (fusionne les entités non contiguës des modèles IO) ; regrouper les jetons bruts par contiguïté d'`index` (voir `groupRawTokens` dans `spikes/ner/lib.mjs`). Les positions `start`/`end` ne sont pas fournies : les reconstruire (voir `reconstructSpans`).
+- Piège : une séquence d'échappement `\uXXXX` tapée dans une commande shell peut devenir le caractère littéral ; vérifier les fichiers écrits.
