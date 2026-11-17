@@ -1,4 +1,5 @@
-/** Options du moteur NER. Sérialisables : elles transitent par `postMessage` vers le worker. */
+/** Options du moteur NER. Sérialisables, sauf `modelFiles` : elles transitent par `postMessage` vers le worker. */
+import type { LocalModelFileSource } from "./local-files.ts";
 
 export type NerDtype = "q8" | "int8" | "uint8" | "fp16" | "fp32";
 
@@ -34,6 +35,15 @@ export interface TransformersNerEngineOptions {
    * est ignorée tant qu'elle n'est pas donnée.
    */
   wasmPaths?: NerWasmPaths;
+  /**
+   * Fichiers du modèle fournis par l'utilisateur (ADR 0003). Quand cette source est donnée, `modelId`
+   * et `localModelPath` sont ignorés : Transformers.js lit chaque fichier par ce biais (`env.customCache`)
+   * et ne fait aucune requête. **Non sérialisable** : ne transite pas par `postMessage` (donc pas par
+   * `worker-client.ts`).
+   */
+  modelFiles?: LocalModelFileSource;
+  /** Nom du modèle repris dans `recognizerId` (défaut : `modelId`). Utile avec `modelFiles`. */
+  modelLabel?: string;
 }
 
 export const DEFAULT_NER_MODEL = "Xenova/distilbert-base-multilingual-cased-ner-hrl";

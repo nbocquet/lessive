@@ -124,3 +124,24 @@ describe("AnalysisClient", () => {
     expect((err as AnalysisFailure).message).not.toContain("sensible");
   });
 });
+
+describe("AnalysisClient : source du modèle", () => {
+  it("la renvoie au worker en cours et à tout worker recréé, avant l'analyse", () => {
+    const workers: ReturnType<typeof silentWorker>[] = [];
+    const client = new AnalysisClient(() => {
+      const w = silentWorker();
+      workers.push(w);
+      return w;
+    });
+    client.setModel({ kind: "dev" });
+    const job = client.start(params());
+    job.result.catch(() => undefined);
+    expect(workers[0]?.sent.map((m) => m.type)).toEqual(["set-model", "analyze"]);
+    client.setModel({ kind: "cache" });
+    expect(workers[0]?.sent.at(-1)).toEqual({ type: "set-model", model: { kind: "cache" } });
+    client.dispose();
+    client.start(params()).result.catch(() => undefined);
+    expect(workers[1]?.sent[0]).toEqual({ type: "set-model", model: { kind: "cache" } });
+    client.dispose();
+  });
+});

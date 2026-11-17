@@ -13,6 +13,7 @@ import {
   type NerWasmPaths,
   type TransformersNerEngineOptions,
 } from "./options.ts";
+import { LOCAL_MODEL_ID, createLocalModelCache } from "./local-files.ts";
 import {
   buildDetections,
   createProgressTracker,
@@ -23,6 +24,27 @@ import {
 } from "./postprocess.ts";
 
 export { DEFAULT_NER_MODEL } from "./options.ts";
+
+/** Marque l'enveloppe de `env.fetch` posée une seule fois (voir `blockLocalModelRequests`). */
+let fetchGuarded = false;
+
+/**
+ * Avec des fichiers fournis par l'utilisateur, un fichier facultatif absent (par exemple
+ * `special_tokens_map.json`) ferait tomber Transformers.js sur une requête vers
+ * `<localModelPath>/lessive/local-model/…`. On la remplace par un 404 local : aucune requête ne part,
+ * et le fichier est traité comme absent. Les autres requêtes passent par le `fetch` d'origine.
+ */
+function blockLocalModelRequests(env: {
+  fetch: (input: never, init?: never) => Promise<Response>;
+}) {
+  if (fetchGuarded) return;
+  fetchGuarded = true;
+  const original = env.fetch;
+  env.fetch = ((input: unknown, init?: unknown) =>
+    typeof input === "string" && input.includes(`/${LOCAL_MODEL_ID}/`)
+      ? Promise.resolve(new Response(null, { status: 404 }))
+      : original(input as never, init as never)) as typeof env.fetch;
+}
 
 /** Sous-ensemble du pipeline utilisé ici (les types de Transformers.js sont trop larges). */
 interface TokenClassificationPipeline {
@@ -47,7 +69,7 @@ export class TransformersNerEngine implements NerEngine {
 
   constructor(options: TransformersNerEngineOptions = {}) {
     this.options = options;
-    this.modelId = options.modelId ?? DEFAULT_NER_MODEL;
+    this.modelId = options.modelFiles ? LOCAL_MODEL_ID : (options.modelId ?? DEFAULT_NER_MODEL);
   }
 
   load(onProgress?: (progress: number) => void): Promise<void> {
@@ -68,6 +90,16 @@ export class TransformersNerEngine implements NerEngine {
     env.allowRemoteModels = false;
     env.allowLocalModels = true;
     env.localModelPath = this.options.localModelPath ?? DEFAULT_LOCAL_MODEL_PATH;
+    if (this.options.modelFiles) {
+      // Fichiers choisis par l'utilisateur : lus par le cache personnalisé, jamais par le réseau (ADR 0003).
+      env.useCustomCache = true;
+      env.customCache = createLocalModelCache(this.options.modelFiles);
+      env.useBrowserCache = false;
+      blockLocalModelRequests(env as never);
+    } else {
+      env.useCustomCache = false;
+      env.customCache = null;
+    }
     // R1 : les fichiers WASM d'ONNX Runtime viennent de l'origine locale, pas du CDN par défaut.
     const wasmPaths = this.options.wasmPaths ?? defaultWasmPaths();
     const wasm = env.backends.onnx.wasm;
@@ -98,7 +130,7 @@ export class TransformersNerEngine implements NerEngine {
       minScore: this.options.minScore ?? DEFAULT_MIN_SCORE,
       signal: ctx.signal,
     });
-    return buildDetections(spans, this.modelId, ctx.nextId);
+    return buildDetections(spans, this.options.modelLabel ?? this.modelId, ctx.nextId);
   }
 
   async dispose(): Promise<void> {

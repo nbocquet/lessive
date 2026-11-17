@@ -1,6 +1,7 @@
-<!-- Reconnaissance des noms (NER) (T5.7). Le branchement réel est fait dans ner-provider.ts. -->
+<!-- Reconnaissance des noms (NER) (T5.7). Le modèle est chargé par l'utilisateur : voir SettingsModel.svelte (ADR 0003). -->
 <script lang="ts">
   import { app } from "../state.svelte.ts";
+  import SettingsModel from "./SettingsModel.svelte";
 </script>
 
 <div class="field">
@@ -14,10 +15,12 @@
     <strong>Reconnaître les noms de personnes, lieux et organisations (NER)</strong>
   </label>
   <p id="settings-ner-help" class="hint">
-    Utilise un modèle de reconnaissance de noms d'environ 138 Mo. Il est chargé une seule fois, puis
-    mis en cache par le navigateur. Tout reste local : le modèle s'exécute dans ce navigateur et
-    votre texte n'est envoyé nulle part.
+    Utilise un modèle de reconnaissance de noms (environ 138 Mo) que vous chargez vous-même depuis
+    votre ordinateur : il n'est pas livré avec l'application. Il est conservé une fois pour toutes
+    dans ce navigateur. Tout reste local : le modèle s'exécute dans ce navigateur et votre texte
+    n'est envoyé nulle part.
   </p>
+  <SettingsModel />
 </div>
 
 <style>

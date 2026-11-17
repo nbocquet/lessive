@@ -14,6 +14,8 @@ import type {
   AnalysisErrorCode,
   AnalysisStage,
   AnalyzeRequest,
+  ModelSourceSpec,
+  NerStatus,
   WorkerRequest,
   WorkerResponse,
 } from "./analysis-protocol.ts";
@@ -29,8 +31,17 @@ export interface AnalysisJob {
   cancel(): void;
 }
 
+/** Issue du chargement du NER pour une analyse (voir `NerStatus`). */
+export type NerStatusListener = (status: NerStatus) => void;
+
 export interface AnalysisService {
-  start(params: AnalyzeParams, onProgress?: ProgressListener): AnalysisJob;
+  start(
+    params: AnalyzeParams,
+    onProgress?: ProgressListener,
+    onNerStatus?: NerStatusListener,
+  ): AnalysisJob;
+  /** Indique d'où lire le modèle NER (ADR 0003). Facultatif : absent des faux services de test. */
+  setModel?(model: ModelSourceSpec): void;
   dispose(): void;
 }
 
@@ -73,6 +84,7 @@ interface Pending {
   resolve(result: AnalysisResult): void;
   reject(error: Error): void;
   onProgress: ProgressListener | undefined;
+  onNerStatus: NerStatusListener | undefined;
   /** Vrai après `cancel()` : la promesse est déjà rejetée. */
   cancelled: boolean;
   graceTimer: ReturnType<typeof setTimeout> | undefined;
@@ -82,13 +94,24 @@ export class AnalysisClient implements AnalysisService {
   readonly #createWorker: () => WorkerLike;
   #worker: WorkerLike | undefined;
   #nextId = 1;
+  /** Dernière source de modèle indiquée : renvoyée à tout worker recréé. */
+  #model: ModelSourceSpec | undefined;
   readonly #pending = new Map<number, Pending>();
 
   constructor(createWorker: () => WorkerLike = createDefaultWorker) {
     this.#createWorker = createWorker;
   }
 
-  start(params: AnalyzeParams, onProgress?: ProgressListener): AnalysisJob {
+  setModel(model: ModelSourceSpec): void {
+    this.#model = model;
+    this.#worker?.postMessage({ type: "set-model", model });
+  }
+
+  start(
+    params: AnalyzeParams,
+    onProgress?: ProgressListener,
+    onNerStatus?: NerStatusListener,
+  ): AnalysisJob {
     const id = this.#nextId++;
     const worker = this.#ensureWorker();
     const result = new Promise<AnalysisResult>((resolve, reject) => {
@@ -96,6 +119,7 @@ export class AnalysisClient implements AnalysisService {
         resolve,
         reject,
         onProgress,
+        onNerStatus,
         cancelled: false,
         graceTimer: undefined,
       });
@@ -119,6 +143,7 @@ export class AnalysisClient implements AnalysisService {
       );
     };
     this.#worker = worker;
+    if (this.#model) worker.postMessage({ type: "set-model", model: this.#model });
     return worker;
   }
 
@@ -156,8 +181,10 @@ export class AnalysisClient implements AnalysisService {
     clearTimeout(p.graceTimer);
     this.#pending.delete(msg.id);
     if (p.cancelled) return; // promesse déjà rejetée
-    if (msg.type === "result") p.resolve(msg.result);
-    else if (msg.type === "cancelled") p.reject(new AnalysisCancelledError());
+    if (msg.type === "result") {
+      if (msg.nerStatus) p.onNerStatus?.(msg.nerStatus);
+      p.resolve(msg.result);
+    } else if (msg.type === "cancelled") p.reject(new AnalysisCancelledError());
     else p.reject(new AnalysisFailure(msg.code, msg.message));
   }
 }

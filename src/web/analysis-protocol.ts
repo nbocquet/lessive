@@ -33,7 +33,25 @@ export interface CancelRequest {
   id: number;
 }
 
-export type WorkerRequest = AnalyzeRequest | CancelRequest;
+/**
+ * D'où le worker lit les fichiers du modèle NER (ADR 0003).
+ * - `cache` (défaut) : Cache Storage, lu directement par le worker : aucun octet du modèle ne transite.
+ * - `memory` : Cache Storage indisponible ; les `Blob` (références vers les fichiers du disque, pas des
+ *   copies) sont transmis une fois par structured clone.
+ * - `dev` : dossier `models/` servi par Vite, développement seulement.
+ */
+export type ModelSourceSpec =
+  | { kind: "cache" }
+  | { kind: "dev" }
+  | { kind: "memory"; files: [string, Blob][]; dtype: "q8" | "fp32"; name: string };
+
+/** Change la source du modèle : le moteur NER en mémoire est abandonné et rechargé au besoin. */
+export interface SetModelRequest {
+  type: "set-model";
+  model: ModelSourceSpec;
+}
+
+export type WorkerRequest = AnalyzeRequest | CancelRequest | SetModelRequest;
 
 export type AnalysisStage = "rules" | "ner";
 
@@ -45,10 +63,18 @@ export interface ProgressResponse {
   progress: number;
 }
 
+/**
+ * Issue du chargement du NER pour une requête `ner: true`.
+ * `missing` : aucun modèle chargé par l'utilisateur ; `error` : fichiers illisibles ou incompatibles.
+ */
+export type NerStatus = "ready" | "missing" | "error";
+
 export interface ResultResponse {
   type: "result";
   id: number;
   result: AnalysisResult;
+  /** Présent seulement si la requête demandait le NER. */
+  nerStatus?: NerStatus;
 }
 
 export type AnalysisErrorCode =

@@ -4,9 +4,10 @@
  *
  * - `/ort/` : fichiers WASM d'ONNX Runtime Web réellement demandés par Transformers.js 4.3.2
  *   (variante « asyncify », voir `src/ner/transformers-engine.ts`), pris dans `node_modules`.
- * - `/models/Xenova/distilbert-base-multilingual-cased-ner-hrl/` : modèle de Nico, non versionné.
- *   S'il est absent, le build réussit quand même et le serveur répond 404 (jamais la page
- *   d'accueil en repli), ce qui fait échouer proprement le chargement du moteur.
+ * - `/models/Xenova/distilbert-base-multilingual-cased-ner-hrl/` : DÉVELOPPEMENT SEULEMENT (`vite dev`).
+ *   Le modèle n'est pas livré (ADR 0003) : ni copié dans `dist/`, ni servi par `vite preview`. En
+ *   développement, s'il est présent dans `models/`, il alimente le bouton « Utiliser le modèle de
+ *   développement ». Absent, le serveur répond 404 (jamais la page d'accueil en repli).
  */
 import { createReadStream, cpSync, existsSync, statSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -50,9 +51,16 @@ function resolveAsset(pathname: string): string | undefined {
 
 type Next = (err?: unknown) => void;
 
-function middleware(req: IncomingMessage, res: ServerResponse, next: Next): void {
+function createMiddleware(serveModels: boolean) {
+  return (req: IncomingMessage, res: ServerResponse, next: Next): void =>
+    serve(req, res, next, serveModels);
+}
+
+function serve(req: IncomingMessage, res: ServerResponse, next: Next, serveModels: boolean): void {
   const pathname = new URL(req.url ?? "/", "http://local").pathname;
-  if (!pathname.startsWith("/ort/") && !pathname.startsWith("/models/")) return next();
+  if (!pathname.startsWith("/ort/") && !(serveModels && pathname.startsWith("/models/"))) {
+    return next();
+  }
   const file = resolveAsset(pathname);
   if (!file || !existsSync(file) || !statSync(file).isFile()) {
     res.statusCode = 404;
@@ -74,10 +82,10 @@ export function localAssets(): Plugin {
       outDir = resolve(config.root, config.build.outDir);
     },
     configureServer(server) {
-      server.middlewares.use(middleware);
+      server.middlewares.use(createMiddleware(true));
     },
     configurePreviewServer(server) {
-      server.middlewares.use(middleware);
+      server.middlewares.use(createMiddleware(false));
     },
     generateBundle(_options, bundle) {
       // Le code d'ORT référence son .wasm par `new URL(…, import.meta.url)` : Vite en émet une copie
@@ -90,9 +98,6 @@ export function localAssets(): Plugin {
       for (const name of ORT_FILES) {
         cpSync(join(ORT_DIR, name), join(outDir, "ort", name));
       }
-      const model = join(MODELS_DIR, MODEL_ID);
-      if (existsSync(model)) cpSync(model, join(outDir, "models", MODEL_ID), { recursive: true });
-      else this.warn(`Modèle NER absent (${model}) : le build n'inclut pas de NER.`);
     },
   };
 }

@@ -6,6 +6,7 @@ import {
   type AnalysisJob,
   type AnalysisService,
   type AnalyzeParams,
+  type NerStatusListener,
   type ProgressListener,
 } from "./analysis-client.ts";
 import { AppState } from "./state.svelte.ts";
@@ -36,6 +37,7 @@ const RESULT: AnalysisResult = {
 interface Call {
   params: AnalyzeParams;
   onProgress: ProgressListener | undefined;
+  onNerStatus: NerStatusListener | undefined;
   resolve(r: AnalysisResult): void;
   reject(e: Error): void;
   cancelled: boolean;
@@ -45,14 +47,14 @@ interface Call {
 function fakeService() {
   const calls: Call[] = [];
   const service: AnalysisService = {
-    start(params, onProgress) {
+    start(params, onProgress, onNerStatus) {
       let resolve!: (r: AnalysisResult) => void;
       let reject!: (e: Error) => void;
       const result = new Promise<AnalysisResult>((res, rej) => {
         resolve = res;
         reject = rej;
       });
-      const call: Call = { params, onProgress, resolve, reject, cancelled: false };
+      const call: Call = { params, onProgress, onNerStatus, resolve, reject, cancelled: false };
       calls.push(call);
       const job: AnalysisJob = {
         result,
@@ -451,5 +453,70 @@ describe("AppState : texte, réponse du LLM, remise à zéro", () => {
     expect(app.minScore).toBe(0);
     app.setMinScore(Number.NaN);
     expect(app.minScore).toBe(0.5);
+  });
+});
+
+describe("AppState : modèle local (ADR 0003)", () => {
+  const CONFIG = JSON.stringify({ id2label: { 0: "O", 1: "B-PER", 2: "B-LOC" } });
+  const file = (name: string, path: string, content: BlobPart) =>
+    Object.assign(new Blob([content]), { name, webkitRelativePath: path });
+  const goodFiles = () => [
+    file("config.json", "m/config.json", CONFIG),
+    file("tokenizer.json", "m/tokenizer.json", "{}"),
+    file("tokenizer_config.json", "m/tokenizer_config.json", "{}"),
+    file("model_quantized.onnx", "m/onnx/model_quantized.onnx", new Uint8Array(2048)),
+  ];
+
+  function withModelService() {
+    const models: unknown[] = [];
+    const base = fakeService();
+    const service: AnalysisService = {
+      start: (...args) => base.service.start(...args),
+      dispose: () => base.service.dispose(),
+      setModel: (m) => void models.push(m),
+    };
+    return { app: new AppState({ service }), models, calls: base.calls };
+  }
+
+  it("démarre sans modèle", () => {
+    const { app } = withModelService();
+    expect(app.modelStatus).toBe("absent");
+    expect(app.modelInfo).toBeNull();
+  });
+
+  it("refuse une sélection invalide sans toucher à l'état", async () => {
+    const { app, models } = withModelService();
+    expect(await app.loadModelFromFiles([file("config.json", "m/config.json", "{}")])).toBe(false);
+    expect(app.modelError).toContain("manquant");
+    expect(app.modelStatus).toBe("absent");
+    expect(models).toEqual([]);
+  });
+
+  it("garde le modèle en mémoire sans Cache Storage, l'explique, puis l'oublie", async () => {
+    const { app, models } = withModelService();
+    expect(await app.loadModelFromFiles(goodFiles())).toBe(true);
+    expect(app.modelStatus).toBe("stored");
+    expect(app.modelInfo).toMatchObject({ origin: "memory", labels: ["PER", "LOC"] });
+    expect(app.modelNotice).toContain("cette session seulement");
+    expect(models[0]).toMatchObject({ kind: "memory", dtype: "q8" });
+
+    await app.forgetModel();
+    expect(app.modelStatus).toBe("absent");
+    expect(app.modelInfo).toBeNull();
+    expect(models.at(-1)).toEqual({ kind: "cache" });
+  });
+
+  it("suit l'issue du chargement du NER rapportée par le worker", async () => {
+    const { app, calls } = withModelService();
+    await app.loadModelFromFiles(goodFiles());
+    app.setText(TEXT);
+    app.setNer(true);
+    const run = app.analyze();
+    calls[0]?.onProgress?.("ner", 0.5);
+    expect(app.modelStatus).toBe("loading");
+    calls[0]?.onNerStatus?.("ready");
+    calls[0]?.resolve(RESULT);
+    await run;
+    expect(app.modelStatus).toBe("ready");
   });
 });

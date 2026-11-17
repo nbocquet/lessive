@@ -44,11 +44,22 @@ import {
   type AnalysisService,
 } from "./analysis-client.ts";
 import type { AnalysisStage } from "./analysis-protocol.ts";
+import {
+  forgetStoredModel,
+  prepareModel,
+  readStoredModel,
+  storeModel,
+  type ModelInfo,
+  type PickedFile,
+  type PreparedModel,
+} from "./model-store.ts";
 import { loadBundledRegistry } from "./packs.ts";
 
 export type LanguageChoice = Language | "auto";
 export type ScreenId = "text" | "review" | "result" | "reidentify";
 export type AnalysisStatus = "idle" | "running" | "done" | "error";
+/** État du modèle NER chargé par l'utilisateur (ADR 0003). */
+export type ModelStatus = "absent" | "stored" | "loading" | "ready" | "error";
 
 export const SCREEN_ORDER: readonly ScreenId[] = ["text", "review", "result", "reidentify"];
 export const DEFAULT_MIN_SCORE = 0.5;
@@ -217,6 +228,8 @@ export class AppState {
   constructor(options: AppStateOptions = {}) {
     this.registry = options.registry ?? loadBundledRegistry();
     this.#given = options.service;
+    // Pas de détection sous Vitest ni sans navigateur : aucun stockage à interroger.
+    if (typeof caches !== "undefined" && import.meta.env.MODE !== "test") void this.refreshModel();
   }
 
   // ======================================================================
@@ -392,6 +405,10 @@ export class AppState {
         if (runId !== this.#runId) return;
         this.analysisStage = stage;
         this.progress = progress;
+        if (stage === "ner" && this.modelStatus === "stored") this.modelStatus = "loading";
+      },
+      (status) => {
+        if (runId === this.#runId) this.#onNerStatus(status);
       },
     );
     this.#job = job;
@@ -674,6 +691,135 @@ export class AppState {
     this.transformed = null;
     this.transformError = null;
     this.validated = false;
+  }
+
+  // ======================================================================
+  // Modèle local (ADR 0003) : le modèle NER est chargé par l'utilisateur, jamais livré
+  // ======================================================================
+
+  /** `absent` : rien de chargé ; `stored` : fichiers conservés ; `loading`/`ready` : moteur en cours de chargement ou prêt ; `error` : fichiers inutilisables. */
+  modelStatus = $state<ModelStatus>("absent");
+  /** Description du modèle conservé, `null` si absent. */
+  modelInfo = $state.raw<ModelInfo | null>(null);
+  /** Dernier problème (sélection refusée, chargement impossible), en français et sans valeur du texte. */
+  modelError = $state<string | null>(null);
+  /** Explication quand le modèle ne vit que dans cette session (Cache Storage indisponible). */
+  modelNotice = $state<string | null>(null);
+  /** Une sélection est en cours de validation et de copie. */
+  modelBusy = $state(false);
+  /** Développement seulement : `models/` du dépôt est servi par Vite. */
+  devModelAvailable = $state(false);
+
+  /** Fichiers gardés en mémoire quand Cache Storage est indisponible. */
+  #memoryModel: PreparedModel | undefined;
+
+  /** Racine de l'application, comme la calcule le worker (`<racine>/assets/….js` → `<racine>/`). */
+  #appRoot(): string {
+    const href = globalThis.location?.href ?? "http://localhost/";
+    return href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
+  }
+
+  /** Détecte un modèle déjà conservé (au démarrage) et, en développement, le modèle du dépôt. */
+  async refreshModel(): Promise<void> {
+    if (this.modelStatus === "loading" || this.modelStatus === "ready" || this.modelBusy) return;
+    const stored = await readStoredModel(this.#appRoot());
+    if (stored && !this.#memoryModel) {
+      this.modelInfo = stored;
+      this.modelStatus = "stored";
+      this.modelError = null;
+    }
+    if (import.meta.env.DEV && import.meta.env.MODE !== "test") {
+      const { probeDevModel } = await import("./dev-model.ts");
+      this.devModelAvailable = await probeDevModel(this.#appRoot());
+    }
+  }
+
+  /**
+   * Valide la sélection de l'utilisateur et conserve le modèle. Une sélection refusée ne touche pas au
+   * modèle déjà chargé : seule `modelError` est renseignée.
+   */
+  async loadModelFromFiles(files: readonly PickedFile[]): Promise<boolean> {
+    this.modelBusy = true;
+    this.modelError = null;
+    try {
+      const prepared = await prepareModel(files);
+      if (!prepared.ok) {
+        this.modelError = prepared.error;
+        return false;
+      }
+      const outcome = await storeModel(prepared.value, this.#appRoot());
+      this.#memoryModel = outcome.where === "memory" ? prepared.value : undefined;
+      this.modelNotice =
+        outcome.where === "memory"
+          ? `${outcome.reason} Le modèle est gardé en mémoire pour cette session seulement : il faudra le recharger à la prochaine visite.`
+          : null;
+      this.modelInfo = {
+        ...prepared.value.info,
+        origin: outcome.where === "cache" ? "cache" : "memory",
+      };
+      this.modelStatus = "stored";
+      this.#sendModelSource();
+      if (this.ner) this.#analysisInputsChanged();
+      return true;
+    } catch {
+      this.modelError =
+        "Le modèle n'a pas pu être lu : fichiers illisibles ou déplacés pendant la lecture.";
+      return false;
+    } finally {
+      this.modelBusy = false;
+    }
+  }
+
+  /** Oublie le modèle : vide Cache Storage et la mémoire de la session. */
+  async forgetModel(): Promise<void> {
+    this.#memoryModel = undefined;
+    await forgetStoredModel();
+    this.modelInfo = null;
+    this.modelStatus = "absent";
+    this.modelError = null;
+    this.modelNotice = null;
+    this.#sendModelSource();
+    if (this.ner) this.#analysisInputsChanged();
+  }
+
+  /** Développement seulement : utilise `models/` du dépôt, servi par Vite. */
+  async useDevModel(): Promise<void> {
+    if (!import.meta.env.DEV || !this.devModelAvailable) return;
+    const { devModelInfo } = await import("./dev-model.ts");
+    this.#memoryModel = undefined;
+    this.modelInfo = devModelInfo();
+    this.modelStatus = "stored";
+    this.modelError = null;
+    this.modelNotice = null;
+    this.#getService().setModel?.({ kind: "dev" });
+    if (this.ner) this.#analysisInputsChanged();
+  }
+
+  /** Dit au worker où lire le modèle (Cache Storage par défaut, Blob en mémoire sinon). */
+  #sendModelSource(): void {
+    const mem = this.#memoryModel;
+    const files: [string, Blob][] = mem ? [...mem.blobs] : [];
+    this.#getService().setModel?.(
+      mem
+        ? { kind: "memory", files, dtype: mem.info.dtype, name: mem.info.name }
+        : { kind: "cache" },
+    );
+  }
+
+  /** Issue du chargement du NER, rapportée par le worker. */
+  #onNerStatus(status: "ready" | "missing" | "error"): void {
+    if (status === "ready") {
+      this.modelStatus = "ready";
+      this.modelError = null;
+    } else if (status === "missing") {
+      // Cache vidé hors de l'application (réglages du navigateur) : la fiche affichée est périmée.
+      if (!this.#memoryModel && this.modelStatus !== "absent") this.modelInfo = null;
+      this.modelStatus = "absent";
+    } else {
+      this.modelStatus = "error";
+      this.modelError =
+        "Le modèle n'a pas pu être chargé : fichiers illisibles ou incompatibles. Chargez-le de nouveau.";
+    }
   }
 }
 

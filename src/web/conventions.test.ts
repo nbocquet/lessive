@@ -48,7 +48,23 @@ describe("conventions de src/web", () => {
   });
 
   it("R1 : aucune API réseau dans le code de l'interface", () => {
-    expect(offenders(/\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b/)).toEqual([]);
+    // `dev-model.ts` (raccourci de développement, même origine) est exclu : il n'entre pas dans le build
+    // de production, ce que vérifie le test suivant.
+    const files = sources().filter((f) => !f.endsWith("/dev-model.ts"));
+    expect(offenders(/\b(fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon)\b/, files)).toEqual(
+      [],
+    );
+  });
+
+  it("R1 : dev-model.ts n'est importé que dynamiquement, derrière import.meta.env.DEV", () => {
+    const importers = sources().filter((f) =>
+      /from "\.\/dev-model\.ts"/.test(readFileSync(f, "utf8")),
+    );
+    expect(importers.map((f) => f.slice(ROOT.length))).toEqual([]);
+    expect(offenders(/import\("\.\/dev-model\.ts"\)/).sort()).toEqual([
+      "ner-provider.ts",
+      "state.svelte.ts",
+    ]);
   });
 
   it("R1 : la CSP interdit toute origine externe", () => {
