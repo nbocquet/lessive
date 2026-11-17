@@ -4,6 +4,6 @@
     "lib": ["ES2022"],
     "types": ["node"]
   },
-  "include": ["packs/_tools/**/*.ts", "src/core/**/*.ts"],
+  "include": ["packs/_tools/**/*.ts", "src/core/**/*.ts", "tests/e2e/**/*.ts"],
   "exclude": []
 }

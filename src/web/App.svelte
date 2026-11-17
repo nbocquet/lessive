@@ -5,6 +5,7 @@
 <script lang="ts">
   import { ENGINE_VERSION } from "../core/index.ts";
   import LimitsBanner from "./components/LimitsBanner.svelte";
+  import OfflineBadge from "./components/OfflineBadge.svelte";
   import StepNav from "./components/StepNav.svelte";
   import ReidentifyScreen from "./screens/ReidentifyScreen.svelte";
   import ResultScreen from "./screens/ResultScreen.svelte";
@@ -53,7 +54,7 @@
     <SettingsScreen />
   </details>
 
-  <footer class="hint">Moteur {ENGINE_VERSION}</footer>
+  <footer class="hint">Moteur {ENGINE_VERSION}<OfflineBadge /></footer>
 </div>
 
 <style>
