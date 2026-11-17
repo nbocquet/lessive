@@ -2,7 +2,7 @@
   "name": "lessive",
   "version": "0.0.0",
   "private": true,
-  "description": "D\u00e9tection et pseudonymisation locale des donn\u00e9es personnelles avant usage dans un LLM",
+  "description": "Détection et pseudonymisation locale des données personnelles avant usage dans un LLM",
   "license": "Apache-2.0",
   "type": "module",
   "engines": {
@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
   },
   "dependencies": {
+    "@huggingface/transformers": "4.3.2",
     "svelte": "5.57.3",
     "zod": "4.6.7"
   },
