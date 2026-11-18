@@ -4,7 +4,7 @@ Source de vérité : `src/core/types/`. Ce document en donne la carte ; en cas d
 
 | Fichier | Contenu |
 |---|---|
-| `entities.ts` | `EntityType` (16 types du MVP), `ENTITY_PRIORITY` pour départager les égalités |
+| `entities.ts` | `EntityType` (16 types), `ENTITY_PRIORITY` pour départager les égalités |
 | `detection.ts` | `Detection` (intervalle UTF-16, score, origine, explication), `AnalysisResult`, `MAX_INPUT_LENGTH` |
 | `recognizer.ts` | `Recognizer`, `AnalysisContext`, `NerEngine`, `Language` |
 | `rules.ts` | Liste fermée `VALIDATOR_NAMES`, `PatternRule`, `DictionaryRule`, `ContextConfig`, `PackManifest`, `Pack` |

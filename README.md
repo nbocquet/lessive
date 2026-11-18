@@ -1,118 +1,111 @@
-# Lessive
+<p align="center"><img src="src/web/public/lessive-mark.svg" alt="" width="72" height="72"></p>
 
-Lessive repère les données personnelles d'un texte (noms, courriels, téléphones, IBAN, numéros AVS…) et les remplace par des repères neutres, comme `PERSONNE_001`, **directement dans votre navigateur**, avant que vous ne colliez le texte dans un assistant IA. Quand l'assistant répond, Lessive remet les vrais noms dans sa réponse, toujours sur votre ordinateur. Votre texte n'est envoyé à aucun serveur de traitement, Lessive n'appelle aucun assistant IA et ne mesure rien sur votre usage.
+<h1 align="center">Lessive</h1>
 
-> **Lessive réduit le risque, il ne garantit pas l'anonymat.** Un texte dont on a remplacé les noms peut rester reconnaissable (une fonction, un lieu et une date suffisent parfois). Relisez toujours le résultat avant de l'envoyer. Voir [ce que Lessive ne fait pas](#ce-que-lessive-ne-fait-pas).
+<p align="center">
+  <strong>Pseudonymiser un texte dans le navigateur avant de le confier à un assistant IA, puis remettre les vrais noms dans la réponse.</strong><br>
+  <em>Pseudonymise text in your browser before pasting it into an AI assistant, then restore the real names in the answer.</em>
+</p>
 
-## À qui il sert
+<p align="center">
+  <a href="https://nbocquet.github.io/lessive/"><strong>Essayer / Try it</strong></a> ·
+  <a href="#français">Français</a> ·
+  <a href="#english">English</a>
+</p>
 
-À toute personne ou équipe qui utilise un assistant IA (ChatGPT, Claude, Gemini ou autre) pour résumer, traduire, reformuler ou rédiger à partir de textes contenant des noms et des coordonnées : courriels, comptes rendus, notes de dossier, échanges avec des clients ou des élèves. Les formats pris en charge sont le texte brut et le Markdown, collés dans la page ou importés depuis un fichier `.txt` ou `.md`.
+<p align="center">
+  <a href="https://github.com/nbocquet/lessive/actions/workflows/ci.yml"><img src="https://github.com/nbocquet/lessive/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/nbocquet/lessive/actions/workflows/pages.yml"><img src="https://github.com/nbocquet/lessive/actions/workflows/pages.yml/badge.svg" alt="GitHub Pages"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licence-Apache%202.0-blue" alt="Licence Apache 2.0"></a>
+</p>
 
-## Le parcours en cinq étapes
+---
 
-Les quatre écrans de l'application (Texte, Vérification, Résultat, Réponse du LLM) portent ces étapes : les écrans 1 à 3 pour les étapes 1 à 3, le quatrième pour les étapes 4 et 5.
+## English
 
-1. **Coller** le texte à protéger, choisir le mode et la langue, puis lancer l'analyse.
+Lessive finds personal data in a text (names, e-mail addresses, phone numbers, IBANs, Swiss AVS and French NIR numbers, postal addresses…) and replaces it with neutral tokens such as `PERSONNE_001`, **entirely in your browser**. You paste the result into ChatGPT, Claude, Gemini or any other assistant; when the assistant answers, Lessive puts the original values back, still on your computer.
+
+- **Local processing.** The text never leaves the browser. A Content Security Policy forbids any connection other than the app's own origin; no analytics, no remote API, no LLM.
+- **Rules plus a local NER model.** Validated identifiers (checksums for IBAN, AVS, NIR, SIRET…), Swiss and French formats, first-name and surname lists, and an optional named-entity recognition model (CamemBERT-NER, ~114 MB, run with ONNX Runtime Web).
+- **Review before sending.** Every detection is highlighted; you can add what was missed or remove false positives.
+- **Round trip.** Tokens are stable, so the assistant's answer can be re-identified; the mapping table lives only in memory, with an optional passphrase-encrypted export.
+- **Works offline** after the first visit.
+
+> **Lessive reduces risk; it does not anonymise.** A text without names can still identify someone (a rare job title, a place and a date). Always read the result before sending it.
+
+The interface and most documentation are in French; detection targets French and English texts and Swiss and French identifiers. Quick start for developers: `ONNXRUNTIME_NODE_INSTALL=skip npm ci && npm run dev` (Node.js 22+). Licence: Apache 2.0. Security reports: see [SECURITY.md](SECURITY.md).
+
+---
+
+## Français
+
+Lessive repère les données personnelles d'un texte (noms, courriels, téléphones, IBAN, numéros AVS et NIR, adresses postales…) et les remplace par des repères neutres comme `PERSONNE_001`, **directement dans votre navigateur**, avant que vous ne colliez le texte dans un assistant IA. Quand l'assistant répond, Lessive remet les vraies valeurs dans sa réponse, toujours sur votre ordinateur. Votre texte n'est envoyé à aucun serveur, Lessive n'appelle aucun assistant IA et ne mesure rien de votre usage.
+
+> **Lessive réduit le risque, il ne garantit pas l'anonymat.** Un texte dont on a remplacé les noms peut rester reconnaissable (une fonction, un lieu et une date suffisent parfois). Relisez toujours le résultat avant de l'envoyer. Voir [les limites](docs/limites.md).
+
+### Utiliser Lessive
+
+**En ligne : https://nbocquet.github.io/lessive/**. Rien à installer ; la page fonctionne ensuite hors ligne. Pour mieux repérer les noms de personnes, de lieux et d'organisations, cliquez sur « Installer le modèle fourni » (environ 114 Mo, téléchargé une seule fois depuis le site, puis conservé dans le navigateur).
+
+Le parcours :
+
+1. **Coller** le texte (ou importer un fichier `.txt` ou `.md`), choisir le mode, lancer l'analyse.
    - **Pseudonymisation** : chaque donnée devient un repère stable (`PERSONNE_001`, `EMAIL_001`…), ce qui permet de retrouver les valeurs dans la réponse de l'assistant.
-   - **Masquage** : chaque donnée est remplacée par des astérisques ; vous pouvez choisir à la place la catégorie (`[PERSONNE]`) ou la suppression. Aucune correspondance n'est gardée : les étapes 4 et 5 ne concernent que la pseudonymisation.
-2. **Vérifier** les détections surlignées. Ce que Lessive a manqué peut être ajouté à la main (toutes les occurrences sont alors traitées) ; ce qui a été détecté à tort peut être retiré. Les noms qui pourraient désigner la même personne sont signalés « à vérifier ».
-3. **Copier avec la consigne** : cocher « J'ai relu le résultat », puis « Copier avec la consigne pour l'IA ». La consigne demande à l'assistant de recopier les repères tels quels.
-4. **Coller la réponse** de l'assistant dans le quatrième écran.
-5. **Remettre les noms** : un clic remet les valeurs d'origine à la place des repères. Les repères inconnus, que l'assistant aurait inventés ou déformés au-delà de ce que Lessive reconnaît, sont laissés tels quels et signalés. Rien n'est remplacé sans votre action.
+   - **Masquage** : chaque donnée est remplacée par des astérisques, sa catégorie (`[PERSONNE]`) ou rien. Aucune correspondance n'est gardée.
+2. **Vérifier** les détections surlignées : ajouter ce qui manque (toutes les occurrences sont traitées), retirer ce qui est détecté à tort. Les noms qui pourraient désigner la même personne sont signalés « à vérifier ».
+3. **Copier avec la consigne** : la consigne jointe demande à l'assistant de recopier les repères tels quels.
+4. **Coller la réponse** de l'assistant dans Lessive.
+5. **Remettre les noms** : les repères sont remplacés par les valeurs d'origine ; un repère inconnu ou déformé est signalé, jamais remplacé sans votre action.
 
-La table des correspondances (qui est `PERSONNE_001` ?) ne vit qu'en mémoire : recharger la page l'efface. Pour la conserver, un export chiffré par phrase de passe est proposé ; sans cette phrase, le fichier est inutilisable et personne ne peut la retrouver pour vous.
+La table des correspondances (qui est `PERSONNE_001` ?) ne vit qu'en mémoire : recharger la page l'efface. Un export chiffré par phrase de passe permet de la conserver ; sans la phrase, le fichier est inutilisable.
 
-## Ce que Lessive ne fait pas
+### Ce que Lessive détecte
 
-- Il ne **garantit pas l'anonymat**. Il ne traite pas l'identification indirecte (une fonction rare, un lieu et une date combinés).
-- Il peut **manquer des noms** (noms en minuscules, prénoms rares, homonymes de mots courants) et en **signaler à tort**. L'ajout manuel existe pour cela.
-- Il ne lit ni PDF, ni DOCX, ni tableurs, et ne traite pas encore les adresses postales complètes.
-- Il n'est pas validé pour des données de santé ou des secrets professionnels : c'est à vous de juger du risque.
+| Par des règles | Avec le modèle de reconnaissance des noms |
+|---|---|
+| Courriels, URL, adresses IP, téléphones suisses et français | Noms de personnes, y compris rares ou étrangers |
+| IBAN, cartes bancaires, AVS, IDE, NIR, SIREN, SIRET (clés de contrôle vérifiées) | Lieux |
+| Dates, adresses postales (rue, code postal et localité, case postale) | Organisations |
+| Prénoms et noms de famille courants (listes Insee et OFS), titres (« M. », « Dr ») | |
+| Secrets techniques de forme connue (clés d'API, jetons), mots de passe annoncés | |
 
-La liste complète, en langage simple : **[docs/limites.md](docs/limites.md)**.
+Il ne lit ni PDF, ni document Word, ni tableur, et ne comprend pas le sens du texte : une information sensible écrite en mots ordinaires (« en arrêt maladie ») reste en clair. La liste complète, en langage simple : **[docs/limites.md](docs/limites.md)**.
 
-## Confidentialité
+### Confidentialité
 
-Le traitement a lieu dans votre navigateur ; l'application ne se connecte qu'à son propre site pour charger ses fichiers, et une politique de sécurité du navigateur (CSP) interdit toute autre connexion. Le texte original et la table des correspondances ne sont écrits ni dans le stockage du navigateur, ni dans des journaux. Détails : **[docs/confidentialite.md](docs/confidentialite.md)** et, pour les chercheurs en sécurité, [SECURITY.md](SECURITY.md).
+Le traitement a lieu dans votre navigateur : l'application ne se connecte qu'à son propre site pour charger ses fichiers, et la politique de sécurité du navigateur (CSP) interdit toute autre connexion. Le texte et la table des correspondances ne sont écrits ni dans le stockage du navigateur, ni dans des journaux. Des tests automatiques le vérifient dans Chrome à chaque changement. GitHub, qui héberge la version en ligne, voit l'adresse IP des visiteurs et les fichiers demandés, jamais le texte. Détails : [docs/confidentialite.md](docs/confidentialite.md) ; signaler une vulnérabilité : [SECURITY.md](SECURITY.md).
 
-## Version en ligne
-
-Lessive est publié sur **https://nbocquet.github.io/lessive/** (GitHub Pages). Tout s'exécute dans votre navigateur ; la page fonctionne ensuite hors ligne. La version en ligne propose un modèle de reconnaissance des noms prêt à l'emploi (bouton « Installer le modèle fourni », environ 114 Mo, téléchargé une fois depuis le site puis conservé dans le navigateur) : [`camembert-ner`](https://huggingface.co/Jean-Baptiste/camembert-ner), sous licence MIT, surtout performant en français. GitHub, qui héberge la page, voit l'adresse IP des visiteurs et les fichiers demandés, jamais votre texte (voir [docs/confidentialite.md](docs/confidentialite.md)).
-
-## Installation et lancement local
+### Installer en local
 
 Prérequis : [Node.js](https://nodejs.org/) 22 ou plus récent.
 
 ```bash
-# 1. Installer les dépendances.
-#    ONNXRUNTIME_NODE_INSTALL=skip évite le téléchargement de binaires inutiles au navigateur.
-ONNXRUNTIME_NODE_INSTALL=skip npm ci
-
-# 2. Lancer l'application en développement (adresse affichée dans le terminal).
-npm run dev
-
-# 3. Produire le site statique dans dist/.
-npm run build
-
-# 4. L'essayer tel qu'il sera servi.
-npm run preview
+ONNXRUNTIME_NODE_INSTALL=skip npm ci   # le préfixe évite des binaires inutiles au navigateur
+npm run dev                            # application en développement
+npm run build                          # site statique dans dist/
+npm run preview                        # le site tel qu'il sera servi
 ```
 
-`dist/` est un site statique : tout serveur de fichiers convient, à condition de servir les fichiers `.wasm` avec le type `application/wasm`. Le site fonctionne sans serveur de traitement.
+`dist/` est un site statique : tout serveur de fichiers convient. Pour l'héberger vous-même, avec ou sans modèle fourni, ou charger un autre modèle (par exemple DistilBERT multilingue pour l'anglais) : **[docs/deploiement.md](docs/deploiement.md)**.
 
-### Le modèle de reconnaissance des noms (NER)
+### Documentation
 
-Les règles (courriels, IBAN, AVS, téléphones, dates, prénoms courants…) fonctionnent seules. Pour mieux repérer les noms de personnes, de lieux et d'organisations, Lessive utilise un petit modèle d'apprentissage automatique qui s'exécute localement. **Le dépôt ne contient aucun modèle.** La version en ligne fournit `Xenova/camembert-ner` ; pour une installation locale, vous le téléchargez vous-même une fois, puis vous le chargez dans Lessive.
+| Pour… | Lire |
+|---|---|
+| Savoir ce que Lessive peut manquer | [docs/limites.md](docs/limites.md) |
+| Comprendre les garanties de confidentialité et leurs tests | [docs/confidentialite.md](docs/confidentialite.md) |
+| Héberger Lessive, gérer le modèle NER | [docs/deploiement.md](docs/deploiement.md) |
+| Ajouter un pays ou une règle | [docs/creer-un-pack.md](docs/creer-un-pack.md) |
+| Comprendre le moteur | [ARCHITECTURE.md](ARCHITECTURE.md), [docs/contrats.md](docs/contrats.md) |
+| Contribuer | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Mesures de qualité et de performance | [docs/evaluation-ner.md](docs/evaluation-ner.md), [docs/performances.md](docs/performances.md) |
+| Décisions d'architecture | [docs/adr/](docs/adr/) |
+| Historique des versions | [CHANGELOG.md](CHANGELOG.md) |
 
-Pour produire un site qui fournit le modèle, comme la version en ligne (téléchargement et vérification des sommes SHA-256, voir [docs/adr/0004-modele-fourni-pages.md](docs/adr/0004-modele-fourni-pages.md)) :
+### État du projet
 
-```bash
-node scripts/fetch-bundled-model.ts models/Xenova/camembert-ner
-LESSIVE_BUNDLED_MODEL=models/Xenova/camembert-ner npm run build
-```
+Version **0.1.0**, première version publique. Le parcours complet, les packs Suisse et France, le modèle fourni, l'export chiffré et le fonctionnement hors ligne sont en place et testés. Aucune relecture de sécurité indépendante n'a encore été faite : pour des données réellement sensibles, suivez les règles de votre organisation.
 
-| Modèle | Usage | Taille |
-|---|---|---|
-| `Xenova/distilbert-base-multilingual-cased-ner-hrl` | **Recommandé** : français, anglais et autres langues | environ 138 Mo |
-| `Xenova/camembert-ner` | Alternative, **français seulement** | environ 114 Mo |
+### Licence et attributions
 
-Fichiers nécessaires : `config.json`, `tokenizer.json`, `tokenizer_config.json`, `special_tokens_map.json` et `onnx/model_quantized.onnx`. Avec l'outil `hf` (`pip install -U "huggingface_hub[cli]"`) ; l'option `--include` se répète, une fois par fichier :
-
-```bash
-hf download Xenova/distilbert-base-multilingual-cased-ner-hrl \
-  --local-dir models/Xenova/distilbert-base-multilingual-cased-ner-hrl \
-  --include "config.json" --include "tokenizer.json" --include "tokenizer_config.json" \
-  --include "special_tokens_map.json" --include "onnx/model_quantized.onnx"
-```
-
-Les fichiers peuvent aussi être téléchargés à la main depuis la page du modèle sur Hugging Face.
-
-- **Utilisation** : dans l'application, ouvrez Réglages, puis « Charger le modèle depuis mon ordinateur » et sélectionnez le dossier du modèle. L'application le garde ensuite dans le cache du navigateur : une seule sélection suffit, tant que ce cache n'est pas vidé.
-- **En développement**, un modèle placé dans `models/` (dossier non versionné, voir [models/README.md](models/README.md)) est servi automatiquement (bouton « Utiliser le modèle de développement »).
-- **Licence** : seul `camembert-ner` (MIT) est redistribué, par la version en ligne. Tout autre modèle reste soumis à sa propre licence (AFL-3.0 pour le modèle DistilBERT d'origine), que vous acceptez en le téléchargeant. Les réserves sur les licences sont consignées dans [docs/adr/0001-modele-ner.md](docs/adr/0001-modele-ner.md) ; la décision de ne pas livrer le modèle est dans [docs/adr/0003-modele-charge-par-l-utilisateur.md](docs/adr/0003-modele-charge-par-l-utilisateur.md).
-- Sans modèle, Lessive fonctionne avec les règles seules et le dit clairement : les noms de personnes, de lieux et d'organisations risquent de manquer bien plus souvent (voir [docs/limites.md](docs/limites.md)).
-
-## Pour les développeurs
-
-```bash
-npm test            # tests unitaires
-npm run lint        # ESLint et Prettier
-npm run typecheck   # TypeScript et Svelte
-npm run test:e2e    # tests de confidentialité dans Chrome (voir docs/confidentialite.md)
-```
-
-- [ARCHITECTURE.md](ARCHITECTURE.md) : comment le moteur est organisé.
-- [CONTRIBUTING.md](CONTRIBUTING.md) : règles et conventions de contribution.
-- [docs/creer-un-pack.md](docs/creer-un-pack.md) : ajouter un pays ou une règle.
-- [docs/performances.md](docs/performances.md) : mesures de performance.
-- [docs/evaluation-ner.md](docs/evaluation-ner.md) : qualité de la détection des noms.
-- [SECURITY.md](SECURITY.md) : modèle de menace et signalement d'une vulnérabilité.
-- `CLAUDE.md`, `PLAN.md` et `SPECIFICATIONS.md` : règles du projet, plan de construction et cahier des charges.
-
-## État du projet
-
-**MVP en cours de construction.** Le moteur de détection, les packs Suisse et France, la transformation, la table des correspondances, la réidentification, l'export chiffré et l'interface du parcours ci-dessus existent, ainsi que le fonctionnement hors ligne après le premier chargement et des tests de confidentialité dans Chrome. Les mesures de performance dans un navigateur, la publication et la recette sur un cas réel ne sont pas faites. Le format des jetons (`PERSONNE_001`) est celui par défaut ; sa fiabilité de recopie par les assistants n'a pas encore été mesurée (voir [docs/adr/0002-format-jetons.md](docs/adr/0002-format-jetons.md)). Ne vous fiez pas à Lessive pour des données réellement sensibles avant la recette.
-
-## Licence et attributions
-
-Apache 2.0, voir [LICENSE](LICENSE). Les listes de prénoms et de noms de famille viennent de l'Insee et de l'Office fédéral de la statistique, l'architecture s'inspire de Presidio (MIT), sans en reprendre de fichier : sources et conditions dans [NOTICE](NOTICE).
+Apache 2.0, voir [LICENSE](LICENSE). Les listes de prénoms et de noms viennent de l'Insee et de l'Office fédéral de la statistique ; le modèle fourni, `camembert-ner`, est sous licence MIT ; l'architecture s'inspire de [Presidio](https://github.com/data-privacy-stack/presidio) (MIT), sans en reprendre de fichier. Sources et conditions : [NOTICE](NOTICE).

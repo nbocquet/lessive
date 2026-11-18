@@ -1,4 +1,6 @@
-# Évaluation du NER et des packs (T3.4)
+# Évaluation du NER et des packs
+
+**Portée du rapport :** mesures historiques avec DistilBERT et les packs de cette évaluation. La version publiée fournit désormais CamemBERT-NER (ADR 0004). Les chiffres ci-dessous ne valident ni ce modèle ni les ajouts ultérieurs aux packs. Une nouvelle évaluation avec CamemBERT reste à faire.
 
 Rapport reproductible : toutes les valeurs ci-dessous sortent de `scripts/eval/evaluate.ts`, sans donnée réelle
 (corpus synthétique `corpus/ner-fr.jsonl` et `corpus/ner-en.jsonl`, 150 phrases chacun).
@@ -23,7 +25,7 @@ déterministe (deux exécutions identiques).
 - Modèle : `Xenova/distilbert-base-multilingual-cased-ner-hrl`, poids q8 (ADR 0001, candidat n° 1), `minScore` du NER 0,5.
 - Exécution : Node 22.23, `onnxruntime-node` (device `cpu`), 2 cœurs Xeon à 2,1 GHz. Ce n'est pas le chemin du
   navigateur (WASM) : les scores devraient être identiques (mêmes poids, même tokenizer), mais pas les temps.
-  Voir T6.3 pour les performances navigateur. Pour mémoire : chargement du modèle ≈ 0,6 s, ≈ 5 ms par phrase
+  Voir [performances.md](performances.md) pour le navigateur. Pour mémoire : chargement du modèle ≈ 0,6 s, ≈ 5 ms par phrase
   sous Node ; ces chiffres ne valent pas pour le navigateur.
 - Configurations :
   1. **Packs seuls** : `createAnalyzer` avec toutes les règles des cinq packs livrés (`country-ch`, `country-fr`,
@@ -37,7 +39,7 @@ déterministe (deux exécutions identiques).
   (courriel, date, téléphone…) sont ignorés, ni vrais ni faux positifs. Cependant, ils participent à la
   résolution des conflits en configuration 3.
 - Appariement un-à-un glouton (une détection ne valide qu'une entité attendue). **Exacte** : mêmes bornes et même
-  type. **Recouvrement** : même type et intervalles qui se chevauchent. La cible de l'ADR (C3) et de T3.4 est lue
+  type. **Recouvrement** : même type et intervalles qui se chevauchent. La cible de l'ADR 0001 (C3) est lue
   en recouvrement (localiser le nom suffit pour le masquer) ; la correspondance exacte est donnée à titre indicatif.
 - Une confusion de type (une personne détectée comme LOCATION) compte une fois en faux négatif pour PERSON et
   une fois en faux positif pour LOCATION.
@@ -161,7 +163,7 @@ lieux homonymes de prénoms, `org`, `commune`, `none` sans entité.
 
 ## Comparaison à la cible
 
-Cible T3.4 : rappel PERSON de la configuration combinée ≥ 0,90 en français et en anglais.
+Objectif : rappel PERSON de la configuration combinée ≥ 0,90 en français et en anglais.
 
 | Langue | Recouvrement | Exacte | Cible (recouvrement) |
 |---|---:|---:|---|
@@ -228,5 +230,4 @@ du dictionnaire. ORGANIZATION et LOCATION : aucune détection, par construction.
    (déjà dans `models/`, non mesuré ici). À comparer avec ce même script en changeant `DEFAULT_NER_MODEL`.
 6. **Étendre le corpus** (plus de phrases, un second auteur, textes plus longs et plus bruités) avant tout
    arbitrage fin : l'intervalle de confiance sur 123 entités est d'environ ± 5 points.
-7. **Correction manuelle dans l'interface** : l'avertissement permanent et l'ajout manuel propagé (PLAN.md,
-   risque « Noms manqués par le NER ») restent indispensables, quel que soit le score.
+7. **Correction manuelle dans l'interface** : l'avertissement permanent et l'ajout manuel propagé restent indispensables, quel que soit le score.

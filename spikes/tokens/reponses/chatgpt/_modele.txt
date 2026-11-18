@@ -1,4 +1,0 @@
-Fournisseur : openrouter
-Modèle : ~openai/gpt-latest
-Date : 2026-11-17T19:17:23.240Z
-Exécution : API via OpenRouter, un appel isolé par essai (run-api.mjs)

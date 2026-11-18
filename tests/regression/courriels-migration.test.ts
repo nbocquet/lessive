@@ -4,7 +4,7 @@
  * (CMARTIN…) et une adresse privée. Le nom réel de Nico y est remplacé par « Nicolas Ferrière ».
  *
  * Après analyse et pseudonymisation, aucune valeur personnelle ne doit rester en clair.
- * Hors champ, par décision documentée (PLAN.md §10) : les références internes (dossier, commande,
+ * Hors champ, par décision documentée (docs/historique/PLAN.md §10) : les références internes (dossier, commande,
  * contrat, serveur) et les données sensibles (« raisons médicales »). « Établissement des
  * Tilleuls » n'est pas reconnu par le modèle NER (limite documentée).
  */
