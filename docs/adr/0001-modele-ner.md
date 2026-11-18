@@ -1,38 +1,33 @@
 # ADR 0001 — Modèle NER
 
-- **Version en ligne : `Xenova/camembert-ner` (MIT) est fourni par GitHub Pages, voir ADR 0004.**
-- **Statut : Accepté le 2026-11-17 par Nico — modèle recommandé : `Xenova/distilbert-base-multilingual-cased-ner-hrl` (q8). Mesure de vitesse dans le navigateur encore à faire (docs/performances.md).**
-- Date de rédaction : 2026-11-16
-- Décideur : Nico (porte G0)
-- Tâche : S1 (PLAN.md, phase 0). Bloque la phase 3 (NER) et la tâche T4.4.
-- Détails de recherche et commandes : `spikes/ner/README.md`
+- **Statut** : Accepté le 2026-11-17 — modèle recommandé pour un chargement depuis le disque : `Xenova/distilbert-base-multilingual-cased-ner-hrl` (q8). Complété par l'ADR 0004 : la version en ligne fournit `Xenova/camembert-ner` (MIT).
+- **Date** : 2026-11-16
+- **Outils et commandes** : `tools/ner-eval/README.md`
 
 ## Contexte
 
 Lessive détecte des données personnelles dans le navigateur, sans aucun appel réseau à l'exécution (R1, R2).
 Les motifs réguliers (courriel, IBAN, AVS…) ne suffisent pas pour les noms de personnes, d'organisations et de
 lieux : il faut un modèle de reconnaissance d'entités nommées (NER) exécuté localement par Transformers.js sur
-ONNX Runtime Web (décision du plan, section 3), chargé uniquement depuis des fichiers locaux (R4).
+ONNX Runtime Web, chargé uniquement depuis des fichiers locaux (R4).
 
 Le public écrit surtout en français, avec des noms suisses, français et d'origine étrangère, en style courriel
 informel (minuscules, prénoms seuls, titres, emojis). Les modèles candidats ont presque tous été entraînés sur
 des textes de presse ou de Wikipédia : leur comportement sur ce style est la vraie inconnue, d'où un corpus
 synthétique dédié (`corpus/ner-fr.jsonl`, `corpus/ner-en.jsonl`, 150 phrases chacun).
 
-Cet ADR est volontairement **non tranché** : l'environnement de l'agent n'a pas accès à Hugging Face, aucun
-modèle n'a pu être chargé. Tout ce qui suit sous « Mesures » est vide tant que Nico n'a pas déposé les modèles
-et lancé la procédure ci-dessous.
+Les mesures ci-dessous ont été faites avec `tools/ner-eval` sur ces deux corpus, puis dans le navigateur.
 
-## Critères d'acceptation (PLAN.md, S1)
+## Critères d'acceptation
 
 Au moins un modèle doit satisfaire **tous** les critères suivants ; sinon, rapport d'échec et options.
 
 | # | Critère | Cible | Comment c'est mesuré |
 |---|---|---|---|
-| C1 | Licence | Redistribuable sous une licence compatible Apache 2.0 | Lecture de la licence du modèle **et** des conditions de ses données d'entraînement ; décision de Nico (voir « Points de licence ») |
+| C1 | Licence | Redistribuable sous une licence compatible Apache 2.0 | Lecture de la licence du modèle **et** des conditions de ses données d'entraînement ; décision du mainteneur (voir « Points de licence ») |
 | C2 | Poids | ≤ 150 Mo (poids quantifié + tokenizer + config) | `results/*.md`, ligne « Fichiers nécessaires » |
 | C3 | Qualité | Rappel PERSON ≥ 0,85 en français | `results/*.md`, langue `fr`, PERSON, **rappel par recouvrement** ; la correspondance exacte est donnée à titre indicatif |
-| C4 | Vitesse | ≤ 5 s pour 5000 caractères sur CPU | Node : `results/*.md` ; navigateur : mesure manuelle (page `spikes/ner/browser`). C'est la mesure **navigateur** qui compte pour le produit |
+| C4 | Vitesse | ≤ 5 s pour 5000 caractères sur CPU | Node : `results/*.md` ; navigateur : mesure manuelle (page `tools/ner-eval/browser`). C'est la mesure **navigateur** qui compte pour le produit |
 
 Critères secondaires, relevés mais non bloquants : précision PERSON (un faux positif coûte une pseudonymisation
 inutile, un faux négatif laisse fuir une donnée), F1 par catégorie et par langue, rappel sur les phrases
@@ -40,12 +35,12 @@ inutile, un faux négatif laisse fuir une donnée), F1 par catégorie et par lan
 positions avec accents et emojis (nombre d'entités non localisées), absence de requête hors origine (R1).
 
 Le choix de la correspondance par recouvrement pour C3 est une proposition : pour masquer une donnée, localiser
-le nom suffit même si les bornes diffèrent d'un mot (un titre, un tiret). Nico peut préférer la correspondance
+le nom suffit même si les bornes diffèrent d'un mot (un titre, un tiret). On peut préférer la correspondance
 exacte.
 
 ## Candidats
 
-Détails, sources et réserves : `spikes/ner/README.md`. **V** = lu sur la page Hugging Face le 2026-11-16 ;
+Détails, sources et réserves : `tools/ner-eval/README.md`. **V** = lu sur la page Hugging Face le 2026-11-16 ;
 **NV** = non vérifié.
 
 | # | Dépôt ONNX | Origine | Langues | Licence annoncée | Poids q8 | Compatible Transformers.js | Remarques |
@@ -65,10 +60,10 @@ Détails, sources et réserves : `spikes/ner/README.md`. **V** = lu sur la page 
 Non utilisable directement avec le pipeline `token-classification` de Transformers.js : il faut porter le
 pré/post-traitement (étiquettes libres, fenêtrage). Un paquet npm communautaire (`gliner`, MIT) existe mais
 dépend de l'ancienne génération (`@xenova/transformers` 2.17.2) et d'un second `onnxruntime-web`, hors du budget
-de dépendances R9 sans accord de Nico. Poids : 352 Mo quantifié, soit plus de deux fois la cible.
+de dépendances R9 sans accord du mainteneur. Poids : 352 Mo quantifié, soit plus de deux fois la cible.
 Statut : non évalué, à réexaminer seulement si aucun modèle de classification de jetons n'atteint C3.
 
-### Points de licence (à trancher par Nico)
+### Points de licence
 
 1. **AFL-3.0 et Apache 2.0.** AFL-3.0 est permissive (attribution, conservation de la licence), mais cet ADR ne
    conclut pas à sa compatibilité avec une distribution sous Apache 2.0. Avis juridique à prendre si un modèle
@@ -81,7 +76,7 @@ Statut : non évalué, à réexaminer seulement si aucun modèle de classificati
 
 ## Mesures (à remplir)
 
-### Sous Node (généré par `npm run eval`, voir `spikes/ner/results/`)
+### Sous Node (généré par `npm run eval`, voir `tools/ner-eval/results/`)
 
 | # | Modèle | dtype | Poids + tokenizer (Mo) | Chargement (ms) | Moy./phrase (ms) | 5000 car. (ms) | Mémoire ajoutée au chargement (Mo) | PERSON fr : P exact / R exact | PERSON fr : P recouv. / **R recouv.** | PERSON en : R recouv. | ORG fr : F1 recouv. | LOC fr : F1 recouv. | Entités non localisées |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -96,7 +91,7 @@ Mesuré le 17 novembre 2026 sous Node 22, Transformers.js 4.3.2, onnxruntime-nod
 
 **Correctif nécessaire, à reprendre dans `src/ner` :** l'agrégation `aggregation_strategy: "simple"` de Transformers.js 4.3.2 fusionne deux entités séparées par d'autres mots quand le modèle étiquette en IO (`I-PER` sans `B-`, cas des modèles CamemBERT) : « Claire Dubois a rencontré Jean-Marc Favre » donnait une seule personne. Le banc regroupe désormais les jetons bruts selon leur contiguïté (`groupRawTokens`), ce qui a fait passer le rappel PERSON fr de CamemBERT-NER de 0,62 à 0,87.
 
-### Dans le navigateur (mesure manuelle, page `spikes/ner/browser`)
+### Dans le navigateur (mesure manuelle, page `tools/ner-eval/browser`)
 
 Navigateur et version : ______ · Machine (CPU, cœurs, RAM) : ______ · Threads WASM : ______
 
@@ -120,10 +115,10 @@ Navigateur et version : ______ · Machine (CPU, cœurs, RAM) : ______ · Threads
 
 ## Procédure pour compléter cet ADR
 
-1. `cd spikes/ner && npm ci` (en cas de blocage réseau sur `onnxruntime-node` : `ONNXRUNTIME_NODE_INSTALL=skip npm ci`).
-2. Télécharger les modèles dans `models/` avec les commandes de `spikes/ner/README.md` (section « Télécharger »).
+1. `cd tools/ner-eval && npm ci` (en cas de blocage réseau sur `onnxruntime-node` : `ONNXRUNTIME_NODE_INSTALL=skip npm ci`).
+2. Télécharger les modèles dans `models/` avec les commandes de `tools/ner-eval/README.md` (section « Télécharger »).
 3. `npm run verify-corpus` puis `npm test` : le corpus et les fonctions de mesure doivent passer.
-4. `npm run eval` : un rapport par modèle dans `spikes/ner/results/<org>__<nom>.md` et `.json`. Reporter les
+4. `npm run eval` : un rapport par modèle dans `tools/ner-eval/results/<org>__<nom>.md` et `.json`. Reporter les
    valeurs dans le premier tableau « Mesures ». Une erreur de chargement (tokenizer incompatible, fichier
    manquant) est affichée par modèle ; la noter dans « Verdict » et continuer.
 5. `npm run browser`, suivre « Mesure navigateur » du README pour les modèles qui passent C2 au moins, remplir
@@ -147,16 +142,16 @@ Navigateur et version : ______ · Machine (CPU, cœurs, RAM) : ______ · Threads
 À instruire selon le critère qui échoue :
 
 - **C2 (poids)** : élaguer le vocabulaire du modèle multilingue (approche du n° 5, à refaire soi-même et à valider),
-  ou relever la limite de 150 Mo (décision de Nico), ou proposer le modèle en téléchargement optionnel séparé
+  ou relever la limite de 150 Mo (décision du mainteneur), ou proposer le modèle en téléchargement optionnel séparé
   (le fonctionnement hors ligne restant garanti par le chargement depuis la même origine).
 - **C3 (rappel)** : combiner le NER avec des dictionnaires de prénoms et de noms (source dictionnaire du contrat
   `Detection`), ou des règles de contexte (titres, signatures, salutations), ou affiner un petit modèle sur un
-  corpus propre (projet à part, hors MVP).
+  corpus propre (projet à part).
 - **C4 (vitesse)** : découper en morceaux et traiter en tâche de fond avec progression, WebGPU en option,
   modèle plus petit.
 - **C1 (licence)** : modèle alternatif à licence claire, ou NER livré comme module optionnel non redistribué,
   l'utilisateur déposant lui-même le modèle (cohérent avec `models/`).
-- **Tout échoue** : mode MVP sans NER (motifs, validateurs et dictionnaires seulement), avec NER en phase ultérieure.
+- **Tout échoue** : version sans NER (motifs, validateurs et dictionnaires seulement), avec NER en phase ultérieure.
 
 ## Conséquences
 

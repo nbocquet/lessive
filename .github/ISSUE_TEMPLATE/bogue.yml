@@ -1,0 +1,39 @@
+name: Signaler un bogue
+description: Un comportement incorrect de l'application ou du moteur.
+labels: ["bogue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **N'indiquez jamais de données personnelles réelles.** Décrivez la forme du texte et donnez un exemple inventé.
+        Pour une vulnérabilité, n'ouvrez pas de ticket : voir SECURITY.md.
+  - type: textarea
+    id: description
+    attributes:
+      label: Ce qui se passe
+      description: Ce que vous avez fait, ce que vous attendiez, ce que vous avez obtenu.
+    validations:
+      required: true
+  - type: textarea
+    id: exemple
+    attributes:
+      label: Exemple inventé qui reproduit le problème
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Affichée en bas de la page (par exemple « Lessive 0.1.0 »), ou le commit.
+  - type: input
+    id: navigateur
+    attributes:
+      label: Navigateur et système
+      placeholder: Firefox 133, macOS 15
+  - type: dropdown
+    id: modele
+    attributes:
+      label: Modèle de reconnaissance des noms
+      options:
+        - Aucun
+        - Modèle fourni (CamemBERT-NER)
+        - Modèle chargé depuis le disque

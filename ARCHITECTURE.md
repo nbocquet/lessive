@@ -1,6 +1,6 @@
 # Architecture
 
-Ce document décrit comment Lessive est construit, pour les développeurs. Les règles du projet sont dans [CLAUDE.md](CLAUDE.md) (R1 à R12), le plan dans [PLAN.md](PLAN.md), le cahier des charges dans [SPECIFICATIONS.md](SPECIFICATIONS.md). En cas de contradiction : CLAUDE.md, puis PLAN.md, puis SPECIFICATIONS.md.
+Ce document décrit comment Lessive est construit, pour les développeurs. Les principes du projet (R1 à R12) sont dans [CONTRIBUTING.md](CONTRIBUTING.md). En cas d'écart entre ce document et le code, le code fait foi. Le cahier des charges et le plan de construction d'origine sont archivés dans [docs/historique/](docs/historique/).
 
 Lessive est une application web statique (Svelte 5, TypeScript, Vite). Tout le traitement a lieu dans le navigateur : aucun serveur de traitement, aucune requête hors de l'origine de l'application (R1), aucun modèle génératif (R2).
 
@@ -82,13 +82,14 @@ Ensuite, hors de l'analyseur :
 | `tests/e2e/` | Tests de confidentialité de bout en bout dans Chrome (voir [docs/confidentialite.md](docs/confidentialite.md)). |
 | `docs/` | Documentation et décisions : [contrats](docs/contrats.md), [ADR](docs/adr/), [évaluation du NER](docs/evaluation-ner.md), [performances](docs/performances.md), [limites](docs/limites.md), [guide des packs](docs/creer-un-pack.md). |
 | `models/` | Modèles NER locaux de développement, non versionnés ([models/README.md](models/README.md)). Ils ne sont pas livrés avec l'application. |
-| `spikes/` | Prototypes jetables, hors build et hors lint strict. |
+| `tools/` | Outils d'évaluation autonomes, hors build et hors lint strict : `ner-eval/` (comparaison des modèles NER), `token-bench/` (recopie des repères par les assistants). |
+| `docs/historique/` | Archive du cahier des charges, du plan et de la recette de la première version. |
 
 ## Dans le navigateur
 
 - **Worker d'analyse** (`src/web/analysis.worker.ts`, logique dans `analysis-engine.ts`, protocole dans `analysis-protocol.ts`). L'analyse complète, NER compris, s'exécute dans ce worker : le fil principal reste libre. Aucune réponse du worker ne reprend le texte analysé ni une valeur détectée (R5). L'annulation est coopérative ; si le worker ne répond pas, le client le termine et le recrée.
 - **NER dans le worker.** Le moteur `TransformersNerEngine` est instancié dans le worker d'analyse, au premier besoin (`ner-provider.ts`). Un seul worker : pas de second envoi du texte. ONNX Runtime Web s'exécute en WebAssembly avec un seul fil, fichiers `.wasm` servis depuis l'origine (`/ort/`).
-- **Modèle.** Il n'est pas livré (A20, [ADR 0003](docs/adr/0003-modele-charge-par-l-utilisateur.md)). L'utilisateur le choisit sur son disque ; les fichiers sont validés puis copiés dans Cache Storage (`lessive-models-v1`) sous des URL synthétiques de même origine, qui ne sont jamais requêtées. Transformers.js les lit par un cache personnalisé : aucune requête, la CSP n'est pas élargie.
+- **Modèle.** Jamais versionné. La version en ligne fournit `Xenova/camembert-ner`, servi par la même origine sous `models/bundled/` et installé au clic de l'utilisateur (`bundled-model.ts`, [ADR 0004](docs/adr/0004-modele-fourni-pages.md)) ; l'utilisateur peut aussi choisir un modèle sur son disque ([ADR 0003](docs/adr/0003-modele-charge-par-l-utilisateur.md)). Dans les deux cas, les fichiers sont validés puis copiés dans Cache Storage (`lessive-models-v1`) sous des URL synthétiques de même origine, qui ne sont jamais requêtées. Transformers.js les lit par un cache personnalisé : aucune requête, la CSP n'est pas élargie.
 - **État** (`state.svelte.ts`) : le seul endroit de l'état partagé de l'interface, en runes Svelte 5 (R12). Il appelle la transformation, et l'écran de réponse la réidentification, sur le fil principal.
 - **Packs.** Les manifestes et fichiers de règles de `packs/*/` sont importés statiquement au build (`import.meta.glob`, `src/web/packs.ts`) et validés par `parsePack` au chargement : aucune requête à l'exécution.
 - **Hors ligne.** Un service worker écrit à la main (`src/web/public/sw.js`, liste de fichiers générée au build par `scripts/vite-plugin-service-worker.ts`) met en cache l'application. Il ne touche jamais au cache du modèle.
@@ -101,7 +102,7 @@ Les types publics sont dans `src/core/types/` (`Detection`, `Recognizer`, `NerEn
 - les positions sont des indices UTF-16 sur le **texte original non modifié** (R7) ;
 - les objets de résultat (`Detection`, erreurs) ne contiennent **jamais la valeur détectée** (R5) ; seules les formes d'une entité de la session la contiennent ;
 - les scores sont des heuristiques, pas des probabilités ;
-- modifier un contrat de `src/core/types` demande une tâche explicite (R11).
+- modifier un contrat de `src/core/types` demande un changement dédié, discuté au préalable (R11).
 
 ## Frontières imposées par ESLint (R3)
 
@@ -117,9 +118,10 @@ Les tests, les fichiers de configuration et `packs/_tools/` échappent à ces r�
 
 | ADR | Sujet | Statut |
 |---|---|---|
-| [0001](docs/adr/0001-modele-ner.md) | Choix du modèle NER | Proposé : recommandation `Xenova/distilbert-base-multilingual-cased-ner-hrl`, licence à trancher |
-| [0002](docs/adr/0002-format-jetons.md) | Format des repères de pseudonymisation | Proposé : `PERSONNE_001` par défaut, mesure auprès des assistants à faire |
-| [0003](docs/adr/0003-modele-charge-par-l-utilisateur.md) | Modèle chargé par l'utilisateur | Décidé (A20) |
+| [0001](docs/adr/0001-modele-ner.md) | Choix du modèle NER | Accepté |
+| [0002](docs/adr/0002-format-jetons.md) | Format des repères de pseudonymisation (`PERSONNE_001`) | Accepté |
+| [0003](docs/adr/0003-modele-charge-par-l-utilisateur.md) | Modèle chargé par l'utilisateur depuis son disque | Accepté |
+| [0004](docs/adr/0004-modele-fourni-pages.md) | Version en ligne avec un modèle fourni (CamemBERT-NER) | Accepté |
 
 ## Où brancher quoi
 

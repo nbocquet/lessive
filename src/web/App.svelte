@@ -30,7 +30,8 @@
     const current = app.screen;
     if (current !== previousScreen) {
       previousScreen = current;
-      main?.focus();
+      main?.focus({ preventScroll: true });
+      main?.scrollIntoView({ block: "start" });
     }
   });
 </script>
@@ -40,7 +41,7 @@
 
 <div class="page">
   <header>
-    <h1>Lessive</h1>
+    <h1><img src="./lessive-mark.svg" width="40" height="48" alt="" />Lessive</h1>
     <p>Traitement local : votre texte reste dans ce navigateur.</p>
   </header>
 
@@ -63,7 +64,28 @@
     <SettingsScreen />
   </details>
 
-  <footer class="hint"><span>Lessive · Moteur {ENGINE_VERSION}</span><OfflineBadge /></footer>
+  <footer class="hint">
+    <span>
+      Lessive {ENGINE_VERSION} ·
+      <a href="https://github.com/nbocquet/lessive" target="_blank" rel="noopener noreferrer"
+        >Code source</a
+      >
+      ·
+      <a
+        href="https://github.com/nbocquet/lessive/blob/main/docs/confidentialite.md"
+        target="_blank"
+        rel="noopener noreferrer">Confidentialité</a
+      >
+      ·
+      <a
+        href="https://github.com/nbocquet/lessive/blob/main/docs/limites.md"
+        target="_blank"
+        rel="noopener noreferrer">Limites</a
+      >
+      · Licence Apache 2.0
+    </span>
+    <OfflineBadge />
+  </footer>
 </div>
 
 <style>
@@ -75,16 +97,24 @@
 
   header {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     flex-wrap: wrap;
     gap: 0.35rem 1.5rem;
     margin-bottom: 1rem;
   }
 
   h1 {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
     margin: 0;
     font-size: 1.3rem;
     font-weight: 650;
+  }
+
+  h1 img {
+    display: block;
+    flex: none;
   }
 
   header p {

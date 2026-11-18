@@ -3,8 +3,8 @@ dist/
 coverage/
 models/*
 !models/README.md
-spikes/**/node_modules/
-spikes/**/models/
+tools/**/node_modules/
+tools/**/models/
 .DS_Store
 *.log
 .lessive-sync*.tgz

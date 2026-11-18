@@ -1,6 +1,6 @@
 {
   "name": "lessive",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Détection et pseudonymisation locale des données personnelles avant usage dans un LLM",
   "license": "Apache-2.0",
