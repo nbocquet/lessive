@@ -3,7 +3,7 @@
  * segmentation des textes longs, dédoublonnage. Aucune dépendance à Transformers.js : tout se
  * teste avec des sorties de pipeline factices.
  *
- * Portage TypeScript des fonctions éprouvées du spike S1 (`spikes/ner/lib.mjs`).
+ * Portage TypeScript des fonctions éprouvées du spike S1 (`tools/ner-eval/lib.mjs`).
  *
  * Positions (R7) : indices UTF-16 sur le texte original non modifié, fin exclue. La normalisation
  * de recherche se fait sur une copie, avec une table de correspondance des positions.

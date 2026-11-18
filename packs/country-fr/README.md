@@ -13,6 +13,9 @@ ou collés à des lettres, pour ne pas lire un fragment d'IBAN comme un téléph
 |---|---|---|---|---|
 | `fr-nir-compact` | `FR_NIR` | 0,6 | `fr_nir_key` | facultatif (+0,35) |
 | `fr-nir-spaced` | `FR_NIR` | 0,6 | `fr_nir_key` | facultatif (+0,35) |
+| `fr-nir-unverified-compact` | `FR_NIR` | 0,6 | aucun | **obligatoire** |
+| `fr-nir-unverified-spaced` | `FR_NIR` | 0,6 | aucun | **obligatoire** |
+| `fr-nir-unverified-merged` | `FR_NIR` | 0,6 | aucun | **obligatoire** |
 | `fr-siret` | `FR_SIRET` | 0,6 | `fr_siret_luhn` | facultatif (+0,35) |
 | `fr-siren` | `FR_SIREN` | 0,5 | `fr_siren_luhn` | **obligatoire** |
 | `fr-phone-national` | `PHONE` | 0,65 | aucun | facultatif (+0,35) |
@@ -34,12 +37,13 @@ commune (3 chiffres), numéro d'ordre (3 chiffres), clé (2 chiffres).
 
 - Mois accepté : 01 à 12, ou 20 à 42 et 50 à 99 (cas spéciaux : mois de naissance inconnu, numéros d'attente, etc.).
   00, 13 à 19 et 43 à 49 sont refusés par le motif.
-- Deux écritures : sans espaces (`185057800608491`, clé éventuellement séparée), et avec espaces
-  (`1 85 05 78 006 084 91`). Pour l'outre-mer (département à 3 chiffres), le groupement
+- Écritures complètes : sans séparateurs (`185057800608491`, clé éventuellement séparée), et avec espaces, points ou tirets
+  (`1 85 05 78 006 084 91`, `1-85-05-78-006-084-91`). Un à trois séparateurs consécutifs sont admis. Pour l'outre-mer (département à 3 chiffres), le groupement
   `1 90 12 971 06 045 73` est reconnu.
 - Le validateur `fr_nir_key` calcule la clé (97 moins le reste modulo 97 du numéro de 13 chiffres ; Corse : 2A vaut 19
-  et 2B vaut 18). Une clé fausse supprime la détection : un NIR mal recopié n'est pas détecté.
-- Le contexte (sécurité sociale, sécu, NIR, INSEE, carte Vitale…) est facultatif : la clé suffit (1 faux positif sur 97).
+  et 2B vaut 18). Une clé fausse écarte la détection validée, mais la règle contextuelle peut conserver le passage comme NIR possible.
+- Le contexte (sécurité sociale, sécu, NIR, INSEE, carte Vitale…) est facultatif pour un numéro complet à clé correcte : la clé suffit (1 faux positif sur 97).
+- Avec un contexte explicite (dont NSS), une règle conservatrice couvre aussi les 13 caractères sans clé, une clé erronée, les groupes collés et un département précédé d’une lettre parasite. Ces détections ne portent pas le statut « validé ». Exemple synthétique : `Sécurité sociale : 1 8505 b78 006 084 36`. Sans contexte, ces formes incertaines ne sont pas détectées.
 
 ### SIRET (`FR_SIRET`) et SIREN (`FR_SIREN`)
 
@@ -135,8 +139,7 @@ une entreprise réelle. Les téléphones ont été choisis dans des plages que l
 
 ## Limites connues
 
-- Un NIR dont la clé est fausse (faute de frappe) n'est pas détecté. Un NIR avec des séparateurs autres que l'espace
-  (points, tirets) ou une répartition d'espaces inhabituelle n'est pas détecté.
+- Un NIR sans clé, à clé fausse ou de format irrégulier exige un contexte explicite. Les caractères parasites hors du département, les retours à la ligne internes et les séparateurs autres qu’espaces, points ou tirets ne sont pas couverts.
 - Sexe limité à 1 et 2 : les numéros provisoires (3, 4, 7, 8) ne sont pas couverts.
 - Un SIREN sans mot de contexte à moins de 5 mots n'est pas détecté. Un SIREN qui fait partie d'un numéro de TVA
   intracommunautaire (`FR 12 123 456 789`) n'est pas détecté.

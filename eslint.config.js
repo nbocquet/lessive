@@ -4,7 +4,7 @@ import svelte from "eslint-plugin-svelte";
 import globals from "globals";
 
 export default tseslint.config(
-  { ignores: ["dist/", "node_modules/", "spikes/", "models/", "coverage/"] },
+  { ignores: ["dist/", "node_modules/", "tools/", "models/", "coverage/"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...svelte.configs.recommended,

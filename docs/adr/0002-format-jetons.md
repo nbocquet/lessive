@@ -1,10 +1,8 @@
 # ADR 0002 — Format des jetons de pseudonymisation
 
-- **Statut** : Accepté le 2026-11-17 — format A, critère atteint pour les deux LLM testés (procédure validée par Nico : `spikes/tokens/consignes.md` §0)
+- **Statut** : Accepté le 2026-11-17 — format A (`PERSONNE_001`), critère atteint pour les deux LLM testés
 - **Date** : 2026-11-16
-- **Tâche** : S2 (PLAN.md, phase 0) ; à valider à la porte G0
-- **Décideur** : Nico
-- **Valeur par défaut tant que rien n'est tranché** : A, `PERSONNE_001` (PLAN.md §3)
+- **Outils** : `tools/token-bench/` (procédure dans `consignes.md`)
 
 ## Contexte
 
@@ -19,7 +17,7 @@ Le LLM n'a aucune obligation de recopier les jetons tels quels. Il peut :
 - couper le jeton par un retour à la ligne, le mettre en gras ou en code ;
 - l'**omettre** (résumé), le **remplacer par un pronom**, ou en **inventer** un (`PERSONNE_009`).
 
-L'analyseur tolérant (`spikes/tokens/analyzer.mjs`) absorbe les cinq premières familles. Il ne peut rien contre une omission, un pronom ou une invention : un jeton absent n'est pas récupérable, un jeton inventé est signalé et laissé tel quel. Le choix du format vise donc à **minimiser ce qui échappe à la tolérance**. Toute déformation rattrapée reste une déformation : un format qui n'en provoque presque aucune est préférable à un format qui en provoque beaucoup mais les fait toutes rattraper.
+L'analyseur tolérant (`tools/token-bench/analyzer.mjs`) absorbe les cinq premières familles. Il ne peut rien contre une omission, un pronom ou une invention : un jeton absent n'est pas récupérable, un jeton inventé est signalé et laissé tel quel. Le choix du format vise donc à **minimiser ce qui échappe à la tolérance**. Toute déformation rattrapée reste une déformation : un format qui n'en provoque presque aucune est préférable à un format qui en provoque beaucoup mais les fait toutes rattraper.
 
 Cette décision est ouverte parce qu'aucune de ces propriétés ne se déduit de l'extérieur : il faut mesurer.
 
@@ -87,33 +85,33 @@ Un format est **retenu** s'il atteint **au moins 98 % de jetons retrouvés en mo
 
 Précisions :
 
-1. Le taux est calculé par `spikes/tokens/score.mjs` : jetons distincts de la source retrouvés dans la réponse / jetons distincts de la source, sommés sur les réponses (section 1 de `results.md`).
+1. Le taux est calculé par `tools/token-bench/score.mjs` : jetons distincts de la source retrouvés dans la réponse / jetons distincts de la source, sommés sur les réponses (section 1 de `results.md`).
 2. Les consignes partielles (`resumer`, `repondre`, `extraire`) et le témoin sans consigne système n'entrent pas dans le critère : ils éclairent les déformations.
 3. **Puissance statistique limitée** : un texte contient 7 à 8 jetons distincts ; le lot 1 compte environ 78 jetons attendus par format et par LLM. Un jeton manquant donne 98,7 %, deux donnent 97,4 %. Le seuil de 98 % revient donc à « au plus un jeton perdu sur le lot 1 ». C'est volontairement sévère. Si deux formats échouent à un jeton près, étendre avec les lots 2 et 3 avant de conclure.
 4. Un taux de jetons « inconnus » élevé (inventions) est un signal d'alerte même si le taux retrouvé est bon.
 
 **Départage** si plusieurs formats passent : (1) le plus haut taux **strict** (moins de déformations à rattraper) ; (2) le moins d'inconnus ; (3) la meilleure lisibilité et saisie au clavier (A > B > C) ; (4) le meilleur résultat au témoin sans consigne système.
 
-**Si aucun format ne passe** : examiner les jetons non retrouvés par `results.md` (section 5), puis au choix : renforcer la consigne système, essayer une variante (ex. préfixe anglais, délimiteurs `<<…>>`), ou assumer que la réidentification exige une revue manuelle des jetons non retrouvés (signalés dans l'interface). Ne pas abaisser le seuil sans en parler à Nico.
+**Si aucun format ne passe** : examiner les jetons non retrouvés par `results.md` (section 5), puis au choix : renforcer la consigne système, essayer une variante (ex. préfixe anglais, délimiteurs `<<…>>`), ou assumer que la réidentification exige une revue manuelle des jetons non retrouvés (signalés dans l'interface). Le seuil ne s'abaisse pas sans décision documentée.
 
 ## Procédure
 
-1. Les 5 textes synthétiques et leurs 15 versions pseudonymisées sont dans `spikes/tokens/textes/` (générés par `generate.mjs` à partir de tables d'entités, aucun jeton écrit à la main).
-2. Nico suit `spikes/tokens/consignes.md` : lot 1 (30 essais) dans 2 ou 3 LLM, en nouvelle conversation à chaque essai, consigne système en tête du message, réponses sauvegardées sans retouche dans `spikes/tokens/reponses/<llm>/<texte>-<format>-<consigne>.txt`.
-3. `node spikes/tokens/score.mjs` produit `spikes/tokens/results.md`.
+1. Les 5 textes synthétiques et leurs 15 versions pseudonymisées sont dans `tools/token-bench/textes/` (générés par `generate.mjs` à partir de tables d'entités, aucun jeton écrit à la main).
+2. Suivre `tools/token-bench/consignes.md` : lot 1 (30 essais) dans 2 ou 3 LLM, en nouvelle conversation à chaque essai, consigne système en tête du message, réponses sauvegardées sans retouche dans `tools/token-bench/reponses/<llm>/<texte>-<format>-<consigne>.txt`.
+3. `node tools/token-bench/score.mjs` produit `tools/token-bench/results.md`.
 4. Compléter la section « Résultats » ci-dessous (tableau de la section 1 de `results.md`, déformations dominantes, décision), faire passer le statut à **Accepté** avec le format retenu, ou **Rejeté**.
-5. Porte G0 : Nico valide. Le format retenu est alors figé dans `src/core` (tâche T1.2 et suivantes) et le texte de la consigne système est repris dans l'interface.
+5. Le format retenu est alors figé dans `src/core` (`mapping/pseudonym.ts`, `reidentify/tokens.ts`) et le texte de la consigne système est repris dans l'interface.
 
 ## Consigne système à joindre (proposée)
 
-Texte à joindre au prompt, adapté au format retenu (versions exactes dans `spikes/tokens/config.mjs`) :
+Texte à joindre au prompt, adapté au format retenu (versions exactes dans `tools/token-bench/config.mjs`) :
 
 - A : « Les mots de la forme PERSONNE_001 (par exemple ORGANISATION_002 ou LIEU_003) sont des pseudonymes : recopie-les à l'identique, sans les traduire, les modifier ni les expliquer. »
 - B et C : même phrase, avec la forme du format, « crochets compris » (B) ou « délimiteurs ⟦ et ⟧ compris » (C).
 
 ## Résultats
 
-Expérience du 17 novembre 2026, lot court (`spikes/tokens/consignes.md` §0) : 5 textes synthétiques × format A × {traduire en anglais, reformuler}, soit 10 essais par LLM, chacun en un appel d'API isolé via OpenRouter (`run-api.mjs`), réponses enregistrées sans retouche dans `spikes/tokens/reponses/`. Rapport complet : `spikes/tokens/results.md`.
+Expérience du 17 novembre 2026, lot court (`tools/token-bench/consignes.md` §0) : 5 textes synthétiques × format A × {traduire en anglais, reformuler}, soit 10 essais par LLM, chacun en un appel d'API isolé via OpenRouter (`run-api.mjs`), réponses enregistrées sans retouche (retirées du dépôt depuis ; les scores sont conservés). Rapport complet : `tools/token-bench/results.md`.
 
 | LLM | Modèle | Réponses | Jetons attendus | Strict | Tolérant | Inconnus |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -136,5 +134,5 @@ Avant toute mesure : **A**, avec la consigne système, est le meilleur candidat 
 ## Conséquences
 
 - Le format retenu devient un contrat de `src/core` ; en changer plus tard casserait les tables de correspondance exportées.
-- L'analyseur tolérant du spike (`analyzer.mjs`) est le prototype de la réidentification tolérante de PLAN.md §5 ; il sera repris en TypeScript pur dans `src/core` (R3) avec ses tests, une fois le format fixé.
-- La réidentification reste une action explicite de l'utilisateur ; les jetons inconnus sont laissés tels quels et signalés (SPECIFICATIONS.md §10.4).
+- L'analyseur tolérant du banc (`tools/token-bench/analyzer.mjs`) a servi de prototype à la réidentification tolérante, reprise en TypeScript pur dans `src/core/reidentify` (R3) avec ses tests.
+- La réidentification reste une action explicite de l'utilisateur ; les jetons inconnus sont laissés tels quels et signalés .

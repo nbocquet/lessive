@@ -1,0 +1,35 @@
+name: Détection manquée ou erronée
+description: Une donnée personnelle non repérée, ou un mot repéré à tort.
+labels: ["détection"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **N'indiquez jamais le texte réel.** Réécrivez un exemple équivalent avec des valeurs inventées (nom absent des listes, numéro dont vous recalculez la clé, courriel en `@example.org`).
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type de problème
+      options:
+        - Donnée manquée
+        - Détection à tort
+        - Mauvaise catégorie
+        - Repère non remis dans la réponse de l'assistant
+    validations:
+      required: true
+  - type: textarea
+    id: exemple
+    attributes:
+      label: Exemple inventé
+      description: Le texte minimal qui montre le problème, et ce qui aurait dû être détecté.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: modele
+    attributes:
+      label: Modèle de reconnaissance des noms
+      options:
+        - Aucun
+        - Modèle fourni (CamemBERT-NER)
+        - Modèle chargé depuis le disque
