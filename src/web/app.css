@@ -223,6 +223,31 @@ legend {
   color: var(--danger-text);
 }
 
+.about,
+.javascript-required {
+  max-width: 76rem;
+  margin: 0 auto 1.5rem;
+  padding: 0 clamp(1rem, 3vw, 2rem);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.about summary {
+  cursor: pointer;
+}
+
+.about-content {
+  max-width: 75ch;
+  padding-top: 1rem;
+}
+
+.about h2,
+.about h3 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;

@@ -1,0 +1,16 @@
+name: Proposer une idée
+description: Une fonctionnalité, un nouveau pays, une amélioration.
+labels: ["idée"]
+body:
+  - type: textarea
+    id: besoin
+    attributes:
+      label: Le besoin
+      description: Quel problème cela résout-il, et pour qui ?
+    validations:
+      required: true
+  - type: textarea
+    id: proposition
+    attributes:
+      label: La proposition
+      description: Ce que vous imaginez. Rappel des principes du projet (CONTRIBUTING.md) — tout reste dans le navigateur, sans requête réseau ni service distant.

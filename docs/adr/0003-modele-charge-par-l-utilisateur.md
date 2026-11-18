@@ -1,8 +1,7 @@
 # ADR 0003 — Le modèle NER est chargé par l'utilisateur
 
-- **Statut** : Décidé par Nico (amendement A20 de SPECIFICATIONS.md)
+- **Statut** : Accepté le 2026-11-17 (amendement A20 du cahier des charges d'origine, voir `docs/historique/`)
 - **Date** : 2026-11-17
-- **Décideur** : Nico
 - **Remplace** : la partie « modèle livré dans `dist/` » de l'ADR 0001 (le choix du modèle recommandé reste valable)
 - **Complété par** : ADR 0004 (la version en ligne fournit `Xenova/camembert-ner`, MIT ; le chargement depuis le disque reste possible)
 

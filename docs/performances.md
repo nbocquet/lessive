@@ -1,12 +1,14 @@
-# Performances (T6.3)
+# Performances
 
-Ce document rapporte des mesures faites **sous Node**, sur le moteur seul, et dit clairement ce qu'elles ne couvrent pas : les mesures dans le navigateur sont **qualitatives** : le 17 novembre 2026, Nico a constaté sur sa machine que l'analyse du texte de 5 000 caractères (`docs/fixtures/texte-5000.txt`), modèle chargé, reste dans la cible dans **Firefox et Safari**, sans relever de chiffres. La procédure pour des mesures chiffrées est plus bas ; les tableaux à remplir sont prêts.
+**Portée des chiffres :** mesures historiques avec DistilBERT, antérieures au choix de CamemBERT pour la version publiée (ADR 0004). Les verdicts ci-dessous concernent ces essais ; ils ne valident pas les performances du build actuel avec CamemBERT. Une nouvelle série de mesures avec CamemBERT reste à faire.
+
+Ce document rapporte des mesures faites **sous Node**, sur le moteur seul, et dit clairement ce qu'elles ne couvrent pas : les mesures dans le navigateur sont **qualitatives** : le 17 novembre 2026, un essai manuel a constaté que l'analyse du texte de 5 000 caractères (`docs/fixtures/texte-5000.txt`), modèle chargé, reste dans la cible dans **Firefox et Safari**, sans relever de chiffres. La procédure pour des mesures chiffrées est plus bas ; les tableaux à remplir sont prêts.
 
 ## En bref
 
-| Cible (PLAN.md, T6.3) | Résultat | Verdict |
+| Objectif | Résultat | Verdict |
 |---|---|---|
-| Analyse de 5 000 caractères en 5 s au plus, modèle chargé | 0,33 s sous Node (règles et NER) ; ≈ 3,1 s dans Chrome headless (recette) ; conforme dans Firefox et Safari selon l'essai de Nico du 17 novembre 2026 (chiffres non relevés). | **Atteint** (constat qualitatif dans les navigateurs) |
+| Analyse de 5 000 caractères en 5 s au plus, modèle chargé | 0,33 s sous Node (règles et NER) ; ≈ 3,1 s dans Chrome headless (recette) ; conforme dans Firefox et Safari selon l'essai manuel du 17 novembre 2026 (chiffres non relevés). | **Atteint** (constat qualitatif dans les navigateurs) |
 | Interface jamais bloquée plus de 100 ms | L'analyse (règles et NER) tourne dans un worker, donc hors du fil principal. Le travail restant sur la page reste sous 30 ms jusqu'à 20 000 caractères. À 100 000 caractères, la transformation seule prend environ 150 ms. Le rendu de la page n'est pas mesuré. | **Atteint par conception jusqu'à 20 000 caractères sous Node, non mesuré dans le navigateur, dépassé à 100 000 caractères** |
 
 ## Ce qui est mesuré, et ce qui ne l'est pas
@@ -36,7 +38,7 @@ Les textes d'essai sont synthétiques et déterministes : phrases du corpus `cor
 
 Valeurs : médiane (minimum–maximum), en millisecondes. Un « Mo » vaut 1 048 576 octets.
 
-**Réserve sur la fiabilité.** La machine était partagée avec d'autres tâches (compilations et tests lancés en parallèle par d'autres agents de développement). Les maxima sont donc bruités. Deux séries complètes ont été faites ; elles concordent à quelques pour cent près sur les valeurs centrales (à 5 000 caractères : NER seul 299 ms et 307 ms, règles et NER 355 ms et 335 ms). Les tableaux ci-dessous sont ceux de la dernière série. Les chiffres de cette page sont des ordres de grandeur sur une petite machine, pas un banc d'essai.
+**Réserve sur la fiabilité.** La machine était partagée avec d'autres tâches (compilations et tests lancés en parallèle). Les maxima sont donc bruités. Deux séries complètes ont été faites ; elles concordent à quelques pour cent près sur les valeurs centrales (à 5 000 caractères : NER seul 299 ms et 307 ms, règles et NER 355 ms et 335 ms). Les tableaux ci-dessous sont ceux de la dernière série. Les chiffres de cette page sont des ordres de grandeur sur une petite machine, pas un banc d'essai.
 
 ## Résultats sous Node
 
@@ -111,7 +113,7 @@ Pic de mémoire résidente du processus : 649 Mo (exécution avec `--expose-gc`,
 
 ### Taille du build (`dist/`)
 
-Le modèle n'est plus livré avec l'application (A20, ADR 0003) : il n'est donc pas dans `dist/`. Mesure sur un build fait à partir de l'état du dépôt au moment des mesures.
+Le build par défaut ne contient pas de modèle (ADR 0003 et 0004) : il n'est donc pas compté dans `dist/`. Mesure sur un build fait à partir de l'état du dépôt au moment des mesures.
 
 | Catégorie | Taille (Mo) | Compressé gzip (Mo) |
 |---|---:|---:|
@@ -169,7 +171,7 @@ node --experimental-transform-types --disable-warning=ExperimentalWarning \
 
 Le modèle est cherché dans `models/` puis dans `/mnt/user-data/uploads/lessive/models/` ; sans lui, le NER n'est pas mesuré (ou avec `--no-ner`). Options, dont `--sizes`, `--runs`, `--dist`, `--kdf-runs` et `--write-texts` : en-tête de `scripts/perf/measure.ts`. Le script n'a aucune dépendance. `--experimental-transform-types` (et non `--experimental-strip-types`) est nécessaire parce que `src/core` utilise des propriétés de paramètre de constructeur. `--expose-gc` n'est pas obligatoire ; sans lui, les relevés de mémoire sont moins nets. Le résultat est un rapport Markdown sur la sortie standard.
 
-## Procédure de mesure dans le navigateur (à faire par Nico)
+## Procédure de mesure dans le navigateur
 
 À faire sur la machine et le navigateur que vous utilisez réellement, puis sur une machine plus modeste si possible. Compter une heure.
 
