@@ -1,0 +1,16 @@
+De : PERSONNE_001
+À : PERSONNE_002
+Objet : Suivi de la facture de mars – Paiement non retrouvé
+
+Madame PERSONNE_002,
+
+Je me permets de vous contacter au sujet de la facture du mois de mars concernant notre dépôt de LIEU_001. Nous avons procédé au règlement le 28 depuis le compte IBAN IBAN_001 de ORGANISATION_001. Toutefois, votre service comptable nous informe ne pas avoir reçu ce paiement. Pourriez-vous, s'il vous plaît, effectuer une vérification de votre côté ?
+
+Par ailleurs, mon associé, PERSONNE_003, a constaté que l'adresse de livraison enregistrée correspondait toujours à celle de notre ancien site. Je vous saurais gré de bien vouloir la mettre à jour et de nous confirmer la prochaine date de passage du livreur.
+
+Je reste à votre disposition par téléphone au TELEPHONE_001 ou par courriel à l'adresse EMAIL_001 pour tout renseignement complémentaire.
+
+En vous remerciant par avance pour votre diligence, je vous prie d'agréer, Madame PERSONNE_002, l'expression de mes salutations distinguées.
+
+PERSONNE_001
+Directeur, ORGANISATION_001

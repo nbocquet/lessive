@@ -1,0 +1,14 @@
+**Procès-verbal de la réunion du comité tenue le 4 novembre à LIEU_001**
+
+**Étaient présents :** PERSONNE_001 (président), PERSONNE_002 (trésorière) et PERSONNE_003 (secrétaire).
+
+**1. Situation budgétaire**
+PERSONNE_002 a présenté les comptes de l'ORGANISATION_001, lesquels font état d'un déficit prévisionnel de 3 200 francs. Afin d'y remédier, PERSONNE_001 a suggéré de solliciter à nouveau les sponsors avant la fin du mois. PERSONNE_003 a bien voulu se charger de la rédaction du courrier correspondant.
+
+**2. Tournoi de printemps**
+Le comité a décidé de retenir la salle de LIEU_001 pour la date du 18 avril. La validation de cette réservation nécessite le versement d'un acompte de 400 francs sur le compte IBAN IBAN_001. PERSONNE_002 procédera à ce virement dans le courant de la semaine, tandis que PERSONNE_001 confirmera la réservation auprès des services de la mairie.
+
+**3. Questions diverses**
+Pour toute demande d'information complémentaire, nous vous prions de bien vouloir contacter PERSONNE_003 au TELEPHONE_001. La prochaine réunion de l'ORGANISATION_001 est fixée au 2 décembre.
+
+*Procès-verbal rédigé par PERSONNE_003.*

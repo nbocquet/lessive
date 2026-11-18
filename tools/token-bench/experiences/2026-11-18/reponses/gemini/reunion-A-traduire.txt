@@ -1,0 +1,11 @@
+Minutes of the committee meeting of November 4, in LIEU_001
+
+Present: PERSONNE_001 (president), PERSONNE_002 (treasurer), PERSONNE_003 (secretary).
+
+1. Budget. PERSONNE_002 presented the accounts of ORGANISATION_001: the projected deficit is 3,200 francs. PERSONNE_001 proposes following up with the sponsors before the end of the month. PERSONNE_003 will draft the letter.
+
+2. Spring tournament. The committee is booking the hall in LIEU_001 for April 18. To reserve, a deposit of 400 francs must be paid into the IBAN account IBAN_001. PERSONNE_002 will make the transfer this week. PERSONNE_001 will confirm the reservation with the town hall.
+
+3. Miscellaneous. For any questions, contact PERSONNE_003 at TELEPHONE_001. The next meeting of ORGANISATION_001 will take place on December 2.
+
+Minutes drafted by PERSONNE_003.

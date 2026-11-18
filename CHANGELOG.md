@@ -4,6 +4,10 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ## [Non publié]
 
+### Corrigé
+
+- Les noms affichés devant une adresse dans les listes de destinataires sont protégés même avec un patronyme absent des dictionnaires, dans l’ordre prénom/nom ou nom/prénom, avec un service entre parenthèses et une adresse sur la ligne suivante.
+
 ## [0.1.0] — 2026-11-18
 
 Première version publique, en ligne sur https://nbocquet.github.io/lessive/.

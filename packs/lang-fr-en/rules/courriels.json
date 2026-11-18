@@ -1,0 +1,13 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "courriel-nom-affiche",
+      "entityType": "PERSON",
+      "score": 1,
+      "flags": "mu",
+      "pattern": "(?<=(?:^|[;,:>\\n])[ \\t\\u00a0\\u202f]{0,8}[\"“]?)[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ][\\p{L}\\p{M}'’\\-]+(?:[ \\t\\u00a0\\u202f]{1}[A-ZÀ-ÖØ-ÞĆČĐĞİŁŃŒŚŞŠŹŻŽ][\\p{L}\\p{M}'’\\-]+){1}(?=[\"”]?(?:[ \\t\\u00a0\\u202f]{0,4}\\([^()\\r\\n]{1,80}\\))?[ \\t\\r\\n\\u00a0\\u202f]{0,80}<[^\\s<>@]+@[^\\s<>@]+>)",
+      "description": "Nom affiché de deux mots capitalisés devant une adresse entre chevrons, dans les deux ordres. Service entre parenthèses et retour à la ligne avant l’adresse admis, exclus de la détection. Un nom rare est couvert sans dépendre des dictionnaires ni du NER."
+    }
+  ]
+}

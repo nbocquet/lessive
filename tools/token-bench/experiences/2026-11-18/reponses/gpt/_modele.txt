@@ -1,0 +1,5 @@
+Fournisseur : openrouter
+Modèle : openai/gpt-6.2-sol
+Date : 2026-11-18T20:51:31.463Z
+Exécution : API via OpenRouter, un appel isolé par essai (run-api.mjs)
+Modèle(s) réellement servi(s) : openai/gpt-6.2-sol

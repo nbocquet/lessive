@@ -1,16 +1,25 @@
 # Pack `lang-fr-en` : prénoms et titres de civilité
 
-Complète le NER, qui manque des noms, par un dictionnaire de prénoms courants et par des motifs « titre + nom ». Type de pack : `language`. Aucune règle sur les noms de famille.
+Complète le NER, qui manque des noms, par des dictionnaires de prénoms et de noms de famille, des motifs « titre + nom » et les noms affichés devant une adresse de courriel. Type de pack : `language`.
 
 ## Contenu
 
 | Règle | Type | Score de base | Rôle |
 |---|---|---|---|
+| `courriel-nom-affiche` | motif, PERSON | 1 | Deux mots capitalisés devant une adresse entre chevrons, service facultatif et adresse sur la ligne suivante. |
 | `prenoms` | dictionnaire, PERSON | 0,45 | Prénoms courants (Suisse romande, France, monde anglophone), insensible à la casse et aux accents. |
 | `prenoms-ambigus` | dictionnaire, PERSON | 0,45 | Prénoms qui sont aussi des mots, des lieux ou des mois (Rose, Pierre, Florence, May, Grace…). Casse exacte (`caseSensitive`) et contexte obligatoire (`context.required`). |
 | `titres-nom` | motif, PERSON | 0,7 | `M. Dupont`, `Mme Martin-Favre`, `Dr Keller`, `Mr Smith`, `Maître Rossi`, `Madame Claire Dubois` (un ou deux mots capitalisés). |
 | `titres-nom-particule` | motif, PERSON | 0,7 | Nom à particule juste après le titre : `M. de Rougemont`, `Mme de la Fontaine`. |
 | `titres-prenom-particule` | motif, PERSON | 0,7 | `de la Fontaine` dans `Mme Anne de la Fontaine` (le prénom `Anne` est détecté par `titres-nom`). |
+
+### Noms affichés dans les courriels
+
+La règle `courriel-nom-affiche` détecte deux mots capitalisés devant une adresse entre chevrons, même absents des dictionnaires, dans les deux ordres : `Cédric Varnelot <cedric@example.org>` et `Varnelot Cédric (DSI) <cedric@example.org>`. Elle accepte une liste séparée par virgules ou points-virgules, les guillemets, accents, capitales, traits d’union et apostrophes, ainsi qu’un retour à la ligne avant l’adresse. Le service entre parenthèses reste hors du nom.
+
+Son score structurel de 1 permet de protéger le nom entier même si le NER n’en détecte qu’un morceau avec un score élevé ; il ne certifie pas une identité. Aucun prénom ou patronyme réel signalé par un utilisateur n’est ajouté aux listes. Les tests utilisent des noms fictifs.
+
+Limites : deux mots capitalisés (un prénom composé avec trait d’union compte comme un mot), pas les noms entièrement en minuscules ni tous les noms à particules. Une boîte collective portant deux mots capitalisés peut être prise pour une personne ; la détection peut être retirée à la vérification. La règle est rédigée à la main dans `rules/courriels.json`, distincte des dictionnaires générés par les scripts.
 
 ### Pourquoi 0,45 pour les prénoms
 

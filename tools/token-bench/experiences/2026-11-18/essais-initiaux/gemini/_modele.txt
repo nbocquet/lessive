@@ -1,0 +1,5 @@
+Fournisseur : openrouter
+Modèle : google/gemini-4-hydrogen
+Date : 2026-11-18T20:51:32.825Z
+Exécution : API via OpenRouter, un appel isolé par essai (run-api.mjs)
+Modèle(s) réellement servi(s) : google/gemini-4-hydrogen
