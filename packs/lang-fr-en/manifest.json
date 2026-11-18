@@ -9,6 +9,7 @@
     "rules/prenoms.json",
     "rules/prenoms-ambigus.json",
     "rules/titres-nom.json",
-    "rules/noms-famille.json"
+    "rules/noms-famille.json",
+    "rules/courriels.json"
   ]
 }

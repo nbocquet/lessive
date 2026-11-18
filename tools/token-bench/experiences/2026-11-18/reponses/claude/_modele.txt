@@ -1,0 +1,5 @@
+Fournisseur : openrouter
+Modèle : anthropic/claude-sonnet-5.5
+Date : 2026-11-18T20:51:33.376Z
+Exécution : API via OpenRouter, un appel isolé par essai (run-api.mjs)
+Modèle(s) réellement servi(s) : anthropic/claude-sonnet-5.5

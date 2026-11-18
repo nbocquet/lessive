@@ -1,0 +1,9 @@
+Note administrative — ORGANISATION_001, LIEU_001
+
+Le Docteur PERSONNE_001 certifie par la présente que Monsieur PERSONNE_002, assuré sous le numéro AVS AVS_001, s'est présenté à une consultation en date du 6 octobre. Il est précisé que ce document ne contient aucune information à caractère médical et qu'il a été établi à la demande de l'intéressé, à l'intention de son employeur, ORGANISATION_002.
+
+Monsieur PERSONNE_002 est ainsi dispensé de présence au travail du 7 au 11 octobre inclus. Le certificat original sera transmis par voie postale par le secrétariat de ORGANISATION_001. Toutefois, PERSONNE_002 a également la possibilité de le retirer directement à la réception ou de le recevoir par voie électronique.
+
+Pour toute question d'ordre administratif, le secrétariat de LIEU_001 se tient à votre disposition par téléphone au TELEPHONE_001 ou par courrier électronique à l'adresse EMAIL_001. Le Docteur PERSONNE_001 demeure joignable les mardis et jeudis.
+
+Fait à LIEU_001, le 6 octobre.

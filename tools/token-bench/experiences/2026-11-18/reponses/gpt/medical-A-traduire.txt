@@ -1,0 +1,9 @@
+Administrative Note — ORGANISATION_001, LIEU_001
+
+Dr. PERSONNE_001 certifies that Mr. PERSONNE_002, insured under AVS number AVS_001, attended a consultation on October 6. This note contains no medical information. It has been issued at his request for his employer, ORGANISATION_002.
+
+Mr. PERSONNE_002 is excused from work from October 7 through October 11, inclusive. The administrative office of ORGANISATION_001 will send the original certificate by post. PERSONNE_002 may also collect it at reception or receive it electronically.
+
+For any administrative questions, please contact the administrative office at LIEU_001 by phone at TELEPHONE_001 or by email at EMAIL_001. Dr. PERSONNE_001 can be reached on Tuesdays and Thursdays.
+
+Issued at LIEU_001 on October 6.

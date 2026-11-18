@@ -1,0 +1,253 @@
+[
+  {
+    "author": "gpt",
+    "id": "1",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "Varnélu Camille",
+      "Tressivel Hugo"
+    ]
+  },
+  {
+    "author": "gpt",
+    "id": "1",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gpt",
+    "id": "1",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gpt",
+    "id": "2",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "LÉA FENDRAVO",
+      "Marc Solvi-Renac"
+    ]
+  },
+  {
+    "author": "gpt",
+    "id": "2",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gpt",
+    "id": "2",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gpt",
+    "id": "3",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "nina brumélac",
+      "Émile de la Vauréline"
+    ]
+  },
+  {
+    "author": "gpt",
+    "id": "3",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "nina brumélac",
+      "Émile de la Vauréline"
+    ]
+  },
+  {
+    "author": "gpt",
+    "id": "3",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "claude",
+    "id": "cas1",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 1,
+    "missing": [
+      "Drouvaine Camille"
+    ]
+  },
+  {
+    "author": "claude",
+    "id": "cas1",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "claude",
+    "id": "cas1",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "claude",
+    "id": "cas2",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "LUCAS TORVEILLE",
+      "Anne-Laure Pellimond"
+    ]
+  },
+  {
+    "author": "claude",
+    "id": "cas2",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "claude",
+    "id": "cas2",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "claude",
+    "id": "cas3",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "salomé brindavel",
+      "Élise de la Varenque"
+    ]
+  },
+  {
+    "author": "claude",
+    "id": "cas3",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "salomé brindavel",
+      "Élise de la Varenque"
+    ]
+  },
+  {
+    "author": "claude",
+    "id": "cas3",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gemini",
+    "id": "case_1",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "Valkorik Julien",
+      "Marnovik Claire"
+    ]
+  },
+  {
+    "author": "gemini",
+    "id": "case_1",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gemini",
+    "id": "case_1",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gemini",
+    "id": "case_2",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "KRELION MARC",
+      "Marc D'Orellis"
+    ]
+  },
+  {
+    "author": "gemini",
+    "id": "case_2",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gemini",
+    "id": "case_2",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  },
+  {
+    "author": "gemini",
+    "id": "case_3",
+    "mode": "packs_before",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "thomas brancour",
+      "Sophie van der Krol"
+    ]
+  },
+  {
+    "author": "gemini",
+    "id": "case_3",
+    "mode": "packs_after",
+    "expected": 2,
+    "covered": 0,
+    "missing": [
+      "thomas brancour",
+      "Sophie van der Krol"
+    ]
+  },
+  {
+    "author": "gemini",
+    "id": "case_3",
+    "mode": "packs_after_ner",
+    "expected": 2,
+    "covered": 2,
+    "missing": []
+  }
+]

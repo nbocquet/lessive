@@ -1,0 +1,30 @@
+{
+  "model": "google/gemini-4-hydrogen",
+  "finishReason": "stop",
+  "cases": [
+    {
+      "id": "case_1",
+      "text": "À : Valkorik Julien (DSI) <j.valkorik@example.org>; Marnovik Claire\n<c.marnovik@example.org>\nObjet : Mise à jour serveur\n\nVeuillez noter que la maintenance aura lieu demain matin.",
+      "persons": [
+        "Valkorik Julien",
+        "Marnovik Claire"
+      ]
+    },
+    {
+      "id": "case_2",
+      "text": "To: \"KRELION MARC\" <m.krelion@example.org>, Marc D'Orellis <m.dorellis@example.org>\nObjet : Réunion projet\n\nMerci de confirmer votre présence pour le point hebdomadaire.",
+      "persons": [
+        "KRELION MARC",
+        "Marc D'Orellis"
+      ]
+    },
+    {
+      "id": "case_3",
+      "text": "Cc : thomas brancour <t.brancour@example.org>, Sophie van der Krol <s.vanderkrol@example.org>\nObjet : Compte-rendu\n\nVous trouverez ci-joint le document validé ce matin.",
+      "persons": [
+        "thomas brancour",
+        "Sophie van der Krol"
+      ]
+    }
+  ]
+}

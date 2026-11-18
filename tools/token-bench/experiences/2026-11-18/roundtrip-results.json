@@ -1,0 +1,272 @@
+[
+  {
+    "file": "claude/client-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/client-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/copro-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/copro-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/medical-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/medical-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/reunion-A-reformuler.txt",
+    "expected": 7,
+    "restored": 7,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/reunion-A-traduire.txt",
+    "expected": 7,
+    "restored": 7,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/rh-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "claude/rh-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/client-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/client-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/copro-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/copro-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/medical-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/medical-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/reunion-A-reformuler.txt",
+    "expected": 7,
+    "restored": 7,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/reunion-A-traduire.txt",
+    "expected": 7,
+    "restored": 7,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/rh-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gemini/rh-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/client-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/client-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/copro-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/copro-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/medical-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/medical-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/reunion-A-reformuler.txt",
+    "expected": 7,
+    "restored": 7,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/reunion-A-traduire.txt",
+    "expected": 7,
+    "restored": 7,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/rh-A-reformuler.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  },
+  {
+    "file": "gpt/rh-A-traduire.txt",
+    "expected": 8,
+    "restored": 8,
+    "missing": [],
+    "missingOriginals": 0,
+    "unknown": 0,
+    "ambiguous": 0
+  }
+]

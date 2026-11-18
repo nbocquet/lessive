@@ -1,0 +1,19 @@
+{
+  "cases": [
+    {
+      "id": "1",
+      "text": "À : Varnélu Camille (DSI) <camille.varnelu@example.org>; Tressivel Hugo (DSI)\n<hugo.tressivel@example.org>\nObjet : Point de suivi\nLe compte rendu est disponible dans le dossier partagé.",
+      "persons": ["Varnélu Camille", "Tressivel Hugo"]
+    },
+    {
+      "id": "2",
+      "text": "To: \"LÉA FENDRAVO\" <lea.fendravo@example.org>; Marc Solvi-Renac <marc.solvi-renac@example.org>\nObjet : Réunion reportée\nLa réunion est reportée à jeudi matin.",
+      "persons": ["LÉA FENDRAVO", "Marc Solvi-Renac"]
+    },
+    {
+      "id": "3",
+      "text": "Cc : nina brumélac <nina.brumelac@example.org>; Émile de la Vauréline <emile.de-la-vaureline@example.org>\nObjet : Salle réservée\nLa salle est réservée pour vendredi après-midi.",
+      "persons": ["nina brumélac", "Émile de la Vauréline"]
+    }
+  ]
+}
