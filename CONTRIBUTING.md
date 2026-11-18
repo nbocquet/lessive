@@ -1,6 +1,8 @@
 # Contribuer à Lessive
 
-Merci de l'intérêt porté au projet. Lessive est développé par une seule personne sur son temps libre, avec des agents de développement : les revues peuvent prendre du temps. Avant de commencer, lisez [ARCHITECTURE.md](ARCHITECTURE.md) pour la vue d'ensemble, [CLAUDE.md](CLAUDE.md) pour les règles, [PLAN.md](PLAN.md) pour le plan. Le dépôt est sous licence Apache 2.0 ; vos contributions le seront aussi.
+Merci de l'intérêt porté au projet. Lessive est maintenu bénévolement : les revues peuvent prendre quelques jours. Avant de commencer, lisez [ARCHITECTURE.md](ARCHITECTURE.md) pour la vue d'ensemble et les principes ci-dessous. Pour une idée de fonctionnalité ou un changement important, ouvrez d'abord un ticket pour en discuter. Le dépôt est sous licence Apache 2.0 ; vos contributions le seront aussi.
+
+Les contributions préparées avec un agent de développement sont bienvenues ; [CLAUDE.md](CLAUDE.md) résume pour eux les principes et les pièges connus. Vous restez responsable de ce que vous proposez.
 
 ## Prérequis
 
@@ -25,13 +27,13 @@ Une contribution est prête quand `npm run lint`, `npm run typecheck` et `npm te
 
 Outils de mesure, sans dépendance, lancés avec `node --experimental-transform-types --disable-warning=ExperimentalWarning` : `scripts/eval/evaluate.ts` (qualité du NER, voir [docs/evaluation-ner.md](docs/evaluation-ner.md)) et `scripts/perf/measure.ts` (performances, voir [docs/performances.md](docs/performances.md)).
 
-## Les règles du projet, résumées
+## Principes du projet
 
-Texte exact : [CLAUDE.md](CLAUDE.md). Un changement qui en viole une est refusé.
+Ces douze principes sont numérotés : le code, les tests et la documentation y renvoient (« R5 »). Un changement qui en viole un est refusé.
 
 | # | En bref |
 |---|---|
-| R1 | Aucune requête réseau à l'exécution hors des fichiers de l'application, depuis sa propre origine. La CSP de `src/web/index.html` ne s'élargit pas. |
+| R1 | Aucune requête réseau à l'exécution hors des fichiers de l'application, depuis sa propre origine. La CSP de `src/web/index.html` (`default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'`…) ne s'élargit pas. |
 | R2 | Ni LLM, ni modèle génératif, ni API distante, ni télémétrie. |
 | R3 | `src/core` est du TypeScript pur : ni DOM, ni Node, ni import de `src/ner` ou `src/web`. ESLint le vérifie. |
 | R4 | Les modèles NER ne se chargent que depuis des fichiers locaux. |
@@ -41,7 +43,7 @@ Texte exact : [CLAUDE.md](CLAUDE.md). Un changement qui en viole une est refusé
 | R8 | Les packs sont des données JSON, sans code ; validateurs référencés par nom dans une liste fermée. |
 | R9 | Dépendances à l'exécution : Svelte, `@huggingface/transformers`, Zod. Toute autre dépendance se justifie (licence compatible Apache 2.0, version verrouillée) et exige l'accord du mainteneur. |
 | R10 | Chaque changement livre ses tests, avec des données **synthétiques uniquement**. |
-| R11 | Les contrats publics de `src/core/types` ne changent que dans une tâche qui le demande. |
+| R11 | Les contrats publics de `src/core/types` ne changent que dans un changement dont c'est l'objet, annoncé et discuté dans un ticket : ils figurent dans les exports chiffrés et dans l'API du moteur. |
 | R12 | Interface en Svelte 5 avec les runes (`$state`, `$derived`, `$props`, `$effect`) ; ni `export let`, ni `$:`, ni stores pour l'état local ; pas de SvelteKit. |
 
 ## Conventions
@@ -79,9 +81,14 @@ Aucun test, corpus, exemple de documentation ou capture ne contient de données 
 ## Commits et branches
 
 - Une branche par sujet ; ne poussez pas directement sur `main`.
-- Messages de commit en français, à l'impératif ou au passé simple, sur une première ligne courte qui dit ce qui change et pourquoi ; ajoutez le numéro de tâche du plan (`T6.4`) quand il existe. Un commit = un changement cohérent, avec ses tests.
+- Messages de commit en français, à l'impératif, sur une première ligne courte qui dit ce qui change et pourquoi ; référencez le ticket concerné (`#12`) quand il existe. Un commit = un changement cohérent, avec ses tests.
+- Notez dans [CHANGELOG.md](CHANGELOG.md), section « Non publié », tout changement visible par l'utilisateur.
 - Mentionnez dans le message ou la description les décisions prises et les questions ouvertes.
 - Ne commitez ni modèle (`models/` n'est pas versionné), ni donnée réelle, ni fichier généré (`dist/`).
+
+## Signaler un bogue ou proposer une idée
+
+Ouvrez un ticket avec le modèle proposé. Pour une détection manquée ou erronée, décrivez la **forme** du texte (« un numéro AVS écrit sans points après « n° » ») et donnez un exemple **inventé** : jamais le texte réel.
 
 ## Revue
 

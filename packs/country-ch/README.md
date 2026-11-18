@@ -140,7 +140,7 @@ numéros. Le banc commun (`packs/_tools/packs.test.ts`) vérifie aussi l'absence
 
 **Non confirmé en ligne dans cette session** : la liste exacte des indicatifs (mobiles 075 à 079,
 058, 0800, 084x, 090x, régionaux 021, 022, 027, 031, 044…) et la longueur de 9 chiffres hors
-zéro de tête. Les motifs reposent sur la forme `0` + 9 chiffres, que Nico peut vérifier dans le plan
+zéro de tête. Les motifs reposent sur la forme `0` + 9 chiffres, à vérifier dans le plan
 E.164 de l'OFCOM (ordonnance sur les ressources d'adressage, RS 784.104) avant publication. Les
 motifs n'imposent volontairement aucune liste d'indicatifs : un indicatif inexistant sera signalé.
 

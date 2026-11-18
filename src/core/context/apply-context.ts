@@ -1,7 +1,7 @@
 import { foldString, tokenizeWords } from "../recognizers/normalize.ts";
 import type { Detection, Language, Rule } from "../types/index.ts";
 
-/** Bonus de score apporté par un mot de contexte (PLAN.md §5). */
+/** Bonus de score apporté par un mot de contexte (voir ARCHITECTURE.md). */
 export const CONTEXT_BOOST = 0.35;
 /** Taille de la fenêtre, en mots, de chaque côté de la détection. */
 export const CONTEXT_WINDOW_WORDS = 5;

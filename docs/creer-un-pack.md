@@ -11,7 +11,7 @@ Un pack est un dossier de **données JSON** : un manifeste et des fichiers de r�
 - Il déclare des **règles motif** (expression régulière) et des **règles dictionnaire** (liste de termes).
 - Il référence les **validateurs** par leur nom, dans une liste fermée de sept (voir section 7).
 - Il ne peut utiliser que les **seize types d'entités** du moteur (`src/core/types/entities.ts`) : personne, organisation, lieu, courriel, téléphone, URL, adresse IP, IBAN, carte bancaire, secret technique, date, AVS, IDE, NIR, SIREN, SIRET. Ajouter un type, un validateur ou un opérateur modifie les contrats de `src/core` : c'est une tâche à part (R11), pas un pack.
-- Il est livré avec le dépôt, au format JSON. L'import d'un pack par l'utilisateur est reporté après le MVP (A8) : un pack tiers n'est pas fiable par défaut, et le schéma le traite comme tel (voir [SECURITY.md](../SECURITY.md)).
+- Il est livré avec le dépôt, au format JSON. L'import d'un pack par l'utilisateur n'est pas proposé ; s'il l'est un jour, un pack tiers sera traité comme non fiable, et le schéma est déjà strict en ce sens (voir [SECURITY.md](../SECURITY.md)).
 
 L'exemple a donc un cas à part : un numéro d'entreprise n'a pas de type dédié. Il est rattaché à `ORGANIZATION`, ce qui donne le pseudonyme `ORGANISATION_001`. Dans un vrai pack, choisissez le type le plus proche et dites-le dans le README du pack.
 
@@ -197,7 +197,7 @@ Un validateur vérifie une valeur déjà trouvée par le motif (somme de contrô
 
 L'exemple utilise `ean13` pour le numéro d'entreprise : le motif impose le préfixe `999` et la forme `999.NNNN.NNNN.NC`, le validateur contrôle la clé. Le cas de test `entreprise-cle-fausse` vérifie qu'une clé fausse ne donne rien.
 
-Un pack ne peut pas apporter son propre validateur : c'est du code (R8). Si votre pays en exige un, ouvrez une tâche pour l'ajouter à `src/core/validators/` (et à `VALIDATOR_NAMES`, contrat de `src/core/types/rules.ts`, R11), avec ses sources et ses tests.
+Un pack ne peut pas apporter son propre validateur : c'est du code (R8). Si votre pays en exige un, ouvrez un ticket pour l'ajouter à `src/core/validators/` (et à `VALIDATOR_NAMES`, contrat de `src/core/types/rules.ts`, R11), avec ses sources et ses tests.
 
 **Un validateur n'est pas toujours possible.** Les numéros de téléphone n'en ont pas : le motif décide seul, et le score reflète ce doute.
 

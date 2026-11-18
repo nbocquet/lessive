@@ -2,7 +2,7 @@
 
 Ce document s'adresse aux chercheurs en sécurité et aux relecteurs. Il décrit ce que Lessive cherche à protéger, ce qu'il ne protège pas, comment signaler une vulnérabilité, et ce qui est dans le périmètre. Le détail de ce que les tests vérifient est dans [docs/confidentialite.md](docs/confidentialite.md) ; les limites pour l'utilisateur sont dans [docs/limites.md](docs/limites.md).
 
-Lessive est un MVP en cours de construction : aucune relecture de sécurité indépendante n'a été faite.
+Version couverte : la dernière version publiée et la branche `main` (la version en ligne suit `main`). Aucune relecture de sécurité indépendante n'a encore été faite.
 
 ## Signaler une vulnérabilité
 
@@ -21,7 +21,7 @@ N'ouvrez pas de ticket public pour une vulnérabilité exploitable. Merci d'indi
 | Aucune requête réseau à l'exécution hors de l'origine de l'application (R1) | CSP (ci-dessous) ; aucune bibliothèque de télémétrie ; fichiers WASM et packs servis par l'origine ou compris dans le bundle ; tests e2e qui bloquent et signalent toute requête hors origine |
 | Aucun modèle génératif, aucune API distante (R2) | aucune dépendance de ce type ; le NER est un modèle de classification de jetons local |
 | Texte et table de correspondance jamais écrits dans `localStorage`, IndexedDB, journaux, messages d'erreur ou rapports (R5) | état en mémoire seulement ; les erreurs et les réponses du worker ne citent jamais de valeur ; tests e2e qui fouillent les stockages et les caches après usage |
-| Modèles chargés uniquement depuis des fichiers locaux (R4) | fichiers choisis par l'utilisateur, lus par un cache personnalisé ; `allowRemoteModels` reste faux ; une requête de repli est remplacée par un 404 local |
+| Modèles chargés uniquement depuis des fichiers locaux (R4) | modèle fourni par l'origine de l'application ou fichiers choisis par l'utilisateur, copiés dans le cache de l'application puis lus par un cache personnalisé ; `allowRemoteModels` reste faux ; une requête de repli est remplacée par un 404 local |
 | Packs : données, jamais du code (R8) | schéma strict, validateurs en liste fermée |
 
 **Ce qui n'est pas protégé :**
@@ -60,7 +60,7 @@ style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-
 ```
 
 - Aucune origine externe, aucun script en ligne, aucun `eval`. `'wasm-unsafe-eval'` n'autorise que la compilation WebAssembly d'ONNX Runtime.
-- `connect-src 'self'` : les requêtes ne partent que vers l'origine de l'application. Le modèle n'est pas téléchargé : il est lu depuis le disque de l'utilisateur, donc la CSP n'a pas à être élargie.
+- `connect-src 'self'` : les requêtes ne partent que vers l'origine de l'application. Le modèle fourni est servi par cette même origine ; un modèle choisi par l'utilisateur est lu depuis son disque. La CSP n'a donc pas à être élargie.
 - `style-src 'unsafe-inline'` : réservé aux balises `<style>` que Vite injecte en développement ; le build de production extrait le CSS dans un fichier et les composants n'utilisent pas d'attribut `style`. C'est un point de durcissement possible (hors développement).
 - ONNX Runtime fonctionne avec un seul fil et sans URL `blob:` : la CSP n'a pas besoin de `blob:` ni de l'isolation inter-origines.
 - Une balise `<meta>` ne couvre pas tout ce qu'un en-tête HTTP couvrirait (par exemple `frame-ancestors` n'y est pas pris en compte). Un hébergeur qui peut envoyer des en-têtes devrait répéter cette politique et y ajouter `frame-ancestors 'none'`.
@@ -77,7 +77,7 @@ Les packs sont des données. Le chargement (`src/core/registry/schema.ts`, `pars
 - des **validateurs référencés par nom**, dans une liste fermée de sept ; un nom inconnu est refusé ;
 - des types d'entités dans une liste fermée de seize.
 
-Dans le MVP, seuls les packs livrés avec le dépôt sont chargés (import statique au build) : l'import de packs par l'utilisateur est reporté (A8). Le jour où il existera, un pack tiers devra être traité comme non fiable : les contrôles ci-dessus sont la base, mais la durée d'exécution de ses motifs (ReDoS) devra être bornée à l'exécution, ce qui n'est pas fait aujourd'hui.
+Seuls les packs livrés avec le dépôt sont chargés (import statique au build) : l'utilisateur ne peut pas importer de pack. Le jour où il existera, un pack tiers devra être traité comme non fiable : les contrôles ci-dessus sont la base, mais la durée d'exécution de ses motifs (ReDoS) devra être bornée à l'exécution, ce qui n'est pas fait aujourd'hui.
 
 ## ReDoS
 
@@ -102,12 +102,12 @@ Implémenté dans `src/core/crypto/mapping-file.ts`, avec WebCrypto uniquement :
 
 Points à examiner : une phrase de passe courte reste vulnérable à une attaque hors ligne malgré les 600 000 itérations ; PBKDF2 est dérivable en parallèle sur GPU (Argon2 n'est pas disponible dans WebCrypto) ; les messages d'erreur à l'import ne distinguent pas finement les causes (« Phrase de passe incorrecte ou fichier altéré. »). La durée mesurée de la dérivation est donnée dans [docs/performances.md](docs/performances.md).
 
-## Chargement du modèle par l'utilisateur
+## Chargement du modèle
 
 Les fichiers retenus sont contrôlés avant toute lecture JSON et avant stockage : 1 Mio par fichier de configuration JSON, 32 Mio pour `tokenizer.json`, 512 Mio par fichier ONNX et 550 Mio au total. Ces mêmes plafonds s'appliquent au modèle fourni par le site : sa fiche est limitée à 64 Kio, les noms de fichiers sont en liste fermée, les doublons sont refusés, et les flux sont annulés dès que les octets reçus dépassent la taille annoncée déjà validée, indépendamment de `Content-Length`. Ces limites bornent les fichiers importés, pas la mémoire de travail nécessaire à l'exécution du graphe ONNX.
 
-Le modèle est un ensemble de fichiers que l'utilisateur choisit (ADR [0003](docs/adr/0003-modele-charge-par-l-utilisateur.md)). L'application valide la forme (fichiers présents, JSON valides, étiquettes d'entités, taille) mais **pas l'origine** : la confiance dans la source du modèle revient à l'utilisateur. Un fichier ONNX est un graphe de calcul exécuté par ONNX Runtime Web, pas du code exécuté par la page, et il ne modifie pas la CSP ; une vulnérabilité de l'exécuteur ONNX dans un fichier piégé reste dans le périmètre. Les fichiers sont gardés dans le cache `lessive-models-v1`, qui ne contient jamais de texte de l'utilisateur.
+Le modèle est soit fourni par le site (ADR [0004](docs/adr/0004-modele-fourni-pages.md) : fichiers vérifiés par sommes SHA-256 au build, servis par la même origine), soit un ensemble de fichiers que l'utilisateur choisit (ADR [0003](docs/adr/0003-modele-charge-par-l-utilisateur.md)). Dans le second cas, l'application valide la forme (fichiers présents, JSON valides, étiquettes d'entités, taille) mais **pas l'origine** : la confiance dans la source du modèle revient à l'utilisateur. Un fichier ONNX est un graphe de calcul exécuté par ONNX Runtime Web, pas du code exécuté par la page, et il ne modifie pas la CSP ; une vulnérabilité de l'exécuteur ONNX dans un fichier piégé reste dans le périmètre. Les fichiers sont gardés dans le cache `lessive-models-v1`, qui ne contient jamais de texte de l'utilisateur.
 
 ## Dépendances
 
-Trois dépendances à l'exécution (R9) : Svelte, `@huggingface/transformers` (qui embarque ONNX Runtime Web) et Zod, en versions verrouillées dans `package-lock.json`. Le contrôle des licences et l'inventaire sont prévus à la publication (PLAN.md, T6.5) et ne sont pas encore automatisés.
+Trois dépendances à l'exécution (R9) : Svelte, `@huggingface/transformers` (qui embarque ONNX Runtime Web) et Zod, en versions verrouillées dans `package-lock.json`. Le contrôle des licences et l'inventaire des dépendances ne sont pas encore automatisés.

@@ -64,7 +64,28 @@
     <SettingsScreen />
   </details>
 
-  <footer class="hint"><span>Lessive · Moteur {ENGINE_VERSION}</span><OfflineBadge /></footer>
+  <footer class="hint">
+    <span>
+      Lessive {ENGINE_VERSION} ·
+      <a href="https://github.com/nbocquet/lessive" target="_blank" rel="noopener noreferrer"
+        >Code source</a
+      >
+      ·
+      <a
+        href="https://github.com/nbocquet/lessive/blob/main/docs/confidentialite.md"
+        target="_blank"
+        rel="noopener noreferrer">Confidentialité</a
+      >
+      ·
+      <a
+        href="https://github.com/nbocquet/lessive/blob/main/docs/limites.md"
+        target="_blank"
+        rel="noopener noreferrer">Limites</a
+      >
+      · Licence Apache 2.0
+    </span>
+    <OfflineBadge />
+  </footer>
 </div>
 
 <style>
