@@ -2,7 +2,7 @@
 
 Merci de l'intérêt porté au projet. Lessive est maintenu bénévolement : les revues peuvent prendre quelques jours. Avant de commencer, lisez [ARCHITECTURE.md](ARCHITECTURE.md) pour la vue d'ensemble et les principes ci-dessous. Pour une idée de fonctionnalité ou un changement important, ouvrez d'abord un ticket pour en discuter. Le dépôt est sous licence Apache 2.0 ; vos contributions le seront aussi.
 
-Les contributions préparées avec un agent de développement sont bienvenues ; [CLAUDE.md](CLAUDE.md) résume pour eux les principes et les pièges connus. Vous restez responsable de ce que vous proposez.
+Les contributions préparées avec un agent de développement sont bienvenues ; [AGENTS.md](AGENTS.md) résume pour eux les principes et les pièges connus. Vous restez responsable de ce que vous proposez.
 
 ## Prérequis
 
@@ -80,7 +80,7 @@ Aucun test, corpus, exemple de documentation ou capture ne contient de données 
 
 ## Commits et branches
 
-- Une branche par sujet ; ne poussez pas directement sur `main`.
+- Une branche par sujet, fusionnée par demande de fusion : `main` est protégée (pas de poussée directe ni forcée, contrôles `check` et `e2e` de la CI obligatoires). Chaque fusion dans `main` met le site en ligne.
 - Messages de commit en français, à l'impératif, sur une première ligne courte qui dit ce qui change et pourquoi ; référencez le ticket concerné (`#12`) quand il existe. Un commit = un changement cohérent, avec ses tests.
 - Notez dans [CHANGELOG.md](CHANGELOG.md), section « Non publié », tout changement visible par l'utilisateur.
 - Mentionnez dans le message ou la description les décisions prises et les questions ouvertes.
