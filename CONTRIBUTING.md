@@ -86,6 +86,12 @@ Aucun test, corpus, exemple de documentation ou capture ne contient de données 
 - Mentionnez dans le message ou la description les décisions prises et les questions ouvertes.
 - Ne commitez ni modèle (`models/` n'est pas versionné), ni donnée réelle, ni fichier généré (`dist/`).
 
+## Publier une version
+
+1. Déplacer les entrées de « Non publié » de [CHANGELOG.md](CHANGELOG.md) sous un nouveau titre `## [X.Y.Z] — AAAA-MM-JJ`, et mettre à jour les liens de comparaison en bas du fichier.
+2. Porter la même version dans `package.json`, `package-lock.json` et `ENGINE_VERSION` (`src/core/index.ts`).
+3. Pousser sur `main` : le workflow `release.yml` crée l'étiquette `vX.Y.Z` et la page de version, avec les notes du CHANGELOG ; `pages.yml` publie le site.
+
 ## Signaler un bogue ou proposer une idée
 
 Ouvrez un ticket avec le modèle proposé. Pour une détection manquée ou erronée, décrivez la **forme** du texte (« un numéro AVS écrit sans points après « n° » ») et donnez un exemple **inventé** : jamais le texte réel.
