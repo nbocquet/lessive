@@ -1,12 +1,11 @@
 # ADR 0004 — Version en ligne avec un modèle NER fourni (CamemBERT-NER)
 
-- **Statut** : Décidé par Nico le 2026-11-17 (amendement A21 de SPECIFICATIONS.md)
-- **Décideur** : Nico
-- **Complète** : ADR 0003 (le chargement depuis le disque reste possible) ; révise l'amendement A20
+- **Statut** : Accepté le 2026-11-17 (amendement A21 du cahier des charges d'origine)
+- **Complète** : ADR 0003 (le chargement depuis le disque reste possible)
 
 ## Contexte
 
-Nico veut publier Lessive comme un produit fini, sur le web (GitHub Pages), avec un modèle de reconnaissance
+Le projet veut publier Lessive comme une application prête à l'emploi, sur le web (GitHub Pages), avec un modèle de reconnaissance
 des noms prêt à l'emploi, sans que le modèle soit versionné dans le dépôt. L'ADR 0003 avait écarté la
 redistribution pour deux raisons : la taille (plus de 100 Mo, limite d'un fichier dans Git) et la licence
 AFL-3.0 du modèle DistilBERT, qui impose d'obtenir l'accord exprès des destinataires.

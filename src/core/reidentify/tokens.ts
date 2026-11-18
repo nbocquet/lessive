@@ -5,7 +5,7 @@ import { typeOfWord, WORD_ALTERNATION } from "./words.ts";
 
 /**
  * Analyseur tolérant de jetons (format A, `PERSONNE_001`), porté de
- * `spikes/tokens/analyzer.mjs`. Fonction pure : aucune valeur d'origine n'est
+ * `tools/token-bench/analyzer.mjs`. Fonction pure : aucune valeur d'origine n'est
  * lue ni renvoyée, seulement des positions et des pseudonymes canoniques.
  *
  * Variantes reconnues : casse, espace / tiret / `\_` à la place du tiret bas,

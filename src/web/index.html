@@ -17,11 +17,137 @@
       content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="data:," />
-    <title>Lessive</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Masquage et pseudonymisation de textes — Lessive</title>
+    <meta
+      name="description"
+      content="Masquez ou pseudonymisez les données personnelles de vos textes avant de les partager avec une IA. Traitement local dans le navigateur, sans compte."
+    />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="application-name" content="Lessive" />
+    <link rel="canonical" href="https://nbocquet.github.io/lessive/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="Lessive" />
+    <meta property="og:title" content="Masquage et pseudonymisation de textes — Lessive" />
+    <meta
+      property="og:description"
+      content="Préparez vos textes avant de les partager avec une IA : détection des données personnelles, corrections et pseudonymisation dans votre navigateur."
+    />
+    <meta property="og:url" content="https://nbocquet.github.io/lessive/" />
+    <meta property="og:image" content="https://nbocquet.github.io/lessive/social-preview.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Lessive : masquage et pseudonymisation de textes, avec une goutte bleue, un document masqué et un cadenas."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Masquage et pseudonymisation de textes — Lessive" />
+    <meta
+      name="twitter:description"
+      content="Un outil gratuit et open source pour préparer vos textes avant de les partager avec une IA. Le traitement reste dans votre navigateur."
+    />
+    <meta name="twitter:image" content="https://nbocquet.github.io/lessive/social-preview.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Lessive : masquage et pseudonymisation de textes dans le navigateur."
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://nbocquet.github.io/lessive/#website",
+            "url": "https://nbocquet.github.io/lessive/",
+            "name": "Lessive",
+            "inLanguage": "fr"
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://nbocquet.github.io/lessive/#application",
+            "name": "Lessive",
+            "url": "https://nbocquet.github.io/lessive/",
+            "description": "Outil gratuit et open source de masquage et de pseudonymisation des données personnelles dans les textes. Le traitement s’effectue localement dans le navigateur.",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Navigateur web",
+            "browserRequirements": "JavaScript et WebAssembly",
+            "inLanguage": "fr",
+            "isAccessibleForFree": true,
+            "license": "https://www.apache.org/licenses/LICENSE-2.0",
+            "image": "https://nbocquet.github.io/lessive/social-preview.png",
+            "sameAs": "https://github.com/nbocquet/lessive",
+            "featureList": [
+              "Détection et correction des données personnelles",
+              "Masquage et pseudonymisation de textes",
+              "Réidentification locale des réponses d’une IA",
+              "Export chiffré des correspondances",
+              "Fonctionnement hors ligne après chargement des ressources"
+            ],
+            "isPartOf": { "@id": "https://nbocquet.github.io/lessive/#website" }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <p class="javascript-required">
+        Activez JavaScript pour utiliser Lessive : la détection et les remplacements s’effectuent
+        dans votre navigateur. Aucun texte n’est envoyé à un service d’IA.
+      </p>
+    </noscript>
+    <section class="about" aria-label="À propos de Lessive">
+      <details>
+        <summary>À propos de Lessive : masquage et pseudonymisation de textes</summary>
+        <div class="about-content">
+          <h2>Préparer un texte avant de le partager avec une IA</h2>
+          <p>
+            Lessive est un outil gratuit et open source qui repère et remplace les données
+            personnelles dans un texte brut ou Markdown. Collez un e-mail ou un compte rendu, lancez
+            l’analyse, puis vérifiez et corrigez les passages proposés avant de copier le résultat
+            dans ChatGPT, Claude ou un autre assistant.
+          </p>
+          <h3>Masquage ou pseudonymisation</h3>
+          <p>
+            Le masquage remplace les données par des masques ou des catégories. La pseudonymisation
+            attribue des repères stables, comme PERSONNE_001 : vous pouvez ensuite remettre les
+            valeurs d’origine dans la réponse de l’IA, localement. La table de correspondance peut
+            être exportée sous forme chiffrée.
+          </p>
+          <h3>Un traitement local, avec des limites</h3>
+          <p>
+            L’application fonctionne dans le navigateur, sans compte et sans envoi du texte à un
+            serveur de traitement. Elle combine des règles pour la Suisse et la France avec un
+            modèle de reconnaissance des noms que vous installez. Elle peut fonctionner hors ligne
+            une fois ses ressources chargées. Des données peuvent échapper à la détection : relisez
+            toujours le résultat. Lessive réduit le risque mais ne garantit pas l’anonymat.
+          </p>
+          <p>
+            <a href="https://github.com/nbocquet/lessive" target="_blank" rel="noopener noreferrer"
+              >Code source et documentation</a
+            >
+            ·
+            <a
+              href="https://github.com/nbocquet/lessive/blob/main/docs/confidentialite.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Confidentialité et fonctionnement local</a
+            >
+            ·
+            <a
+              href="https://github.com/nbocquet/lessive/blob/main/LICENSE"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Licence Apache 2.0</a
+            >
+          </p>
+        </div>
+      </details>
+    </section>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

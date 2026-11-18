@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Signaler une vulnérabilité
+    url: https://github.com/nbocquet/lessive/blob/main/SECURITY.md
+    about: Ne pas ouvrir de ticket public ; écrire à l'adresse indiquée dans SECURITY.md.

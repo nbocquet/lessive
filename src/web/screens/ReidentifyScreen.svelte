@@ -1,6 +1,6 @@
 <!--
   Écran 4 — Réponse du LLM (T5.6). La réidentification est une action explicite : jamais
-  automatique (SPECIFICATIONS §10.4). Le texte réidentifié contient de nouveau des données
+  automatique. Le texte réidentifié contient de nouveau des données
   personnelles ; il n'est ni stocké ni journalisé (R5), seulement copié ou téléchargé à la demande.
 -->
 <script lang="ts">

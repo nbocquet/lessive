@@ -1,9 +1,0 @@
-**Note administrative — ORGANISATION_001, LIEU_001**
-
-Le Dr PERSONNE_001 atteste que M. PERSONNE_002, assuré sous le numéro AVS AVS_001, s’est présenté à une consultation le 6 octobre. La présente note ne contient aucune information médicale. Elle est établie à la demande de l’intéressé à l’intention de son employeur, ORGANISATION_002.
-
-M. PERSONNE_002 est dispensé de se présenter à son poste de travail du 7 au 11 octobre inclus. Le secrétariat de ORGANISATION_001 transmettra le certificat original par courrier. M. PERSONNE_002 pourra également le retirer à la réception ou le recevoir par voie électronique.
-
-Pour toute question d’ordre administratif, le secrétariat de LIEU_001 peut être joint par téléphone au TELEPHONE_001 ou par courriel à l’adresse EMAIL_001. Le Dr PERSONNE_001 reste joignable le mardi et le jeudi.
-
-Fait à LIEU_001, le 6 octobre.

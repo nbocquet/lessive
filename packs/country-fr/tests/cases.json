@@ -37,7 +37,12 @@
       "id": "nir-cle-fausse",
       "language": "fr",
       "text": "Sécurité sociale : 1 85 05 78 006 084 36.",
-      "expect": []
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1 85 05 78 006 084 36"
+        }
+      ]
     },
     {
       "id": "nir-corse-2a",
@@ -65,7 +70,12 @@
       "id": "nir-corse-cle-fausse",
       "language": "fr",
       "text": "NIR : 2 85 10 2A 004 123 85",
-      "expect": []
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "2 85 10 2A 004 123 85"
+        }
+      ]
     },
     {
       "id": "nir-outre-mer",
@@ -506,209 +516,209 @@
     {
       "id": "telephone-national-nbsp",
       "language": "fr",
-      "text": "Tél : 01\u00a099\u00a000\u00a012\u00a034",
+      "text": "Tél : 01 99 00 12 34",
       "expect": [
         {
           "type": "PHONE",
-          "value": "01\u00a099\u00a000\u00a012\u00a034"
+          "value": "01 99 00 12 34"
         }
       ]
     },
     {
       "id": "telephone-international-nbsp",
       "language": "fr",
-      "text": "Joignable au +33\u00a06\u00a039\u00a098\u00a012\u00a034.",
+      "text": "Joignable au +33 6 39 98 12 34.",
       "expect": [
         {
           "type": "PHONE",
-          "value": "+33\u00a06\u00a039\u00a098\u00a012\u00a034"
+          "value": "+33 6 39 98 12 34"
         }
       ]
     },
     {
       "id": "telephone-international-paren-nbsp",
       "language": "fr",
-      "text": "Tél : +33\u00a0(0)6\u00a039\u00a098\u00a012\u00a034",
+      "text": "Tél : +33 (0)6 39 98 12 34",
       "expect": [
         {
           "type": "PHONE",
-          "value": "+33\u00a0(0)6\u00a039\u00a098\u00a012\u00a034"
+          "value": "+33 (0)6 39 98 12 34"
         }
       ]
     },
     {
       "id": "telephone-international-compact-nbsp",
       "language": "fr",
-      "text": "Mobile : +33\u00a0639981234",
+      "text": "Mobile : +33 639981234",
       "expect": [
         {
           "type": "PHONE",
-          "value": "+33\u00a0639981234"
+          "value": "+33 639981234"
         }
       ]
     },
     {
       "id": "nir-espaces-nbsp",
       "language": "fr",
-      "text": "Sécurité sociale : 1\u00a085\u00a005\u00a078\u00a0006\u00a0084\u00a091.",
+      "text": "Sécurité sociale : 1 85 05 78 006 084 91.",
       "expect": [
         {
           "type": "FR_NIR",
-          "value": "1\u00a085\u00a005\u00a078\u00a0006\u00a0084\u00a091"
+          "value": "1 85 05 78 006 084 91"
         }
       ]
     },
     {
       "id": "nir-cle-separee-nbsp",
       "language": "fr",
-      "text": "NIR 1850578006084\u00a091",
+      "text": "NIR 1850578006084 91",
       "expect": [
         {
           "type": "FR_NIR",
-          "value": "1850578006084\u00a091"
+          "value": "1850578006084 91"
         }
       ]
     },
     {
       "id": "siret-nbsp",
       "language": "fr",
-      "text": "SIRET : 123\u00a0456\u00a0782\u00a000010.",
+      "text": "SIRET : 123 456 782 00010.",
       "expect": [
         {
           "type": "FR_SIRET",
-          "value": "123\u00a0456\u00a0782\u00a000010"
+          "value": "123 456 782 00010"
         }
       ]
     },
     {
       "id": "siren-nbsp",
       "language": "fr",
-      "text": "Société immatriculée, SIREN 123\u00a0456\u00a0782.",
+      "text": "Société immatriculée, SIREN 123 456 782.",
       "expect": [
         {
           "type": "FR_SIREN",
-          "value": "123\u00a0456\u00a0782"
+          "value": "123 456 782"
         }
       ]
     },
     {
       "id": "code-postal-nbsp",
       "language": "fr",
-      "text": "Adresse : 12 rue des Lilas, 74160\u00a0SAINT-JULIEN-EN-GENEVOIS",
+      "text": "Adresse : 12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "12 rue des Lilas, 74160\u00a0SAINT-JULIEN-EN-GENEVOIS"
+          "value": "12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS"
         }
       ]
     },
     {
       "id": "telephone-national-nnbsp",
       "language": "fr",
-      "text": "Tél : 01\u202f99\u202f00\u202f12\u202f34",
+      "text": "Tél : 01 99 00 12 34",
       "expect": [
         {
           "type": "PHONE",
-          "value": "01\u202f99\u202f00\u202f12\u202f34"
+          "value": "01 99 00 12 34"
         }
       ]
     },
     {
       "id": "telephone-international-nnbsp",
       "language": "fr",
-      "text": "Joignable au +33\u202f6\u202f39\u202f98\u202f12\u202f34.",
+      "text": "Joignable au +33 6 39 98 12 34.",
       "expect": [
         {
           "type": "PHONE",
-          "value": "+33\u202f6\u202f39\u202f98\u202f12\u202f34"
+          "value": "+33 6 39 98 12 34"
         }
       ]
     },
     {
       "id": "telephone-international-paren-nnbsp",
       "language": "fr",
-      "text": "Tél : +33\u202f(0)6\u202f39\u202f98\u202f12\u202f34",
+      "text": "Tél : +33 (0)6 39 98 12 34",
       "expect": [
         {
           "type": "PHONE",
-          "value": "+33\u202f(0)6\u202f39\u202f98\u202f12\u202f34"
+          "value": "+33 (0)6 39 98 12 34"
         }
       ]
     },
     {
       "id": "telephone-international-compact-nnbsp",
       "language": "fr",
-      "text": "Mobile : +33\u202f639981234",
+      "text": "Mobile : +33 639981234",
       "expect": [
         {
           "type": "PHONE",
-          "value": "+33\u202f639981234"
+          "value": "+33 639981234"
         }
       ]
     },
     {
       "id": "nir-espaces-nnbsp",
       "language": "fr",
-      "text": "Sécurité sociale : 1\u202f85\u202f05\u202f78\u202f006\u202f084\u202f91.",
+      "text": "Sécurité sociale : 1 85 05 78 006 084 91.",
       "expect": [
         {
           "type": "FR_NIR",
-          "value": "1\u202f85\u202f05\u202f78\u202f006\u202f084\u202f91"
+          "value": "1 85 05 78 006 084 91"
         }
       ]
     },
     {
       "id": "nir-cle-separee-nnbsp",
       "language": "fr",
-      "text": "NIR 1850578006084\u202f91",
+      "text": "NIR 1850578006084 91",
       "expect": [
         {
           "type": "FR_NIR",
-          "value": "1850578006084\u202f91"
+          "value": "1850578006084 91"
         }
       ]
     },
     {
       "id": "siret-nnbsp",
       "language": "fr",
-      "text": "SIRET : 123\u202f456\u202f782\u202f00010.",
+      "text": "SIRET : 123 456 782 00010.",
       "expect": [
         {
           "type": "FR_SIRET",
-          "value": "123\u202f456\u202f782\u202f00010"
+          "value": "123 456 782 00010"
         }
       ]
     },
     {
       "id": "siren-nnbsp",
       "language": "fr",
-      "text": "Société immatriculée, SIREN 123\u202f456\u202f782.",
+      "text": "Société immatriculée, SIREN 123 456 782.",
       "expect": [
         {
           "type": "FR_SIREN",
-          "value": "123\u202f456\u202f782"
+          "value": "123 456 782"
         }
       ]
     },
     {
       "id": "code-postal-nnbsp",
       "language": "fr",
-      "text": "Adresse : 12 rue des Lilas, 74160\u202fSAINT-JULIEN-EN-GENEVOIS",
+      "text": "Adresse : 12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "12 rue des Lilas, 74160\u202fSAINT-JULIEN-EN-GENEVOIS"
+          "value": "12 rue des Lilas, 74160 SAINT-JULIEN-EN-GENEVOIS"
         }
       ]
     },
     {
       "id": "code-postal-commune-espaces-mixtes",
       "language": "fr",
-      "text": "Adresse : 3 place du Marché, 74800\u00a0LA\u202fROCHE-SUR-FORON",
+      "text": "Adresse : 3 place du Marché, 74800 LA ROCHE-SUR-FORON",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "3 place du Marché, 74800\u00a0LA\u202fROCHE-SUR-FORON"
+          "value": "3 place du Marché, 74800 LA ROCHE-SUR-FORON"
         }
       ]
     },
@@ -935,33 +945,33 @@
     {
       "id": "rue-espaces-insecables",
       "language": "fr",
-      "text": "J'habite au 7\u00a0avenue\u00a0du\u00a0Léman,\u00a074100\u00a0Annemasse.",
+      "text": "J'habite au 7 avenue du Léman, 74100 Annemasse.",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "7\u00a0avenue\u00a0du\u00a0Léman,\u00a074100\u00a0Annemasse"
+          "value": "7 avenue du Léman, 74100 Annemasse"
         }
       ]
     },
     {
       "id": "rue-fines-insecables",
       "language": "fr",
-      "text": "J'habite au 7\u202favenue\u202fdu\u202fLéman,\u202f74100\u202fAnnemasse.",
+      "text": "J'habite au 7 avenue du Léman, 74100 Annemasse.",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "7\u202favenue\u202fdu\u202fLéman,\u202f74100\u202fAnnemasse"
+          "value": "7 avenue du Léman, 74100 Annemasse"
         }
       ]
     },
     {
       "id": "rue-insecables-mixtes",
       "language": "fr",
-      "text": "Chez eux : 12\u00a0rue\u202fde\u00a0la\u202fPaix,\u00a074100\u202fAnnemasse",
+      "text": "Chez eux : 12 rue de la Paix, 74100 Annemasse",
       "expect": [
         {
           "type": "LOCATION",
-          "value": "12\u00a0rue\u202fde\u00a0la\u202fPaix,\u00a074100\u202fAnnemasse"
+          "value": "12 rue de la Paix, 74100 Annemasse"
         }
       ]
     },
@@ -1084,6 +1094,197 @@
       "id": "negatif-numero-sans-nom-de-voie",
       "language": "fr",
       "text": "Il habite au 7 avenue et au 12 rue.",
+      "expect": []
+    },
+    {
+      "id": "nir-tirets",
+      "language": "fr",
+      "text": "Dossier : 1-85-05-78-006-084-91.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1-85-05-78-006-084-91"
+        }
+      ]
+    },
+    {
+      "id": "nir-points",
+      "language": "fr",
+      "text": "Dossier : 1.85.05.78.006.084.91.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1.85.05.78.006.084.91"
+        }
+      ]
+    },
+    {
+      "id": "nir-cle-sans-espace",
+      "language": "fr",
+      "text": "Dossier : 1850578006084-91.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1850578006084-91"
+        }
+      ]
+    },
+    {
+      "id": "nir-espaces-doubles",
+      "language": "fr",
+      "text": "Dossier : 1  85  05  78  006  084  91.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1  85  05  78  006  084  91"
+        }
+      ]
+    },
+    {
+      "id": "nir-sans-cle-compact",
+      "language": "fr",
+      "text": "Sécurité sociale : 1850578006084.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1850578006084"
+        }
+      ]
+    },
+    {
+      "id": "nir-sans-cle-groupe",
+      "language": "fr",
+      "text": "NIR : 1 85 05 78 006 084.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1 85 05 78 006 084"
+        }
+      ]
+    },
+    {
+      "id": "nir-sans-cle-corse",
+      "language": "fr",
+      "text": "NIR : 2 85 10 2A 004 123.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "2 85 10 2A 004 123"
+        }
+      ]
+    },
+    {
+      "id": "nir-sans-cle-outremer",
+      "language": "fr",
+      "text": "NIR : 1 90 12 971 06 045.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1 90 12 971 06 045"
+        }
+      ]
+    },
+    {
+      "id": "nir-cle-fausse-compact",
+      "language": "fr",
+      "text": "NSS : 185057800608436.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "185057800608436"
+        }
+      ]
+    },
+    {
+      "id": "nir-cle-fausse-tirets",
+      "language": "fr",
+      "text": "Sécurité sociale : 1-85-05-78-006-084-36.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1-85-05-78-006-084-36"
+        }
+      ]
+    },
+    {
+      "id": "nir-cle-fausse-anglais",
+      "language": "en",
+      "text": "French social security: 185057800608436.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "185057800608436"
+        }
+      ]
+    },
+    {
+      "id": "nir-sans-cle-sans-contexte",
+      "language": "fr",
+      "text": "Référence : 1850578006084.",
+      "expect": []
+    },
+    {
+      "id": "nir-cle-fausse-sans-contexte",
+      "language": "fr",
+      "text": "Référence : 185057800608436.",
+      "expect": []
+    },
+    {
+      "id": "nir-sans-cle-groupe-sans-contexte",
+      "language": "fr",
+      "text": "Référence : 1 85 05 78 006 084.",
+      "expect": []
+    },
+    {
+      "id": "nir-nombre-trop-long",
+      "language": "fr",
+      "text": "NIR : 1850578006084917.",
+      "expect": []
+    },
+    {
+      "id": "nir-groupe-trop-long",
+      "language": "fr",
+      "text": "NIR : 1 85 05 78 006 084 917.",
+      "expect": []
+    },
+    {
+      "id": "nir-compact-dans-identifiant",
+      "language": "fr",
+      "text": "NIR : X185057800608491Z.",
+      "expect": []
+    },
+    {
+      "id": "nir-sans-cle-dans-identifiant",
+      "language": "fr",
+      "text": "NIR : X1850578006084Z.",
+      "expect": []
+    },
+    {
+      "id": "nir-groupes-colles-lettre-parasite",
+      "language": "fr",
+      "text": "Sécurité sociale : 1 8505 b78 006 084 36.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1 8505 b78 006 084 36"
+        }
+      ]
+    },
+    {
+      "id": "nir-groupes-colles",
+      "language": "fr",
+      "text": "NSS : 1 8505 78 006 084 91.",
+      "expect": [
+        {
+          "type": "FR_NIR",
+          "value": "1 8505 78 006 084 91"
+        }
+      ]
+    },
+    {
+      "id": "nir-lettre-parasite-sans-contexte",
+      "language": "fr",
+      "text": "Référence : 1 8505 b78 006 084 36.",
       "expect": []
     }
   ]
