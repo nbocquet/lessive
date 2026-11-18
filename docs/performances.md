@@ -1,5 +1,7 @@
 # Performances (T6.3)
 
+**Portée des chiffres :** mesures historiques avec DistilBERT, antérieures au choix de CamemBERT pour la version publiée (ADR 0004). Les verdicts ci-dessous concernent ces essais ; ils ne valident pas les performances du build actuel avec CamemBERT. Les mesures à refaire sont suivies dans [la recette du MVP](recette-mvp.md#5-travail-restant-pour-clôturer-la-recette).
+
 Ce document rapporte des mesures faites **sous Node**, sur le moteur seul, et dit clairement ce qu'elles ne couvrent pas : les mesures dans le navigateur sont **qualitatives** : le 17 novembre 2026, Nico a constaté sur sa machine que l'analyse du texte de 5 000 caractères (`docs/fixtures/texte-5000.txt`), modèle chargé, reste dans la cible dans **Firefox et Safari**, sans relever de chiffres. La procédure pour des mesures chiffrées est plus bas ; les tableaux à remplir sont prêts.
 
 ## En bref

@@ -1,5 +1,7 @@
 # Évaluation du NER et des packs (T3.4)
 
+**Portée du rapport :** mesures historiques avec DistilBERT et les packs de cette évaluation. La version publiée fournit désormais CamemBERT-NER (ADR 0004, A21). Les chiffres ci-dessous ne valident ni ce modèle ni les ajouts ultérieurs aux packs. Une nouvelle évaluation est requise ; voir [la recette du MVP](recette-mvp.md#5-travail-restant-pour-clôturer-la-recette).
+
 Rapport reproductible : toutes les valeurs ci-dessous sortent de `scripts/eval/evaluate.ts`, sans donnée réelle
 (corpus synthétique `corpus/ner-fr.jsonl` et `corpus/ner-en.jsonl`, 150 phrases chacun).
 

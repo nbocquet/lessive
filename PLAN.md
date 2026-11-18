@@ -53,20 +53,20 @@ CLI, import de packs par l'utilisateur, YAML, formats CSV/JSON structurés, DOCX
 | Build web | Vite | Standard, gère workers et WASM |
 | Interface | Svelte 5, sans SvelteKit | Code court et lisible, état intégré (aucune bibliothèque d'état), peu de dépendances |
 | Tests unitaires | Vitest | Intégré à Vite |
-| Tests navigateur | Playwright | Interception réseau et mode hors ligne |
+| Tests navigateur | Harnais Chrome/CDP du dépôt (`node:test`) | Interception réseau, inspection des stockages et mode hors ligne, sans dépendance supplémentaire |
 | Validation des packs | Zod | Une seule dépendance sans dépendance transitive ; schéma et types d'une seule source |
 | NER | Transformers.js (`@huggingface/transformers`) sur ONNX Runtime Web, backend WASM, WebGPU en option | Seule voie mûre dans le navigateur ; modèle choisi par le prototype S1 |
 | Chiffrement | WebCrypto : PBKDF2-SHA-256 (600 000 itérations, sel 16 octets) + AES-256-GCM (IV 12 octets), format versionné | Natif, aucune dépendance |
 | Sécurité des regex | Packs livrés uniquement, vérifiés en CI par un détecteur de ReDoS ; exécution dans un worker ; longueur d'entrée plafonnée | Suffisant tant que l'import de packs est hors MVP |
 | Distribution | Site statique (GitHub Pages) avec service worker écrit à la main pour le hors-ligne ; auto-hébergement documenté | Seul le traitement doit être local ; pas de bibliothèque PWA |
 
-**Budget de dépendances.** À l'exécution : Svelte, `@huggingface/transformers`, Zod, et rien d'autre sans accord de Nico. En développement : TypeScript, Vite, Vitest, Playwright, ESLint, Prettier, un détecteur de ReDoS.
+**Budget de dépendances.** À l'exécution : Svelte, `@huggingface/transformers`, Zod, et rien d'autre sans accord de Nico. En développement : TypeScript, Vite, Vitest, ESLint, Prettier, un détecteur de ReDoS. Playwright était prévu initialement ; les tests navigateur utilisent finalement le harnais Chrome/CDP du dépôt.
 
 ### Décisions ouvertes, tranchées par les prototypes
 
 | Décision | Tranchée par | Valeur par défaut |
 |---|---|---|
-| Modèle NER | S1 | **Tranché : DistilBERT multilingue (ADR 0001, 17 novembre 2026), chargé par l'utilisateur (ADR 0003)** |
+| Modèle NER | S1 | **Version publiée : CamemBERT-NER MIT (ADR 0004, A21), installation au clic depuis la même origine. Import local toujours possible (ADR 0003). DistilBERT reste la référence du rapport d'évaluation historique, pas le modèle publié.** |
 | Format des jetons | S2 | `PERSONNE_001` — **tranché : A accepté (ADR 0002, 17 novembre 2026)** |
 | Poids maximal du modèle | S1 + Nico | 150 Mo |
 
@@ -188,6 +188,22 @@ interface Entity {            // une personne, un lieu… réel, indépendant de
 
 ## 6. Phases et tâches
 
+### État d'avancement au 17 novembre 2026
+
+État rapproché du code au commit `a16947b`. Les tâches ci-dessous conservent leur objectif initial ; les preuves et réserves actuelles sont dans [la recette du MVP](docs/recette-mvp.md).
+
+| Phase | État actuel | Reste à clôturer |
+|---|---|---|
+| 0 — Prototypes | Décisions prises, porte G0 franchie ; modèle publié révisé par ADR 0004 | Ne pas attribuer les scores DistilBERT au CamemBERT fourni. |
+| 1 — Socle | Implémenté et testé | Réserves transversales suivies dans la recette. |
+| 2 — Packs | Cinq packs livrés et testés, enrichis après les retours de Nico | Réévaluer l'ensemble actuel avec le modèle publié. |
+| 3 — NER | Adaptateur, segmentation et worker livrés | T3.4 : évaluation fr/en de CamemBERT avec les packs actuels et comparaison aux cibles A13. |
+| 4 — Transformation et sessions | Implémenté et testé | Compléter la recette navigateur du chiffrement et des corrections ; encadrer la réidentification d'anciens pseudonymes entre documents. |
+| 5 — Interface | Parcours complet, avertissements et vérification réorganisés | Recette complète au clavier, Firefox et Safari. |
+| 6 — Durcissement et publication | Confidentialité Chrome, hors ligne par règles, CI e2e, Pages, imports bornés et Actions épinglées | Performances chiffrées actuelles, NER hors ligne après rechargement, inventaire/contrôle des licences, guide complet d'auto-hébergement, recette distante et porte G1. |
+
+**Prochaine étape :** réévaluer le modèle publié, mesurer ses performances puis finaliser les vérifications manuelles de [la recette](docs/recette-mvp.md#5-travail-restant-pour-clôturer-la-recette). Le site est publié ; la porte G1 avant annonce publique n'est pas formellement clôturée.
+
 Notation : **Dép.** = tâches à terminer avant ; **∥** = peut tourner en parallèle des autres tâches de la même vague.
 
 ### Phase 0 — Prototypes (bloquants)
@@ -297,7 +313,7 @@ Acceptation commune : parcours complet au clavier ; aucune injection HTML possib
 
 ### Phase 6 — Durcissement et publication
 
-- **T6.1 — Tests de confidentialité** (Playwright) : toute requête hors origine fait échouer le test ; parcours complet hors ligne ; rien dans `localStorage` ni IndexedDB après usage ; rechargement de la page = session vide.
+- **T6.1 — Tests de confidentialité** (harnais Chrome/CDP du dépôt) : toute requête hors origine fait échouer le test ; parcours complet hors ligne ; rien dans `localStorage` ni IndexedDB après usage ; rechargement de la page = session vide.
 - **T6.2 — Hors-ligne** : service worker écrit à la main, sans bibliothèque, mettant en cache l'application et le modèle ; indicateur « prêt hors ligne ».
 - **T6.3 — Performances** : mesures sur machine de référence, rapport `docs/performances.md`. Cibles : analyse de 5 000 caractères ≤ 5 s après chargement du modèle ; interface jamais bloquée plus de 100 ms.
 - **T6.4 — Documentation** : `README`, `ARCHITECTURE.md`, `SECURITY.md`, `CONTRIBUTING.md`, guide de création d'un pack, limites connues.
