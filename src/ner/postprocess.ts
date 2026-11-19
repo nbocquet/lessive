@@ -207,6 +207,15 @@ export interface LocateResult {
   unlocated: number;
 }
 
+const MARK = /\p{M}/u;
+
+/** Avance `end` au-delà des marques combinantes (texte NFD) : l'accent suit sa lettre. */
+function extendOverMarks(text: string, end: number): number {
+  let e = end;
+  while (e < text.length && MARK.test(text.charAt(e))) e++;
+  return e;
+}
+
 const LINE_BREAK = /[\n\r\u0085\u2028\u2029]/u;
 
 /**
@@ -220,7 +229,10 @@ function splitAtLineBreaks(
   g: TokenGroup,
 ): [number, number][] {
   const first = startMap[found] as number;
-  const last = endMap[found + foldForSearch(g.word).norm.length - 1] as number;
+  const last = extendOverMarks(
+    text,
+    endMap[found + foldForSearch(g.word).norm.length - 1] as number,
+  );
   const whole: [number, number][] = [[first, last]];
   if (g.parts === undefined || g.parts.length < 2 || !LINE_BREAK.test(text.slice(first, last))) {
     return whole;
@@ -233,7 +245,7 @@ function splitAtLineBreaks(
     const n = foldForSearch(part).norm.length;
     if (n === 0) continue;
     const s = startMap[offset] as number;
-    const e = endMap[offset + n - 1] as number;
+    const e = extendOverMarks(text, endMap[offset + n - 1] as number);
     offset += n;
     if (runStart !== -1 && LINE_BREAK.test(text.slice(prevEnd, s))) {
       runs.push([runStart, prevEnd]);
@@ -278,7 +290,7 @@ export function locateGroups(text: string, groups: readonly TokenGroup[]): Locat
     let found = -1;
     for (let i = norm.indexOf(needle, from); i !== -1; i = norm.indexOf(needle, i + 1)) {
       const s = startMap[i] as number;
-      const e = endMap[i + needle.length - 1] as number;
+      const e = extendOverMarks(text, endMap[i + needle.length - 1] as number);
       if (!isWordChar(text[s - 1]) && !isWordChar(text[e])) {
         found = i;
         break;
@@ -288,7 +300,7 @@ export function locateGroups(text: string, groups: readonly TokenGroup[]): Locat
       if (entityType !== null) unlocated++;
       continue;
     }
-    cursor = endMap[found + needle.length - 1] as number;
+    cursor = extendOverMarks(text, endMap[found + needle.length - 1] as number);
     if (entityType !== null) {
       for (const [start, end] of splitAtLineBreaks(text, folded, found, g)) {
         spans.push({ start, end, entityType, score: g.score, approximate: false });

@@ -226,6 +226,35 @@ describe("locateGroups", () => {
     }
   });
 
+  it("texte NFD : un nom accentué en fin de mot est localisé accent compris", () => {
+    const text = "Bonjour Rene\u0301 Dupont.".normalize("NFD");
+    const { spans, unlocated } = locateGroups(text, [group("PER", "René")]);
+    expect(unlocated).toBe(0);
+    expect(slices(text, spans)).toEqual(["Rene\u0301"]);
+  });
+
+  it("texte NFD : un nom accentué suivi de ponctuation ou de sous-tokens garde son accent", () => {
+    const text = "Merci, Rene\u0301. Zoe\u0301 Dupont\nElodie".normalize("NFD");
+    const { spans } = locateGroups(text, [group("PER", "René"), group("PER", "Zoé Dupont", 0.9)]);
+    expect(slices(text, spans)).toEqual(["Rene\u0301", "Zoe\u0301 Dupont"]);
+    const multi = "Rene\u0301 Martin\n\nSophie";
+    const groups = groupRawTokens([
+      tok("I-PER", "René", 1),
+      tok("I-PER", "Martin", 2),
+      tok("I-PER", "Sophie", 3),
+    ]);
+    expect(slices(multi, locateGroups(multi, groups).spans)).toEqual([
+      "Rene\u0301 Martin",
+      "Sophie",
+    ]);
+  });
+
+  it("texte NFD : un fragment à l'intérieur d'un mot reste écarté", () => {
+    const text = "Rene\u0301e et Ele\u0301onore";
+    expect(locateGroups(text, [group("PER", "René")]).spans).toEqual([]);
+    expect(locateGroups(text, [group("PER", "leonore")]).spans).toEqual([]);
+  });
+
   it("garde le fragment entouré de ponctuation, d'apostrophes ou de traits d'union", () => {
     const text = "(Marc), l'Anne et Jean-Paul";
     const { spans } = locateGroups(text, [
