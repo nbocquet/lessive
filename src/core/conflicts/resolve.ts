@@ -198,9 +198,10 @@ function tighten(
  * Applique les unités protégées avant la résolution : une unité l'emporte sur toute détection
  * non manuelle qu'elle chevauche, quel que soit le score.
  *  - fragment strictement contenu : écarté ;
- *  - détection qui déborde d'un côté : seuls les fragments NER ou dictionnaire non validés sont
- *    rognés, si le texte est fourni, si la coupe tombe entre deux mots et s'il reste des lettres
- *    ou chiffres ; sinon écartée (un motif ou validateur porte sur la valeur entière) ;
+ *  - détection qui déborde d'un côté : rognée à sa partie extérieure si le texte est fourni, si la
+ *    coupe tombe entre deux mots et s'il reste des lettres ou chiffres ; sinon écartée. Une
+ *    validation portait sur la valeur entière : la détection rognée la perd mais reste couverte
+ *    (laisser sa partie extérieure en clair serait une fuite) ;
  *  - détection qui contient l'unité : laissée à la politique habituelle ;
  *  - ajouts manuels et chevauchement entre deux unités : laissés à la politique habituelle.
  * Sans la rognure, une détection qui déborde gagnerait seule après l'éviction de ses fragments
@@ -260,10 +261,7 @@ function applyProtectedUnits(
       // Chevauchement partiel : on garde la partie extérieure.
       const left = u.start <= cur.start;
       const t =
-        (cur.source === "ner" || cur.source === "dictionary") &&
-        cur.validated !== true &&
-        text !== undefined &&
-        isWordBoundary(text, left ? u.end : u.start)
+        text !== undefined && isWordBoundary(text, left ? u.end : u.start)
           ? tighten(text, left ? u.end : cur.start, left ? cur.end : u.start, left)
           : null;
       if (t === null) {
@@ -271,6 +269,10 @@ function applyProtectedUnits(
         break;
       }
       cur = { ...cur, explanation: [...cur.explanation], start: t[0], end: t[1] };
+      if (cur.validated === true) {
+        cur.validated = false;
+        cur.explanation.push("validation retirée : la valeur a été coupée");
+      }
       trimmed = true;
     }
     if (dropped !== undefined) {

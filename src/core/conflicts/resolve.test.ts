@@ -478,27 +478,38 @@ describe("unités protégées (e-mail, adresse réunie)", () => {
       { source: "pattern", validated: false },
       { source: "ner", validated: true },
       { source: "dictionary", validated: true },
-    ] as const)("ne rogne pas une détection de motif ou validée : %j", (metadata) => {
-      for (const before of [false, true]) {
-        const text = before ? "+41 22 123 45 67, a@example.org" : "a@example.org, +41 22 123 45 67";
-        const mailStart = text.indexOf("a@example.org");
-        const mail = email(mailStart, mailStart + "a@example.org".length);
-        const over = det(before ? 0 : 2, before ? mailStart + 1 : text.length, {
-          ...metadata,
-          entityType: "PHONE",
-          score: 1,
-        });
-        const { kept, discarded } = resolveConflicts([over, mail], { text });
-        expect(ids(kept)).toEqual([mail.id]);
-        expect(discarded[0]).toMatchObject({
-          id: over.id,
-          start: over.start,
-          end: over.end,
-          validated: metadata.validated,
-          supersededBy: mail.id,
-        });
-      }
-    });
+    ] as const)(
+      "rogne aussi un motif ou une détection validée, sans la validation : %j",
+      (metadata) => {
+        const value = "+41 22 123 45 67";
+        for (const before of [false, true]) {
+          const text = before ? `${value}, a@example.org` : `a@example.org, ${value}`;
+          const mailStart = text.indexOf("a@example.org");
+          const valueStart = text.indexOf(value);
+          const mail = email(mailStart, mailStart + "a@example.org".length);
+          const over = det(before ? 0 : 2, before ? mailStart + 1 : text.length, {
+            ...metadata,
+            entityType: "PHONE",
+            score: 1,
+          });
+          const { kept, discarded } = resolveConflicts([over, mail], { text });
+          expect(discarded).toEqual([]);
+          const trimmed = kept.find((d) => d.id === over.id)!;
+          // La partie extérieure reste couverte : la laisser en clair serait une fuite.
+          // Seul le bord coupé est resserré (le « + » tombe si la coupe est à gauche).
+          expect(text.slice(trimmed.start, trimmed.end)).toBe(before ? value : value.slice(1));
+          expect(before ? trimmed.start : trimmed.end).toBe(
+            before ? valueStart : valueStart + value.length,
+          );
+          expect(trimmed.validated).toBe(false);
+          expect(trimmed.explanation.includes("validation retirée : la valeur a été coupée")).toBe(
+            metadata.validated,
+          );
+          expect(trimmed.explanation.at(-1)).toContain("rognée");
+          expect(over.validated).toBe(metadata.validated);
+        }
+      },
+    );
 
     it.each(["Rene\u0301", "Rene\u0301\u0327", "𐐀Rene\u0301", "Rene\u{1D165}", "𐐀"])(
       "le nom rogné conserve ses marques combinantes : %s",

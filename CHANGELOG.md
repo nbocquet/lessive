@@ -6,7 +6,7 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
-- Le rognage près d'une unité protégée conserve la ponctuation du bord intact et ne réutilise pas une validation portant sur une valeur entière désormais coupée (#18).
+- Le rognage près d'une unité protégée conserve la ponctuation du bord intact ; une détection validée (motif, IBAN…) rognée perd sa validation, qui portait sur la valeur entière, mais sa partie extérieure reste remplacée (#18).
 - Les détections écartées au profit d'une unité protégée désignent la détection finalement retenue, même si cette unité perd ensuite un conflit (#19).
 - Le NER sépare aussi les noms situés de part et d'autre d'un saut de page ou d'une tabulation verticale (#20).
 - Corriger manuellement un morceau d'adresse ne supprime plus les détections voisines du code postal et de la ville ; les noms rognés près d'une adresse conservent leurs accents décomposés dans le remplacement et la table de correspondance.
