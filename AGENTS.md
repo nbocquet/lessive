@@ -48,7 +48,7 @@ Un changement est terminé quand `npm run lint`, `npm run typecheck` et `npm tes
 
 ## Pièges connus
 
-- `npm ci` / `npm install` : préfixer par `ONNXRUNTIME_NODE_INSTALL=skip` (onnxruntime-node télécharge sinon des binaires depuis nuget.org).
+- `npm ci` / `npm install` : préfixer par `ONNXRUNTIME_NODE_INSTALL=skip` (onnxruntime-node télécharge sinon des binaires depuis nuget.org). Les scripts d'installation sont refusés dans `allowScripts` (`package.json`) ; n'en approuver aucun sans accord du mainteneur.
 - Les modèles NER ne sont pas versionnés : ils se déposent à la main dans `models/` (voir [models/README.md](models/README.md)). Les tests qui en ont besoin sont sautés en leur absence. Dans un environnement sans accès à Hugging Face, ne pas tenter de les télécharger.
 - Transformers.js 4.3 : ne pas utiliser `aggregation_strategy` (fusionne les entités non contiguës des modèles IO) ; regrouper les jetons bruts par contiguïté d'`index` et reconstruire les positions (`src/ner/postprocess.ts`).
 - Aucune chaîne en forme de secret (jeton Slack, GitHub, Stripe, clé d'API, JWT, clé PEM) en clair dans le dépôt, même fictive : GitHub refuse le push. Dans un JSON de test, écrire le premier caractère en `\uXXXX` (voir `packs/_tools/no-secrets.test.ts`). Une séquence `\uXXXX` tapée dans une commande shell peut devenir le caractère littéral : vérifier les fichiers écrits.

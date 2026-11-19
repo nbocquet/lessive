@@ -23,6 +23,8 @@ npm run build                          # site statique dans dist/
 npm run test:e2e                       # confidentialité de bout en bout (Chrome)
 ```
 
+Les scripts d'installation des dépendances sont refusés dans `allowScripts` (`package.json`) : `onnxruntime-node` (téléchargement de binaires depuis nuget.org), `protobufjs` et `fsevents` n'en ont pas besoin ici. Une dépendance qui ajoute un script d'installation fait apparaître un avertissement de npm : ne l'approuver (`npm install-scripts approve`) qu'après l'avoir lu, et avec l'accord du mainteneur. Le préfixe `ONNXRUNTIME_NODE_INSTALL=skip` reste une sécurité pour les versions de npm qui ignorent `allowScripts`.
+
 Une contribution est prête quand `npm run lint`, `npm run typecheck` et `npm test` passent. L'intégration continue (`.github/workflows/ci.yml`) les lance, avec le build.
 
 Outils de mesure, sans dépendance, lancés directement avec `node` : `scripts/eval/evaluate.ts` (qualité du NER, voir [docs/evaluation-ner.md](docs/evaluation-ner.md)) et `scripts/perf/measure.ts` (performances, voir [docs/performances.md](docs/performances.md)).
