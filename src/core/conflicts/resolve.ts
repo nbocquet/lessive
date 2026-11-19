@@ -149,7 +149,8 @@ function isProtectedUnit(d: Detection): boolean {
   return d.source !== "manual" && (d.entityType === "EMAIL" || d.recognizerId === ADDRESS_MERGE_ID);
 }
 
-const WORD_CHAR = /[\p{L}\p{N}]/u;
+const WORD_CHAR = /[\p{L}\p{N}\p{M}]/u;
+const BASE_CHAR = /[\p{L}\p{N}]/u;
 const isWordAt = (text: string, i: number): boolean => {
   const cp = text.codePointAt(i);
   return cp !== undefined && WORD_CHAR.test(String.fromCodePoint(cp));
@@ -157,19 +158,30 @@ const isWordAt = (text: string, i: number): boolean => {
 const isLow = (c: number) => c >= 0xdc00 && c <= 0xdfff;
 const isHigh = (c: number) => c >= 0xd800 && c <= 0xdbff;
 
+/** Début du point de code qui précède `pos` (positions UTF-16). */
+function previousCodePoint(text: string, pos: number): number {
+  return pos >= 2 && isLow(text.charCodeAt(pos - 1)) && isHigh(text.charCodeAt(pos - 2))
+    ? pos - 2
+    : pos - 1;
+}
+
 /** Vrai si la coupe en `pos` ne tombe pas au milieu d'un mot (ni d'une paire de substitution). */
 function isWordBoundary(text: string, pos: number): boolean {
   if (pos <= 0 || pos >= text.length) return true;
   if (isHigh(text.charCodeAt(pos - 1)) && isLow(text.charCodeAt(pos))) return false;
-  return !(isWordAt(text, pos - 1) && isWordAt(text, pos));
+  return !(isWordAt(text, previousCodePoint(text, pos)) && isWordAt(text, pos));
 }
 
-/** Resserre [start, end) sur ses lettres et chiffres extrêmes ; null s'il n'en reste aucun. */
+/** Resserre sur les lettres et chiffres, en conservant leurs marques combinantes finales. */
 function tighten(text: string, start: number, end: number): [number, number] | null {
   let s = start;
   let e = end;
-  while (s < e && !isWordAt(text, s)) s++;
-  while (e > s && !isWordAt(text, isLow(text.charCodeAt(e - 1)) ? e - 2 : e - 1)) e--;
+  while (s < e) {
+    const cp = text.codePointAt(s);
+    if (cp !== undefined && BASE_CHAR.test(String.fromCodePoint(cp))) break;
+    s += cp !== undefined && cp > 0xffff ? 2 : 1;
+  }
+  while (e > s && !isWordAt(text, previousCodePoint(text, e))) e = previousCodePoint(text, e);
   return s < e ? [s, e] : null;
 }
 
@@ -194,7 +206,18 @@ function applyProtectedUnits(
   discarded: Detection[],
   text: string | undefined,
 ): Detection[] {
-  const units = candidates.filter(isProtectedUnit).sort(compareCanonical);
+  let units = candidates.filter(isProtectedUnit).sort(compareCanonical);
+  if (units.length === 0) return [...candidates];
+  // Une unité battue par un ajout manuel ne doit pas écarter les autres morceaux d'adresse.
+  // Seuls les ajouts retenus comptent : un ajout manuel peut lui-même perdre un conflit.
+  // Cet appel ne repasse pas ici : les détections manuelles ne sont jamais des unités protégées.
+  const manual = resolveConflicts(candidates.filter((d) => d.source === "manual")).kept;
+  let manualIndex = 0;
+  units = units.filter((u) => {
+    while (manualIndex < manual.length && manual[manualIndex]!.end <= u.start) manualIndex++;
+    const first = manual[manualIndex];
+    return first === undefined || first.start >= u.end;
+  });
   if (units.length === 0) return [...candidates];
   const maxEnd: number[] = [];
   units.forEach((u, i) => maxEnd.push(Math.max(u.end, i > 0 ? maxEnd[i - 1]! : u.end)));

@@ -379,6 +379,36 @@ describe("unités protégées (e-mail, adresse réunie)", () => {
     expect(ids(kept)).toEqual([manual.id]);
   });
 
+  it("une adresse battue par un ajout manuel ne supprime pas la ville voisine", () => {
+    const text = "18 rue des Mélèzes, 1205 Genève";
+    const address = det(0, text.length, {
+      entityType: "LOCATION",
+      recognizerId: "core/address-merge",
+      score: 0.95,
+    });
+    const manual = det(0, text.indexOf(","), { source: "manual", score: 1 });
+    const city = det(text.indexOf("Genève"), text.length, {
+      entityType: "LOCATION",
+      source: "ner",
+      score: 0.99,
+    });
+    for (const input of permutations([address, manual, city])) {
+      const { kept, discarded } = resolveConflicts(input, { text });
+      expect(ids(kept)).toEqual([manual.id, city.id]);
+      expect(discarded.map((d) => [d.id, d.supersededBy])).toEqual([[address.id, manual.id]]);
+    }
+  });
+
+  it("seuls les ajouts manuels retenus désactivent une unité protégée", () => {
+    const winner = det(0, 10, { source: "manual", score: 1 });
+    const loser = det(5, 20, { source: "manual", score: 0.8 });
+    const mail = email(15, 35);
+    const fragment = det(25, 30, { source: "ner", score: 0.99 });
+    for (const input of permutations([winner, loser, mail, fragment])) {
+      expect(ids(resolveConflicts(input).kept)).toEqual([winner.id, mail.id]);
+    }
+  });
+
   describe("chevauchement partiel d'une unité", () => {
     const addrText = "7 avenue du Léman, 74100 Annemasse, France";
     const addr = () =>
@@ -411,6 +441,25 @@ describe("unités protégées (e-mail, adresse réunie)", () => {
         [s, s + 24],
       ]);
     });
+
+    it.each(["Rene\u0301", "Rene\u0301\u0327", "𐐀Rene\u0301", "Rene\u{1D165}", "𐐀"])(
+      "le nom rogné conserve ses marques combinantes : %s",
+      (name) => {
+        for (const before of [false, true]) {
+          const text = before ? `${name}, a@example.org` : `a@example.org, ${name}`;
+          const mailStart = text.indexOf("a@example.org");
+          const nameStart = text.indexOf(name);
+          const mail = email(mailStart, mailStart + "a@example.org".length);
+          const over = before
+            ? ner(0, mailStart + 1, "PERSON")
+            : ner(mailStart + 2, text.length, "PERSON");
+          const { kept } = resolveConflicts([over, mail], { text });
+          const person = kept.find((d) => d.id === over.id)!;
+          expect([person.start, person.end]).toEqual([nameStart, nameStart + name.length]);
+          expect(text.slice(person.start, person.end)).toBe(name);
+        }
+      },
+    );
 
     it("sans texte, ou coupe au milieu d'un mot, ou sans lettre restante : écartée", () => {
       const mail = email(13, 37);

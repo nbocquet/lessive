@@ -3,8 +3,14 @@
  * adresse e-mail entière ni une adresse postale réunie par les règles. Textes fictifs (R10).
  */
 import { describe, expect, it } from "vitest";
-import { createAnalyzer, createSession, PackRegistry, transform } from "../../src/core/index.ts";
-import type { EntityType, NerEngine } from "../../src/core/types/index.ts";
+import {
+  createAnalyzer,
+  createSession,
+  PackRegistry,
+  reidentify,
+  transform,
+} from "../../src/core/index.ts";
+import type { Detection, EntityType, NerEngine } from "../../src/core/types/index.ts";
 import { bundledPackDirs, loadPackDir } from "../../packs/_tools/load.ts";
 
 const registry = new PackRegistry();
@@ -34,8 +40,8 @@ function fakeNer(fragments: readonly (readonly [string, EntityType, number])[]):
   };
 }
 
-async function run(text: string, ner?: NerEngine) {
-  const result = await analyzer.analyze(text, { language: "fr", ...(ner ? { ner } : {}) });
+async function run(text: string, ner?: NerEngine, manual: Detection[] = []) {
+  const result = await analyzer.analyze(text, { language: "fr", manual, ...(ner ? { ner } : {}) });
   const out = {} as Record<"masking" | "pseudonymization", string>;
   for (const mode of ["masking", "pseudonymization"] as const) {
     const t = transform(
@@ -53,6 +59,27 @@ async function run(text: string, ner?: NerEngine) {
 }
 
 describe("e-mail entier protégé (#8)", () => {
+  it("un nom NFD rogné garde ses accents dans la correspondance et la réidentification", async () => {
+    const name = "Rene\u0301";
+    const text = `a@example.org, ${name}`;
+    const { result, out, values } = await run(
+      text,
+      fakeNer([[`example.org, ${name}`, "PERSON", 0.99]]),
+    );
+    expect(values("PERSON")).toEqual([name]);
+    expect(out.pseudonymization).toMatch(/^EMAIL_\d{3}, PERSONNE_\d{3}$/u);
+    expect(out.masking).toBe("[EMAIL], [PERSONNE]");
+    const session = createSession();
+    const transformed = transform(
+      text,
+      result.detections,
+      { mode: "pseudonymization", defaultOperator: "pseudonymize" },
+      session,
+    );
+    expect(session.entities().find((e) => e.entityType === "PERSON")?.surfaceForms).toContain(name);
+    expect(reidentify(transformed.text, session).text).toBe(text);
+  });
+
   it.each([
     ["elodie.morel@example.org", "elodie"],
     ["<nina.brumelac@example.org>", "nina"],
@@ -88,6 +115,35 @@ describe("e-mail entier protégé (#8)", () => {
 });
 
 describe("adresse postale protégée (#9)", () => {
+  it.each([undefined, 0.99])(
+    "corriger la rue à la main conserve les détections voisines (NER : %s)",
+    async (score) => {
+      const text = "18 rue des Mélèzes, 1205 Genève";
+      const manual: Detection = {
+        id: "manual",
+        start: 0,
+        end: text.indexOf(","),
+        entityType: "LOCATION",
+        source: "manual",
+        score: 1,
+        recognizerId: "manual",
+        packId: "manual",
+        explanation: [],
+      };
+      const { result, out } = await run(
+        text,
+        score === undefined ? undefined : fakeNer([["Genève", "LOCATION", score]]),
+        [manual],
+      );
+      expect(result.detections.some((d) => d.source === "manual")).toBe(true);
+      for (const mode of ["masking", "pseudonymization"] as const) {
+        expect(out[mode]).not.toMatch(/Mélèzes|Genève/u);
+        // Sans conflit NER supplémentaire, la règle code postal + ville reste entière.
+        if (score === undefined) expect(out[mode]).not.toContain("1205");
+      }
+    },
+  );
+
   it("un faux NER `Léman` à 0,99 ne dégrade pas l'adresse complète", async () => {
     const text = "Il habite au 7 avenue du Léman, 74100 Annemasse, France.";
     const { values, out } = await run(text, fakeNer([["Léman", "LOCATION", 0.99]]));
