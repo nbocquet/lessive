@@ -6,7 +6,9 @@
  * Après analyse et pseudonymisation, aucune valeur personnelle ne doit rester en clair.
  * Hors champ, par décision documentée (docs/historique/PLAN.md §10) : les références internes (dossier, commande,
  * contrat, serveur) et les données sensibles (« raisons médicales »). « Établissement des
- * Tilleuls » n'est pas reconnu par le modèle NER (limite documentée).
+ * Tilleuls » n'est pas reconnu par le modèle NER (limite documentée). « HexaTech Conseil » non
+ * plus : le modèle n'en étiquette que des morceaux (« He », « Tech ») à l'intérieur du mot, qui
+ * sont écartés plutôt que de couper le mot (#10) ; limite documentée.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -69,7 +71,7 @@ const ALWAYS = [
 ];
 
 /** Valeurs reconnues seulement par le NER (organisations). */
-const WITH_NER = ["Alpina Solutions", "HexaTech Conseil"];
+const WITH_NER = ["Alpina Solutions"];
 
 /** Hors champ par décision : restent en clair, sans que ce soit une fuite. */
 const OUT_OF_SCOPE = ["ET-2026-003821", "PO-2026-77841", "CT-2026-0847", "raisons médicales"];
