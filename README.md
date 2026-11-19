@@ -21,6 +21,28 @@
 
 ---
 
+## Le parcours en un schéma
+
+```mermaid
+flowchart TD
+  SOURCE["Texte ou e-mail contenant des données personnelles"]
+  subgraph LOCAL["Sur votre ordinateur · Lessive dans le navigateur"]
+    PSEUDO["1. Pseudonymiser puis vérifier les détections"]
+    MAPPING[("Correspondances conservées en mémoire")]
+    REID["4. Réidentifier la réponse avec Lessive"]
+    RESULT["Réponse avec les données personnelles rétablies"]
+  end
+  LLM["Assistant IA externe · LLM"]
+  SOURCE -->|"Coller le texte"| PSEUDO
+  PSEUDO -.-> MAPPING
+  PSEUDO -->|"2. Copier-coller le texte vérifié avec ses repères : PERSONNE_001, EMAIL_001…"| LLM
+  LLM -->|"3. Copier-coller la réponse contenant les repères"| REID
+  MAPPING -.-> REID
+  REID --> RESULT
+```
+
+Les échanges avec l'assistant se font par copier-coller : Lessive n'appelle aucun LLM. La table de correspondance reste sur votre ordinateur. Relisez le texte pseudonymisé avant de le transmettre ; des informations non détectées peuvent encore identifier une personne.
+
 ## English
 
 Lessive finds personal data in a text (names, e-mail addresses, phone numbers, IBANs, Swiss AVS and French NIR numbers, postal addresses…) and replaces it with neutral tokens such as `PERSONNE_001`, **entirely in your browser**. You paste the result into ChatGPT, Claude, Gemini or any other assistant; when the assistant answers, Lessive puts the original values back, still on your computer.
@@ -101,6 +123,7 @@ npm run preview                        # le site tel qu'il sera servi
 | Mesures de qualité et de performance | [docs/evaluation-ner.md](docs/evaluation-ner.md), [docs/performances.md](docs/performances.md) |
 | Décisions d'architecture | [docs/adr/](docs/adr/) |
 | Historique des versions | [CHANGELOG.md](CHANGELOG.md) |
+| Travaux prévus | [TODO.md](TODO.md) |
 
 ### État du projet
 

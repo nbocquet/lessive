@@ -442,6 +442,75 @@ describe("unités protégées (e-mail, adresse réunie)", () => {
       ]);
     });
 
+    it.each([
+      ["+41 22 123 45 67", "41 22 123 45 67", "+41 22 123 45 67"],
+      ["S.A.", "S.A.", "S.A"],
+      ["(Dupont", "Dupont", "(Dupont"],
+    ])("le rognage conserve la ponctuation du bord intact : %s", (value, cutLeft, cutRight) => {
+      for (const source of ["ner", "dictionary"] as const) {
+        for (const before of [false, true]) {
+          const text = before ? `${value}, a@example.org` : `a@example.org, ${value}`;
+          const mailStart = text.indexOf("a@example.org");
+          const valueStart = text.indexOf(value);
+          const mail = email(mailStart, mailStart + "a@example.org".length);
+          const over = det(before ? 0 : 2, before ? mailStart + 1 : text.length, {
+            source,
+            score: 0.99,
+          });
+          const { kept } = resolveConflicts([over, mail], { text });
+          const trimmed = kept.find((d) => d.id === over.id)!;
+          // Le bord coupé est resserré ; seule la ponctuation du bord intact est conservée.
+          const expected = before ? cutRight : cutLeft;
+          expect(text.slice(trimmed.start, trimmed.end)).toBe(expected);
+          expect(before ? trimmed.start : trimmed.end).toBe(
+            before ? valueStart : valueStart + value.length,
+          );
+          expect([over.start, over.end]).toEqual([
+            before ? 0 : 2,
+            before ? mailStart + 1 : text.length,
+          ]);
+        }
+      }
+    });
+
+    it.each([
+      { source: "pattern", validated: true },
+      { source: "pattern", validated: false },
+      { source: "ner", validated: true },
+      { source: "dictionary", validated: true },
+    ] as const)(
+      "rogne aussi un motif ou une détection validée, sans la validation : %j",
+      (metadata) => {
+        const value = "+41 22 123 45 67";
+        for (const before of [false, true]) {
+          const text = before ? `${value}, a@example.org` : `a@example.org, ${value}`;
+          const mailStart = text.indexOf("a@example.org");
+          const valueStart = text.indexOf(value);
+          const mail = email(mailStart, mailStart + "a@example.org".length);
+          const over = det(before ? 0 : 2, before ? mailStart + 1 : text.length, {
+            ...metadata,
+            entityType: "PHONE",
+            score: 1,
+          });
+          const { kept, discarded } = resolveConflicts([over, mail], { text });
+          expect(discarded).toEqual([]);
+          const trimmed = kept.find((d) => d.id === over.id)!;
+          // La partie extérieure reste couverte : la laisser en clair serait une fuite.
+          // Seul le bord coupé est resserré (le « + » tombe si la coupe est à gauche).
+          expect(text.slice(trimmed.start, trimmed.end)).toBe(before ? value : value.slice(1));
+          expect(before ? trimmed.start : trimmed.end).toBe(
+            before ? valueStart : valueStart + value.length,
+          );
+          expect(trimmed.validated).toBe(false);
+          expect(trimmed.explanation.includes("validation retirée : la valeur a été coupée")).toBe(
+            metadata.validated,
+          );
+          expect(trimmed.explanation.at(-1)).toContain("rognée");
+          expect(over.validated).toBe(metadata.validated);
+        }
+      },
+    );
+
     it.each(["Rene\u0301", "Rene\u0301\u0327", "𐐀Rene\u0301", "Rene\u{1D165}", "𐐀"])(
       "le nom rogné conserve ses marques combinantes : %s",
       (name) => {
@@ -497,5 +566,43 @@ describe("unités protégées (e-mail, adresse réunie)", () => {
     const name = det(0, 12, { source: "ner", score: 0.99 });
     const mail = email(14, 38);
     expect(ids(resolveConflicts([mail, name]).kept)).toEqual([name.id, mail.id]);
+  });
+});
+
+describe("unités protégées : lien vers la détection finalement retenue", () => {
+  it("rattache le fragment et l'e-mail à l'URL retenue, indépendamment de l'ordre d'entrée", () => {
+    const text = "voir https://example.org/a/jean@example.org/b";
+    const emailStart = text.indexOf("jean");
+    const url = det(5, text.length, { entityType: "URL", score: 0.95 });
+    const email = det(emailStart, emailStart + "jean@example.org".length, {
+      entityType: "EMAIL",
+      score: 0.9,
+    });
+    const fragment = det(emailStart, emailStart + 4, { source: "ner", score: 0.99 });
+    const input = [url, email, fragment];
+    const original = structuredClone(input);
+
+    for (const order of permutations(input)) {
+      const { kept, discarded } = resolveConflicts(order, { text });
+      expect(ids(kept)).toEqual([url.id]);
+      expect(discarded).toHaveLength(2);
+      expect(discarded.every((d) => d.supersededBy === url.id)).toBe(true);
+      const discardedFragment = discarded.find((d) => d.id === fragment.id)!;
+      expect(discardedFragment.explanation.at(-1)).toBe(
+        "décision intermédiaire révisée : détection finalement retenue URL",
+      );
+      expect(discardedFragment.explanation.join(" ")).not.toContain("jean");
+      expect(discardedFragment.explanation.join(" ")).not.toContain("example.org");
+    }
+    expect(input).toEqual(original);
+  });
+
+  it("conserve le lien et l'explication directe quand l'e-mail est retenu", () => {
+    const email = det(0, 16, { entityType: "EMAIL", score: 0.9 });
+    const fragment = det(0, 4, { source: "ner", score: 0.99 });
+    const { discarded } = resolveConflicts([fragment, email]);
+    expect(discarded[0]!.supersededBy).toBe(email.id);
+    expect(discarded[0]!.explanation.at(-1)).toContain("unité protégée");
+    expect(discarded[0]!.explanation).toHaveLength(fragment.explanation.length + 1);
   });
 });

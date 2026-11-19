@@ -172,17 +172,26 @@ function isWordBoundary(text: string, pos: number): boolean {
   return !(isWordAt(text, previousCodePoint(text, pos)) && isWordAt(text, pos));
 }
 
-/** Resserre sur les lettres et chiffres, en conservant leurs marques combinantes finales. */
-function tighten(text: string, start: number, end: number): [number, number] | null {
+/** Resserre uniquement le bord coupé, sans altérer la ponctuation du bord intact. */
+function tighten(
+  text: string,
+  start: number,
+  end: number,
+  cutStart: boolean,
+): [number, number] | null {
   let s = start;
   let e = end;
-  while (s < e) {
-    const cp = text.codePointAt(s);
-    if (cp !== undefined && BASE_CHAR.test(String.fromCodePoint(cp))) break;
-    s += cp !== undefined && cp > 0xffff ? 2 : 1;
+  if (cutStart) {
+    while (s < e) {
+      const cp = text.codePointAt(s);
+      if (cp !== undefined && BASE_CHAR.test(String.fromCodePoint(cp))) break;
+      s += cp !== undefined && cp > 0xffff ? 2 : 1;
+    }
+  } else {
+    // Les marques combinantes finales appartiennent au dernier caractère conservé.
+    while (e > s && !isWordAt(text, previousCodePoint(text, e))) e = previousCodePoint(text, e);
   }
-  while (e > s && !isWordAt(text, previousCodePoint(text, e))) e = previousCodePoint(text, e);
-  return s < e ? [s, e] : null;
+  return s < e && BASE_CHAR.test(text.slice(s, e)) ? [s, e] : null;
 }
 
 /**
@@ -190,7 +199,9 @@ function tighten(text: string, start: number, end: number): [number, number] | n
  * non manuelle qu'elle chevauche, quel que soit le score.
  *  - fragment strictement contenu : écarté ;
  *  - détection qui déborde d'un côté : rognée à sa partie extérieure si le texte est fourni, si la
- *    coupe tombe entre deux mots et s'il reste des lettres ou chiffres ; sinon écartée ;
+ *    coupe tombe entre deux mots et s'il reste des lettres ou chiffres ; sinon écartée. Une
+ *    validation portait sur la valeur entière : la détection rognée la perd mais reste couverte
+ *    (laisser sa partie extérieure en clair serait une fuite) ;
  *  - détection qui contient l'unité : laissée à la politique habituelle ;
  *  - ajouts manuels et chevauchement entre deux unités : laissés à la politique habituelle.
  * Sans la rognure, une détection qui déborde gagnerait seule après l'éviction de ses fragments
@@ -251,13 +262,17 @@ function applyProtectedUnits(
       const left = u.start <= cur.start;
       const t =
         text !== undefined && isWordBoundary(text, left ? u.end : u.start)
-          ? tighten(text, left ? u.end : cur.start, left ? cur.end : u.start)
+          ? tighten(text, left ? u.end : cur.start, left ? cur.end : u.start, left)
           : null;
       if (t === null) {
         dropped = u;
         break;
       }
       cur = { ...cur, explanation: [...cur.explanation], start: t[0], end: t[1] };
+      if (cur.validated === true) {
+        cur.validated = false;
+        cur.explanation.push("validation retirée : la valeur a été coupée");
+      }
       trimmed = true;
     }
     if (dropped !== undefined) {
@@ -367,6 +382,26 @@ export function resolveConflicts(
     if (others !== undefined) {
       k.explanation.push(
         `confirmée par un autre détecteur : ${[...others].sort(cmpStr).join(", ")}`,
+      );
+    }
+  }
+
+  // Une unité protégée peut avoir écarté un fragment avant de perdre elle-même un conflit.
+  // Le lien affiché doit viser la gagnante finale ; l'explication conserve les étapes de décision.
+  const keptById = new Map(kept.map((d) => [d.id, d]));
+  const discardedById = new Map(discarded.map((d) => [d.id, d]));
+  for (const d of discarded) {
+    let target = d.supersededBy;
+    const visited = new Set<string>();
+    while (target !== undefined && !keptById.has(target) && !visited.has(target)) {
+      visited.add(target);
+      target = discardedById.get(target)?.supersededBy;
+    }
+    const winner = target === undefined ? undefined : keptById.get(target);
+    if (winner !== undefined && winner.id !== d.supersededBy) {
+      d.supersededBy = winner.id;
+      d.explanation.push(
+        `décision intermédiaire révisée : détection finalement retenue ${winner.entityType}`,
       );
     }
   }

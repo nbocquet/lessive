@@ -304,8 +304,8 @@ describe("locateGroups", () => {
     expect(slices(text, spans)).toEqual(["Claire Martin", "Sophie", "Élodie"]);
   });
 
-  it("coupe aussi à un simple saut de ligne, CRLF et séparateurs Unicode, sans toucher les noms d'une ligne", () => {
-    for (const sep of ["\n", "\r\n", "\u2028"]) {
+  it("coupe aux sauts de ligne, de page et séparateurs Unicode, sans toucher les noms d'une ligne", () => {
+    for (const sep of ["\n", "\r", "\r\n", "\f", "\v", "\u2028", "\u2029"]) {
       const text = `Anne Dupré${sep}Bob Léger`;
       const groups = groupRawTokens([
         tok("I-PER", "Anne", 1),
@@ -335,9 +335,13 @@ describe("locateGroups", () => {
     for (const [text, expected] of [
       ["Signé Jean-\nPierre Martin.", ["Jean-\nPierre Martin"]],
       ["Signé Jean-\r\nPierre Martin.", ["Jean-\r\nPierre Martin"]],
+      ["Signé Jean-\fPierre Martin.", ["Jean-\fPierre Martin"]],
+      ["Signé Jean-\vPierre Martin.", ["Jean-\vPierre Martin"]],
       ["Signé Jean‐ \n Pierre Martin.", ["Jean‐ \n Pierre Martin"]],
       // Ligne vide ou séparateur de paragraphe : la coupure s'applique toujours.
       ["Signé Jean-\n\nPierre Martin.", ["Jean-", "Pierre Martin"]],
+      ["Signé Jean-\f\vPierre Martin.", ["Jean-", "Pierre Martin"]],
+      ["Signé Jean-\f\nPierre Martin.", ["Jean-", "Pierre Martin"]],
       ["Signé Jean- Pierre Martin.", ["Jean-", "Pierre Martin"]],
     ] as const) {
       const g = text.includes("‐")
