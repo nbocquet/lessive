@@ -4,6 +4,11 @@ import type { Detection } from "../types/detection.ts";
 export interface ResolveConflictsOptions {
   /** Score minimal (inclus) pour participer à la résolution. Défaut : 0,5. Sans effet sur `manual`. */
   minScore?: number;
+  /**
+   * Texte analysé. Optionnel : il permet de rogner à des frontières de mot une détection qui
+   * déborde d'une unité protégée (adresse e-mail ou postale entière). Sans lui, elle est écartée.
+   */
+  text?: string;
 }
 
 export interface ConflictResolution {
@@ -144,48 +149,109 @@ function isProtectedUnit(d: Detection): boolean {
   return d.source !== "manual" && (d.entityType === "EMAIL" || d.recognizerId === ADDRESS_MERGE_ID);
 }
 
+const WORD_CHAR = /[\p{L}\p{N}]/u;
+const isWordAt = (text: string, i: number): boolean => {
+  const cp = text.codePointAt(i);
+  return cp !== undefined && WORD_CHAR.test(String.fromCodePoint(cp));
+};
+const isLow = (c: number) => c >= 0xdc00 && c <= 0xdfff;
+const isHigh = (c: number) => c >= 0xd800 && c <= 0xdbff;
+
+/** Vrai si la coupe en `pos` ne tombe pas au milieu d'un mot (ni d'une paire de substitution). */
+function isWordBoundary(text: string, pos: number): boolean {
+  if (pos <= 0 || pos >= text.length) return true;
+  if (isHigh(text.charCodeAt(pos - 1)) && isLow(text.charCodeAt(pos))) return false;
+  return !(isWordAt(text, pos - 1) && isWordAt(text, pos));
+}
+
+/** Resserre [start, end) sur ses lettres et chiffres extrêmes ; null s'il n'en reste aucun. */
+function tighten(text: string, start: number, end: number): [number, number] | null {
+  let s = start;
+  let e = end;
+  while (s < e && !isWordAt(text, s)) s++;
+  while (e > s && !isWordAt(text, isLow(text.charCodeAt(e - 1)) ? e - 2 : e - 1)) e--;
+  return s < e ? [s, e] : null;
+}
+
 /**
- * Écarte tout fragment strictement contenu dans une unité protégée (un nom dans une adresse
- * e-mail, un lieu dans une adresse postale), quel que soit son score : le découper ferait fuiter
- * ou altérerait le reste de l'unité. Les ajouts manuels sont conservés.
+ * Applique les unités protégées avant la résolution : une unité l'emporte sur toute détection
+ * non manuelle qu'elle chevauche, quel que soit le score.
+ *  - fragment strictement contenu : écarté ;
+ *  - détection qui déborde d'un côté : rognée à sa partie extérieure si le texte est fourni, si la
+ *    coupe tombe entre deux mots et s'il reste des lettres ou chiffres ; sinon écartée ;
+ *  - détection qui contient l'unité : laissée à la politique habituelle ;
+ *  - ajouts manuels et chevauchement entre deux unités : laissés à la politique habituelle.
+ * Sans la rognure, une détection qui déborde gagnerait seule après l'éviction de ses fragments
+ * internes et laisserait le reste de l'unité en clair.
  *
  * C'est un filtre préalable, et non une règle de `decide` : la politique par paire est déjà
  * non transitive (voir `compareCanonical`) et une règle de plus y créerait des cycles avec des
- * détections de score intermédiaire, qui défont le tri. Ici le résultat ne dépend que de
- * l'inclusion, donc de rien d'autre que du contenu des détections. Renvoie les détections gardées.
+ * détections de score intermédiaire, qui défont le tri. Les unités sont parcourues dans l'ordre
+ * canonique : le résultat ne dépend pas de l'ordre d'entrée.
  */
-function removeProtectedFragments(candidates: Detection[], discarded: Detection[]): Detection[] {
+function applyProtectedUnits(
+  candidates: Detection[],
+  discarded: Detection[],
+  text: string | undefined,
+): Detection[] {
   const units = candidates.filter(isProtectedUnit).sort(compareCanonical);
   if (units.length === 0) return [...candidates];
-  // Plus grande fin parmi les unités qui commencent au plus tard à la même position.
   const maxEnd: number[] = [];
   units.forEach((u, i) => maxEnd.push(Math.max(u.end, i > 0 ? maxEnd[i - 1]! : u.end)));
 
   const out: Detection[] = [];
   for (const d of candidates) {
-    let owner: Detection | undefined;
-    if (d.source !== "manual") {
-      // Dernière unité qui commence au plus tard en d.start.
-      let lo = 0;
-      let hi = units.length;
-      while (lo < hi) {
-        const mid = (lo + hi) >>> 1;
-        if (units[mid]!.start <= d.start) lo = mid + 1;
-        else hi = mid;
-      }
-      for (let j = lo - 1; j >= 0 && maxEnd[j]! >= d.end; j--) {
-        if (strictlyContains(units[j]!, d)) owner = units[j];
-      }
+    if (d.source === "manual" || isProtectedUnit(d)) {
+      out.push(d);
+      continue;
     }
-    if (owner === undefined) out.push(d);
-    else {
+    // Premier indice dont la fin cumulée dépasse d.start.
+    let lo = 0;
+    let hi = units.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (maxEnd[mid]! > d.start) hi = mid;
+      else lo = mid + 1;
+    }
+    let cur = d;
+    let dropped: Detection | undefined;
+    let trimmed = false;
+    for (let j = lo; j < units.length && units[j]!.start < d.end; j++) {
+      const u = units[j]!;
+      if (u.end <= cur.start || u.start >= cur.end) continue;
+      if (u.start <= cur.start && u.end >= cur.end) {
+        dropped = u; // contenue dans l'unité (ou identique)
+        break;
+      }
+      if (cur.start <= u.start && cur.end >= u.end) continue; // d contient l'unité
+      // Chevauchement partiel : on garde la partie extérieure.
+      const left = u.start <= cur.start;
+      const t =
+        text !== undefined && isWordBoundary(text, left ? u.end : u.start)
+          ? tighten(text, left ? u.end : cur.start, left ? cur.end : u.start)
+          : null;
+      if (t === null) {
+        dropped = u;
+        break;
+      }
+      cur = { ...cur, explanation: [...cur.explanation], start: t[0], end: t[1] };
+      trimmed = true;
+    }
+    if (dropped !== undefined) {
       discarded.push(
         discard(
           d,
-          `écartée au profit d'une détection ${owner.entityType} : unité protégée (adresse entière) contenant ce fragment`,
-          owner.id,
+          `écartée au profit d'une détection ${dropped.entityType} : unité protégée (adresse entière) qu'elle chevauche`,
+          dropped.id,
         ),
       );
+    } else {
+      if (trimmed) {
+        cur.explanation.push(
+          "rognée : sa partie dans une unité protégée (adresse entière) est retirée",
+        );
+      }
+      out.push(cur);
     }
   }
   return out;
@@ -229,7 +295,7 @@ export function resolveConflicts(
     }
   }
 
-  const ordered = removeProtectedFragments(candidates, discarded)
+  const ordered = applyProtectedUnits(candidates, discarded, options.text)
     .sort(compareCanonical)
     .sort(compareDetections);
 

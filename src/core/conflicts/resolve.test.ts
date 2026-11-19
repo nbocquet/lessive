@@ -379,6 +379,71 @@ describe("unités protégées (e-mail, adresse réunie)", () => {
     expect(ids(kept)).toEqual([manual.id]);
   });
 
+  describe("chevauchement partiel d'une unité", () => {
+    const addrText = "7 avenue du Léman, 74100 Annemasse, France";
+    const addr = () =>
+      det(0, 34, { entityType: "LOCATION", score: 0.95, recognizerId: "core/address-merge" });
+    const ner = (s: number, e: number, entityType: EntityType = "LOCATION") =>
+      det(s, e, { entityType, source: "ner", score: 0.99 });
+    const span = (ds: Detection[]) => ds.map((d) => [d.start, d.end]);
+
+    it("adresse postale : la partie extérieure d'une détection qui déborde est gardée", () => {
+      const input = [ner(12, 17), ner(25, 42), addr()];
+      const { kept, discarded } = resolveConflicts(input, { text: addrText });
+      expect(span(kept)).toEqual([
+        [0, 34],
+        [36, 42],
+      ]);
+      expect(addrText.slice(36, 42)).toBe("France");
+      expect(kept[1]!.explanation.join(" ")).toContain("rognée");
+      expect(discarded.map((d) => d.start)).toEqual([12]);
+    });
+
+    it("e-mail : le débordement est rogné à gauche, le fragment interne écarté", () => {
+      const text = "Contact Nina Morel@x elodie.morel@example.org fin";
+      const s = text.indexOf("elodie");
+      const mail = email(s, s + 24);
+      const over = ner(s - 6, s + 6, "PERSON");
+      const inner = ner(s + 7, s + 12, "PERSON");
+      const { kept } = resolveConflicts([over, inner, mail], { text });
+      expect(span(kept)).toEqual([
+        [s - 6, s - 1],
+        [s, s + 24],
+      ]);
+    });
+
+    it("sans texte, ou coupe au milieu d'un mot, ou sans lettre restante : écartée", () => {
+      const mail = email(13, 37);
+      const over = ner(7, 19, "PERSON");
+      expect(span(resolveConflicts([over, mail]).kept)).toEqual([[13, 37]]);
+      const mid = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnop";
+      expect(span(resolveConflicts([over, mail], { text: mid }).kept)).toEqual([[13, 37]]);
+      const blank = "      , ".padEnd(13, " ") + "x".repeat(24);
+      expect(span(resolveConflicts([over, mail], { text: blank }).kept)).toEqual([[13, 37]]);
+    });
+
+    it("résultat identique pour toute permutation, avec deux unités qui se chevauchent", () => {
+      const text = "x ".repeat(30);
+      const input = [
+        email(2, 20),
+        email(10, 30),
+        ner(0, 12, "PERSON"),
+        ner(18, 40, "PERSON"),
+        ner(14, 16, "PERSON"),
+      ];
+      const norm = (ds: Detection[]) => span(resolveConflicts(ds, { text }).kept);
+      const a = norm(input);
+      expect(norm([...input].reverse())).toEqual(a);
+      expect(norm([input[3]!, input[0]!, input[4]!, input[2]!, input[1]!])).toEqual(a);
+    });
+
+    it("un ajout manuel qui chevauche partiellement l'unité reste prioritaire (comportement fixé)", () => {
+      const mail = email(13, 37);
+      const manual = det(7, 19, { source: "manual", score: 1 });
+      expect(span(resolveConflicts([mail, manual]).kept)).toEqual([[7, 19]]);
+    });
+  });
+
   it("un nom affiché voisin n'est pas touché", () => {
     const name = det(0, 12, { source: "ner", score: 0.99 });
     const mail = email(14, 38);
