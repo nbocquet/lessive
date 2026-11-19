@@ -7,7 +7,7 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 ### Corrigé
 
 - Corriger manuellement un morceau d'adresse ne supprime plus les détections voisines du code postal et de la ville ; les noms rognés près d'une adresse conservent leurs accents décomposés dans le remplacement et la table de correspondance.
-- Le NER n'applique plus une entité trouvée à l'intérieur d'un mot (« Objet » devenait `LIEU_001jet`, `JPLAMBERT` devenait `JPLAMPERSONNE_013`), et ne réunit plus deux personnes séparées par un saut de ligne ou de paragraphe (`Claire Martin` puis `Sophie`) en une seule entité (#10, #11).
+- Le NER n'applique plus une entité trouvée à l'intérieur d'un mot (« Objet » devenait `LIEU_001jet`, `JPLAMBERT` devenait `JPLAMPERSONNE_013`), et ne réunit plus deux personnes séparées par un saut de ligne ou de paragraphe (`Claire Martin` puis `Sophie`) en une seule entité ; un nom à trait d'union renvoyé à la ligne (`Jean-` puis `Pierre`) reste une seule personne (#10, #11).
 - Une adresse e-mail entière et une adresse postale réunie par les règles (rue, code postal, ville) sont des unités protégées : un fragment du modèle de reconnaissance des noms (nom dans un e-mail, lieu dans une adresse), même très confiant, ne les découpe plus, en Masquage comme en Pseudonymisation.
 - Les noms affichés devant une adresse dans les listes de destinataires sont protégés même avec un patronyme absent des dictionnaires, dans l’ordre prénom/nom ou nom/prénom, avec un service entre parenthèses et une adresse sur la ligne suivante.
 

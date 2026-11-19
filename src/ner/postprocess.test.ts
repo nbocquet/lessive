@@ -325,6 +325,33 @@ describe("locateGroups", () => {
     expect(slices(oneLine, locateGroups(oneLine, groups).spans)).toEqual([oneLine]);
   });
 
+  it("ne coupe pas un nom à trait d'union renvoyé à la ligne", () => {
+    const groups = groupRawTokens([
+      tok("I-PER", "Jean", 1),
+      tok("I-PER", "-", 2),
+      tok("I-PER", "Pierre", 3),
+      tok("I-PER", "Martin", 4),
+    ]);
+    for (const [text, expected] of [
+      ["Signé Jean-\nPierre Martin.", ["Jean-\nPierre Martin"]],
+      ["Signé Jean-\r\nPierre Martin.", ["Jean-\r\nPierre Martin"]],
+      ["Signé Jean‐ \n Pierre Martin.", ["Jean‐ \n Pierre Martin"]],
+      // Ligne vide ou séparateur de paragraphe : la coupure s'applique toujours.
+      ["Signé Jean-\n\nPierre Martin.", ["Jean-", "Pierre Martin"]],
+      ["Signé Jean- Pierre Martin.", ["Jean-", "Pierre Martin"]],
+    ] as const) {
+      const g = text.includes("‐")
+        ? groupRawTokens([
+            tok("I-PER", "Jean", 1),
+            tok("I-PER", "‐", 2),
+            tok("I-PER", "Pierre", 3),
+            tok("I-PER", "Martin", 4),
+          ])
+        : groups;
+      expect(slices(text, locateGroups(text, g).spans)).toEqual(expected);
+    }
+  });
+
   it("un saut de ligne coupe aussi les groupes SentencePiece et garde les mots coupés d'une ligne", () => {
     const text = "Mme Du pont\n\nSophie";
     const groups = groupRawTokens([

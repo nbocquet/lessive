@@ -217,6 +217,19 @@ function extendOverMarks(text: string, end: number): number {
 }
 
 const LINE_BREAK = /[\n\r\u0085\u2028\u2029]/u;
+/** Un seul saut de ligne, entour\u00e9 d'espaces \u00e9ventuels (pas de ligne vide ni de paragraphe). */
+const SINGLE_LINE_BREAK =
+  /^[^\S\n\r\u0085\u2028\u2029]*(?:\r\n|[\n\r\u0085\u2028])[^\S\n\r\u0085\u2028\u2029]*$/u;
+const HYPHEN = /[-\u2010\u2011]/u;
+
+/**
+ * Vrai si l'\u00e9cart `[prevEnd, next)` est un saut de ligne au milieu d'un mot \u00e0 trait d'union
+ * (\u00ab Jean-\u23cePierre \u00bb) : la ligne pr\u00e9c\u00e9dente se termine par le tiret et rien d'autre que des espaces
+ * et un seul saut de ligne ne s\u00e9pare les deux morceaux. On ne coupe pas le groupe \u00e0 cet endroit.
+ */
+function isHyphenatedWrap(text: string, prevEnd: number, next: number): boolean {
+  return HYPHEN.test(text.charAt(prevEnd - 1)) && SINGLE_LINE_BREAK.test(text.slice(prevEnd, next));
+}
 
 /**
  * Intervalles `[début, fin)` d'un groupe trouvé à l'indice `found` de la copie normalisée, coupés
@@ -247,7 +260,11 @@ function splitAtLineBreaks(
     const s = startMap[offset] as number;
     const e = extendOverMarks(text, endMap[offset + n - 1] as number);
     offset += n;
-    if (runStart !== -1 && LINE_BREAK.test(text.slice(prevEnd, s))) {
+    if (
+      runStart !== -1 &&
+      LINE_BREAK.test(text.slice(prevEnd, s)) &&
+      !isHyphenatedWrap(text, prevEnd, s)
+    ) {
       runs.push([runStart, prevEnd]);
       runStart = -1;
     }
@@ -266,7 +283,7 @@ function splitAtLineBreaks(
  * fragment trouvé à l'intérieur d'un mot (« b » dans « Objet », « BERT » dans « JPLAMBERT ») est
  * écarté et compté dans `unlocated`, plutôt que de couper le mot. Un groupe qui couvre un saut de
  * ligne du texte original est recoupé à ce saut : deux personnes de part et d'autre d'un paragraphe
- * ne forment pas une seule entité.
+ * ne forment pas une seule entité. Un mot à trait d'union renvoyé à la ligne (« Jean-⏎Pierre ») n'est pas recoupé.
  *
  * Tous les groupes, même ceux d'un type ignoré (MISC…), sont localisés pour faire avancer le curseur :
  * sans cela, un « Marc » ignoré ferait attribuer au « Marc » suivant la position du premier.
