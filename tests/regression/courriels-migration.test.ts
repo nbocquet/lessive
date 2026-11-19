@@ -9,6 +9,7 @@
  * Tilleuls » n'est pas reconnu par le modèle NER (limite documentée).
  */
 import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   createAnalyzer,
@@ -124,6 +125,45 @@ describe("non-régression : courriels de migration", () => {
       try {
         const out = await pseudonymize(ner);
         expect(leaks(out, [...ALWAYS, ...WITH_NER])).toEqual([]);
+      } finally {
+        await ner.dispose();
+      }
+    },
+    120_000,
+  );
+
+  // Modèle CamemBERT-NER déposé dans models/ (non versionné) : test sauté en son absence.
+  const LOCAL_MODELS = fileURLToPath(new URL("../../models/", import.meta.url));
+  const CAMEMBERT = "Xenova/camembert-ner";
+  const hasCamembert = existsSync(`${LOCAL_MODELS}${CAMEMBERT}/onnx/model_quantized.onnx`);
+  it.skipIf(!hasCamembert)(
+    "avec CamemBERT : ni jeton au milieu d'un mot, ni personne à cheval sur un paragraphe",
+    async () => {
+      const { TransformersNerEngine } = await import("../../src/ner/transformers-engine.ts");
+      const ner = new TransformersNerEngine({
+        modelId: CAMEMBERT,
+        localModelPath: LOCAL_MODELS,
+        device: "cpu",
+      });
+      await ner.load();
+      try {
+        const res = await analyzer().analyze(TEXT, { language: "fr", ner });
+        const out = transform(
+          TEXT,
+          res.detections,
+          { mode: "pseudonymization", defaultOperator: "pseudonymize" },
+          createSession(),
+        ).text;
+        // Libellé intact : « Objet » n'est pas coupé par un repère.
+        expect(out).toContain("**Objet :**");
+        expect(out).not.toMatch(/[\p{L}]\w*(?:PERSONNE|LIEU|ORGANISATION)_\d{3}/u);
+        expect(out).not.toMatch(/(?:PERSONNE|LIEU|ORGANISATION)_\d{3}\p{L}/u);
+        // Aucune entité PERSON ne traverse une ligne vide.
+        for (const d of res.detections) {
+          if (d.entityType === "PERSON") {
+            expect(TEXT.slice(d.start, d.end)).not.toMatch(/\n\s*\n/u);
+          }
+        }
       } finally {
         await ner.dispose();
       }

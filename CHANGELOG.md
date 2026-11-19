@@ -6,6 +6,7 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
+- Le NER n'applique plus une entité trouvée à l'intérieur d'un mot (« Objet » devenait `LIEU_001jet`, `JPLAMBERT` devenait `JPLAMPERSONNE_013`), et ne réunit plus deux personnes séparées par un saut de ligne ou de paragraphe (`Claire Martin` puis `Sophie`) en une seule entité (#10, #11).
 - Les noms affichés devant une adresse dans les listes de destinataires sont protégés même avec un patronyme absent des dictionnaires, dans l’ordre prénom/nom ou nom/prénom, avec un service entre parenthèses et une adresse sur la ligne suivante.
 
 ## [0.1.0] — 2026-11-18

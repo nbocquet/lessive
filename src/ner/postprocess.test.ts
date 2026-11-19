@@ -116,6 +116,26 @@ describe("groupRawTokens", () => {
   });
 });
 
+describe("recognizeSegments : paragraphes", () => {
+  it("deux personnes contiguës en indices mais séparées par une ligne vide restent deux entités", async () => {
+    const text = "Responsable projet : Claire Martin\n\nSophie, merci de contacter Élodie";
+    const classify = fakeClassifier({
+      Claire: "I-PER",
+      Martin: "I-PER",
+      Sophie: "I-PER",
+      Élodie: "I-PER",
+    });
+    const spans = await recognizeSegments(text, classify);
+    expect(slices(text, spans)).toEqual(["Claire Martin", "Sophie", "Élodie"]);
+  });
+
+  it("un mot intramot reconnu par le modèle n'est pas appliqué", async () => {
+    const text = "Objet : Réservation de salle";
+    const classify = (): Promise<RawToken[]> => Promise.resolve([tok("I-LOC", "b", 2, 0.57)]);
+    expect(await recognizeSegments(text, classify)).toEqual([]);
+  });
+});
+
 describe("locateGroups", () => {
   it("retrouve les positions après un emoji (UTF-16) et avec des accents", () => {
     const text = "🎉 Bravo à Marc Rochat pour Zoé 🎉";
@@ -173,11 +193,118 @@ describe("locateGroups", () => {
     expect(spans[0]?.approximate).toBe(false);
   });
 
-  it("se rabat sur une occurrence approximative", () => {
+  it("écarte une occurrence à l'intérieur d'un mot au lieu de la découper", () => {
     const text = "Mme Dupontel est là";
-    const { spans } = locateGroups(text, [group("PER", "Dupont")]);
-    expect(spans[0]?.approximate).toBe(true);
-    expect(slices(text, spans)).toEqual(["Dupont"]);
+    const { spans, unlocated } = locateGroups(text, [group("PER", "Dupont")]);
+    expect(spans).toEqual([]);
+    expect(unlocated).toBe(1);
+  });
+
+  it("« b » dans « Objet » n'est pas une localisation", () => {
+    const text = "Objet : Réservation de salle";
+    const { spans, unlocated } = locateGroups(text, [group("LOC", "b")]);
+    expect(spans).toEqual([]);
+    expect(unlocated).toBe(1);
+  });
+
+  it("« BERT » dans « JPLAMBERT » n'est pas une personne", () => {
+    const text = "`CMARTIN`, `EMOREL` et `JPLAMBERT`";
+    const { spans } = locateGroups(text, [group("PER", "BERT")]);
+    expect(spans).toEqual([]);
+  });
+
+  it("écarte un fragment collé à des lettres accentuées, des chiffres ou des marques combinantes", () => {
+    const cases: [string, string][] = [
+      ["Édouard est là", "douard"],
+      ["Zoé2 est là", "Zoé"],
+      ["Zoé2 est là", "Zo"],
+      ["Le 🎉Marcel arrive", "Marc"],
+      ["Cafe\u0301 ouvert", "Caf"],
+    ];
+    for (const [text, word] of cases) {
+      expect(locateGroups(text, [group("PER", word)]).spans, `${word} dans ${text}`).toEqual([]);
+    }
+  });
+
+  it("garde le fragment entouré de ponctuation, d'apostrophes ou de traits d'union", () => {
+    const text = "(Marc), l'Anne et Jean-Paul";
+    const { spans } = locateGroups(text, [
+      group("PER", "Marc"),
+      group("PER", "Anne"),
+      group("PER", "Paul"),
+    ]);
+    expect(slices(text, spans)).toEqual(["Marc", "Anne", "Paul"]);
+    expect(spans.every((s) => !s.approximate)).toBe(true);
+  });
+
+  it("un fragment intramot n'avance pas le curseur et laisse la vraie occurrence suivante", () => {
+    const text = "Objet : Marc voit Marc";
+    const { spans } = locateGroups(text, [group("LOC", "b"), group("PER", "Marc")]);
+    expect(spans.map((s) => [s.start, s.end])).toEqual([[8, 12]]);
+  });
+
+  it("préfère l'occurrence alignée même après une occurrence intramot (emoji, répétition)", () => {
+    const text = "🎉 Marcel et 🎉 Marc, puis Marc";
+    const { spans } = locateGroups(text, [group("PER", "Marc"), group("PER", "Marc")]);
+    expect(slices(text, spans)).toEqual(["Marc", "Marc"]);
+    expect(spans.map((s) => s.start)).toEqual([text.indexOf("Marc,"), text.lastIndexOf("Marc")]);
+  });
+
+  it("reconstruit un nom complet à partir de sous-tokens WordPiece, accents et emojis compris", () => {
+    const text = "🎉 Bravo à Zoé Du Pont-Éluard 🎉";
+    const groups = groupRawTokens([
+      tok("I-PER", "Zo", 3),
+      tok("I-PER", "##é", 4),
+      tok("I-PER", "Du", 5),
+      tok("I-PER", "##pont", 6),
+    ]);
+    const { spans } = locateGroups(text, groups);
+    expect(slices(text, spans)).toEqual(["Zoé Du Pont"]);
+  });
+
+  it("coupe un groupe contigu en indices aux sauts de paragraphe", () => {
+    const text = "Responsable : Claire Martin\n\nSophie, merci de contacter Élodie";
+    const groups = groupRawTokens([
+      tok("I-PER", "Claire", 3),
+      tok("I-PER", "Martin", 4),
+      tok("I-PER", "Sophie", 5),
+      tok("I-PER", "Élodie", 10),
+    ]);
+    expect(groups).toHaveLength(2);
+    const { spans } = locateGroups(text, groups);
+    expect(slices(text, spans)).toEqual(["Claire Martin", "Sophie", "Élodie"]);
+  });
+
+  it("coupe aussi à un simple saut de ligne, CRLF et séparateurs Unicode, sans toucher les noms d'une ligne", () => {
+    for (const sep of ["\n", "\r\n", "\u2028"]) {
+      const text = `Anne Dupré${sep}Bob Léger`;
+      const groups = groupRawTokens([
+        tok("I-PER", "Anne", 1),
+        tok("I-PER", "Dupré", 2),
+        tok("I-PER", "Bob", 3),
+        tok("I-PER", "Léger", 4),
+      ]);
+      expect(slices(text, locateGroups(text, groups).spans)).toEqual(["Anne Dupré", "Bob Léger"]);
+    }
+    const oneLine = "Anne Dupré Bob Léger";
+    const groups = groupRawTokens([
+      tok("I-PER", "Anne", 1),
+      tok("I-PER", "Dupré", 2),
+      tok("I-PER", "Bob", 3),
+      tok("I-PER", "Léger", 4),
+    ]);
+    expect(slices(oneLine, locateGroups(oneLine, groups).spans)).toEqual([oneLine]);
+  });
+
+  it("un saut de ligne coupe aussi les groupes SentencePiece et garde les mots coupés d'une ligne", () => {
+    const text = "Mme Du pont\n\nSophie";
+    const groups = groupRawTokens([
+      tok("I-PER", "▁Du", 2),
+      tok("I-PER", "pont", 3),
+      tok("I-PER", "▁Sophie", 4),
+    ]);
+    const { spans } = locateGroups(text, groups);
+    expect(slices(text, spans)).toEqual(["Du pont", "Sophie"]);
   });
 
   it("compte les entités non localisées et ignore les mots vides", () => {
