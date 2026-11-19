@@ -112,7 +112,7 @@ describe("non-régression : courriels de migration", () => {
     expect(leaks(out, OUT_OF_SCOPE)).toEqual(OUT_OF_SCOPE);
   });
 
-  const MODEL = "/mnt/user-data/uploads/lessive/models/";
+  const MODEL = fileURLToPath(new URL("../../models/", import.meta.url));
   const hasModel = existsSync(
     `${MODEL}Xenova/distilbert-base-multilingual-cased-ner-hrl/onnx/model_quantized.onnx`,
   );
@@ -125,6 +125,9 @@ describe("non-régression : courriels de migration", () => {
       try {
         const out = await pseudonymize(ner);
         expect(leaks(out, [...ALWAYS, ...WITH_NER])).toEqual([]);
+        // #8 : aucun fragment de nom ne découpe une adresse e-mail ; #9 : aucune adresse dégradée.
+        expect(out).not.toMatch(/PERSONNE_\d{3}[.@]\w|\w\.PERSONNE_\d{3}|@example/u);
+        expect(out).not.toMatch(/LIEU_\d{3}\d|\d LIEU_\d{3}|rue LIEU_|avenue du LIEU_/u);
       } finally {
         await ner.dispose();
       }

@@ -1,4 +1,6 @@
 /** Noms et adresses fictifs : destinataires de courriels avec noms absents des listes. */
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { createAnalyzer, createSession, PackRegistry, transform } from "../../src/core/index.ts";
 import type { NerEngine } from "../../src/core/types/index.ts";
@@ -94,4 +96,52 @@ describe("destinataires : noms d'affichage sans NER", () => {
       result.detections.filter((d) => d.recognizerId.endsWith("/courriel-nom-affiche")),
     ).toEqual([]);
   });
+});
+
+const MODEL = fileURLToPath(new URL("../../models/", import.meta.url));
+const hasModel = existsSync(
+  `${MODEL}Xenova/distilbert-base-multilingual-cased-ner-hrl/onnx/model_quantized.onnx`,
+);
+
+describe("destinataires : adresses entières protégées avec le vrai NER (#8)", () => {
+  it.skipIf(!hasModel)(
+    "aucun fragment de nom ne découpe l'adresse, dans les deux modes",
+    async () => {
+      const { TransformersNerEngine } = await import("../../src/ner/transformers-engine.ts");
+      const ner = new TransformersNerEngine({ localModelPath: MODEL, device: "cpu" });
+      await ner.load();
+      try {
+        const emails = [
+          "elodie.morel@example.org",
+          "nina.brumelac@example.org",
+          "elise.delavarenque@example.org",
+        ];
+        const text = [
+          "Élodie Morel <elodie.morel@example.org>",
+          `Contact local : ${emails[0]}`,
+          `gpt-3 : <${emails[1]}>`,
+          `Cas 3 : <${emails[2]}>`,
+        ].join("\n");
+        const result = await analyzer.analyze(text, { language: "fr", ner });
+        const found = result.detections
+          .filter((d) => d.entityType === "EMAIL")
+          .map((d) => text.slice(d.start, d.end));
+        expect(found).toEqual([emails[0], emails[0], emails[1], emails[2]]);
+        for (const mode of ["masking", "pseudonymization"] as const) {
+          const output = transform(
+            text,
+            result.detections,
+            { mode, defaultOperator: mode === "masking" ? "categorize" : "pseudonymize" },
+            createSession(),
+          );
+          expect(output.errors).toEqual([]);
+          expect(output.text).not.toMatch(/example|\.morel|brumelac|varenque/u);
+          expect(output.text).not.toMatch(/PERSONNE_\d{3}[.@]\w|\w\.PERSONNE_\d{3}/u);
+        }
+      } finally {
+        await ner.dispose();
+      }
+    },
+    120_000,
+  );
 });

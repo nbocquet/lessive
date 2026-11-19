@@ -133,6 +133,64 @@ function discard(d: Detection, line: string, supersededBy?: string): Detection {
   return copy;
 }
 
+/** Identifiant de la détection de rue + code postal + ville produite par la fusion d'adresses. */
+const ADDRESS_MERGE_ID = "core/address-merge";
+
+/**
+ * Unité protégée : une adresse e-mail entière, ou une adresse postale réunie par les règles
+ * (hors ajout manuel, qui suit sa propre priorité).
+ */
+function isProtectedUnit(d: Detection): boolean {
+  return d.source !== "manual" && (d.entityType === "EMAIL" || d.recognizerId === ADDRESS_MERGE_ID);
+}
+
+/**
+ * Écarte tout fragment strictement contenu dans une unité protégée (un nom dans une adresse
+ * e-mail, un lieu dans une adresse postale), quel que soit son score : le découper ferait fuiter
+ * ou altérerait le reste de l'unité. Les ajouts manuels sont conservés.
+ *
+ * C'est un filtre préalable, et non une règle de `decide` : la politique par paire est déjà
+ * non transitive (voir `compareCanonical`) et une règle de plus y créerait des cycles avec des
+ * détections de score intermédiaire, qui défont le tri. Ici le résultat ne dépend que de
+ * l'inclusion, donc de rien d'autre que du contenu des détections. Renvoie les détections gardées.
+ */
+function removeProtectedFragments(candidates: Detection[], discarded: Detection[]): Detection[] {
+  const units = candidates.filter(isProtectedUnit).sort(compareCanonical);
+  if (units.length === 0) return [...candidates];
+  // Plus grande fin parmi les unités qui commencent au plus tard à la même position.
+  const maxEnd: number[] = [];
+  units.forEach((u, i) => maxEnd.push(Math.max(u.end, i > 0 ? maxEnd[i - 1]! : u.end)));
+
+  const out: Detection[] = [];
+  for (const d of candidates) {
+    let owner: Detection | undefined;
+    if (d.source !== "manual") {
+      // Dernière unité qui commence au plus tard en d.start.
+      let lo = 0;
+      let hi = units.length;
+      while (lo < hi) {
+        const mid = (lo + hi) >>> 1;
+        if (units[mid]!.start <= d.start) lo = mid + 1;
+        else hi = mid;
+      }
+      for (let j = lo - 1; j >= 0 && maxEnd[j]! >= d.end; j--) {
+        if (strictlyContains(units[j]!, d)) owner = units[j];
+      }
+    }
+    if (owner === undefined) out.push(d);
+    else {
+      discarded.push(
+        discard(
+          d,
+          `écartée au profit d'une détection ${owner.entityType} : unité protégée (adresse entière) contenant ce fragment`,
+          owner.id,
+        ),
+      );
+    }
+  }
+  return out;
+}
+
 /**
  * Résout les conflits entre détections (chevauchements).
  *
@@ -171,7 +229,9 @@ export function resolveConflicts(
     }
   }
 
-  const ordered = [...candidates].sort(compareCanonical).sort(compareDetections);
+  const ordered = removeProtectedFragments(candidates, discarded)
+    .sort(compareCanonical)
+    .sort(compareDetections);
 
   const kept: Detection[] = [];
   // Détecteurs ayant produit le même intervalle et le même type qu'une gardée.

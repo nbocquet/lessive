@@ -341,3 +341,47 @@ describe("resolveConflicts : performance", () => {
     expect(elapsed).toBeLessThan(1000);
   });
 });
+
+describe("unités protégées (e-mail, adresse réunie)", () => {
+  const email = (s: number, e: number) =>
+    det(s, e, { entityType: "EMAIL", score: 0.9, recognizerId: "global/email" });
+
+  it("un fragment plus confiant contenu dans un e-mail est écarté", () => {
+    const mail = email(0, 24);
+    const frag = det(0, 6, { source: "ner", score: 0.99 });
+    const { kept, discarded } = resolveConflicts([frag, mail]);
+    expect(ids(kept)).toEqual([mail.id]);
+    expect(discarded[0]!.supersededBy).toBe(mail.id);
+  });
+
+  it("une adresse réunie résiste à plusieurs fragments NER, même avec un score intermédiaire", () => {
+    const addr = det(0, 40, {
+      entityType: "LOCATION",
+      score: 0.95,
+      recognizerId: "core/address-merge",
+    });
+    const fragments = [
+      det(0, 22, { entityType: "LOCATION", source: "ner", score: 0.9379 }),
+      det(30, 40, { entityType: "LOCATION", source: "ner", score: 0.9964 }),
+      det(50, 60, { entityType: "PERSON", source: "ner", score: 0.97 }),
+    ];
+    const { kept } = resolveConflicts([...fragments, addr]);
+    expect(kept.map((d) => [d.start, d.end])).toEqual([
+      [0, 40],
+      [50, 60],
+    ]);
+  });
+
+  it("un ajout manuel dans l'unité reste prioritaire", () => {
+    const mail = email(0, 24);
+    const manual = det(0, 6, { source: "manual", score: 1 });
+    const { kept } = resolveConflicts([mail, manual]);
+    expect(ids(kept)).toEqual([manual.id]);
+  });
+
+  it("un nom affiché voisin n'est pas touché", () => {
+    const name = det(0, 12, { source: "ner", score: 0.99 });
+    const mail = email(14, 38);
+    expect(ids(resolveConflicts([mail, name]).kept)).toEqual([name.id, mail.id]);
+  });
+});
