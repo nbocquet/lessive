@@ -4,7 +4,7 @@ Lessive promet que le texte saisi et la table de correspondance ne quittent pas 
 
 ## Ce qui est vérifié automatiquement
 
-Commande : `npm run test:e2e` (construit l'application, puis exécute `tests/e2e/*.test.ts` avec le lanceur de tests de Node). Chrome ou Chromium headless est piloté directement par le protocole DevTools (WebSocket natif de Node 22), sans bibliothèque. L'application est servie par un petit serveur statique Node (404 pour les fichiers absents) depuis `dist/`.
+Commande : `npm run test:e2e` (construit l'application, puis exécute `tests/e2e/*.test.ts` avec le lanceur de tests de Node). Chrome ou Chromium headless est piloté directement par le protocole DevTools (WebSocket natif de Node), sans bibliothèque. L'application est servie par un petit serveur statique Node (404 pour les fichiers absents) depuis `dist/`.
 
 | Garantie | Comment c'est vérifié | Fichier |
 |---|---|---|

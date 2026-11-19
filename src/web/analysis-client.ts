@@ -54,11 +54,11 @@ export class AnalysisCancelledError extends Error {
 
 /** Échec d'analyse ; `message` ne contient jamais de valeur du texte (R5). */
 export class AnalysisFailure extends Error {
-  constructor(
-    readonly code: AnalysisErrorCode,
-    message: string,
-  ) {
+  readonly code: AnalysisErrorCode;
+
+  constructor(code: AnalysisErrorCode, message: string) {
     super(message);
+    this.code = code;
     this.name = "AnalysisFailure";
   }
 }

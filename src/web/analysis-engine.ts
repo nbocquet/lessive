@@ -28,11 +28,11 @@ export interface AnalysisHandler {
 }
 
 class RequestError extends Error {
-  constructor(
-    readonly code: AnalysisErrorCode,
-    message: string,
-  ) {
+  readonly code: AnalysisErrorCode;
+
+  constructor(code: AnalysisErrorCode, message: string) {
     super(message);
+    this.code = code;
     this.name = "RequestError";
   }
 }

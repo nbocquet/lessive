@@ -165,11 +165,10 @@ Les noms de fichiers JavaScript et CSS portent une empreinte qui change à chaqu
 ```bash
 ONNXRUNTIME_NODE_INSTALL=skip npm ci
 ONNXRUNTIME_NODE_INSTALL=skip npm run build      # pour mesurer la taille de dist/
-node --experimental-transform-types --disable-warning=ExperimentalWarning \
-  --expose-gc scripts/perf/measure.ts --json /tmp/perf.json
+node --expose-gc scripts/perf/measure.ts --json /tmp/perf.json
 ```
 
-Le modèle est cherché dans `models/` puis dans `/mnt/user-data/uploads/lessive/models/` ; sans lui, le NER n'est pas mesuré (ou avec `--no-ner`). Options, dont `--sizes`, `--runs`, `--dist`, `--kdf-runs` et `--write-texts` : en-tête de `scripts/perf/measure.ts`. Le script n'a aucune dépendance. `--experimental-transform-types` (et non `--experimental-strip-types`) est nécessaire parce que `src/core` utilise des propriétés de paramètre de constructeur. `--expose-gc` n'est pas obligatoire ; sans lui, les relevés de mémoire sont moins nets. Le résultat est un rapport Markdown sur la sortie standard.
+Le modèle est cherché dans `models/` puis dans `/mnt/user-data/uploads/lessive/models/` ; sans lui, le NER n'est pas mesuré (ou avec `--no-ner`). Options, dont `--sizes`, `--runs`, `--dist`, `--kdf-runs` et `--write-texts` : en-tête de `scripts/perf/measure.ts`. Le script n'a aucune dépendance. `--expose-gc` n'est pas obligatoire ; sans lui, les relevés de mémoire sont moins nets. Le résultat est un rapport Markdown sur la sortie standard.
 
 ## Procédure de mesure dans le navigateur
 
@@ -186,8 +185,7 @@ Le modèle est cherché dans `models/` puis dans `/mnt/user-data/uploads/lessive
 2. **Texte de 5 000 caractères prêt à coller** : `docs/fixtures/texte-5000.txt` (compte rendu fictif : 46 personnes, adresses, téléphones, courriels, IBAN et AVS à clés valides ; 72 détections par les règles seules). Pour les autres tailles, **générer les textes d'essai** (rapide, sans NER), puis les ouvrir dans un éditeur pour les copier :
 
    ```bash
-   node --experimental-transform-types --disable-warning=ExperimentalWarning \
-     scripts/perf/measure.ts --no-ner --runs 1 --kdf-runs 1 --write-texts /tmp/lessive-textes
+   node scripts/perf/measure.ts --no-ner --runs 1 --kdf-runs 1 --write-texts /tmp/lessive-textes
    ```
 
    Fichiers produits : `texte-1000.txt`, `texte-5000.txt`, `texte-20000.txt`, `texte-100000.txt`.

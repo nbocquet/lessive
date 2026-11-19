@@ -12,7 +12,7 @@
  * séparée, « noms-famille-ambigus » : majuscule exacte et score 0,3, donc retenus seulement
  * accolés à un prénom (fusion des noms adjacents) ; ils restent aussi détectés par le NER et
  * par les motifs « titre + nom ».
- * Sans dépendance ; Node 22.
+ * Sans dépendance ; Node 26.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";

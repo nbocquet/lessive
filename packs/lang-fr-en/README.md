@@ -88,7 +88,7 @@ Une liste de prénoms dérivée d'un fichier statistique est un extrait de faits
 
 ## Régénérer la liste depuis les sources officielles
 
-Prérequis : Node 22, aucune dépendance. Les fichiers sont téléchargés et décompressés par la personne qui régénère.
+Prérequis : Node 26, aucune dépendance. Les fichiers sont téléchargés et décompressés par la personne qui régénère.
 
 1. Télécharger et décompresser : le CSV national INSEE, le dossier SSA (`yob*.txt`), éventuellement un CSV OFS dont les conditions ont été vérifiées.
 2. Lancer, depuis la racine du dépôt :
