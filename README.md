@@ -55,7 +55,7 @@ Lessive finds personal data in a text (names, e-mail addresses, phone numbers, I
 
 > **Lessive reduces risk; it does not anonymise.** A text without names can still identify someone (a rare job title, a place and a date). Always read the result before sending it.
 
-The interface and most documentation are in French; detection targets French and English texts and Swiss and French identifiers. Quick start for developers: `ONNXRUNTIME_NODE_INSTALL=skip npm ci && npm run dev` (Node.js 22+). Licence: Apache 2.0. Security reports: see [SECURITY.md](SECURITY.md).
+The interface and most documentation are in French; detection targets French and English texts and Swiss and French identifiers. Quick start for developers: `ONNXRUNTIME_NODE_INSTALL=skip npm ci && npm run dev` (Node.js 26+). Licence: Apache 2.0. Security reports: see [SECURITY.md](SECURITY.md).
 
 ---
 
@@ -99,7 +99,7 @@ Le traitement a lieu dans votre navigateur : l'application ne se connecte qu'à 
 
 ### Installer en local
 
-Prérequis : [Node.js](https://nodejs.org/) 22 ou plus récent.
+Prérequis : [Node.js](https://nodejs.org/) 26 ou plus récent.
 
 ```bash
 ONNXRUNTIME_NODE_INSTALL=skip npm ci   # le préfixe évite des binaires inutiles au navigateur

@@ -43,11 +43,10 @@ export class DictionaryRecognizer implements Recognizer {
   readonly languages: readonly Language[] | "any";
   private readonly root: TrieNode = newNode();
   private readonly lowerCase: boolean;
+  private readonly rule: DictionaryRule;
 
-  constructor(
-    private readonly rule: DictionaryRule,
-    packId: string,
-  ) {
+  constructor(rule: DictionaryRule, packId: string) {
+    this.rule = rule;
     this.packId = packId;
     this.id = `${packId}/${rule.id}`;
     this.supportedEntities = [rule.entityType];

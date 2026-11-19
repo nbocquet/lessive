@@ -6,7 +6,7 @@ Les contributions préparées avec un agent de développement sont bienvenues ; 
 
 ## Prérequis
 
-- [Node.js](https://nodejs.org/) 22 ou plus récent (`engines` de `package.json`).
+- [Node.js](https://nodejs.org/) 26 ou plus récent (`engines` de `package.json`, version de la CI dans `.nvmrc`). Le TypeScript du moteur doit rester effaçable (`erasableSyntaxOnly`) : ni propriété de paramètre de constructeur, ni `enum`, ni `namespace`.
 - Un navigateur récent pour essayer l'interface ; Chrome ou Chromium pour les tests de bout en bout.
 - Aucun modèle n'est nécessaire pour développer. Pour travailler sur la reconnaissance des noms, déposez un modèle dans `models/` (voir [models/README.md](models/README.md) et le [README](README.md)) ; les tests qui en ont besoin sont sautés en son absence.
 
@@ -25,7 +25,7 @@ npm run test:e2e                       # confidentialité de bout en bout (Chrom
 
 Une contribution est prête quand `npm run lint`, `npm run typecheck` et `npm test` passent. L'intégration continue (`.github/workflows/ci.yml`) les lance, avec le build.
 
-Outils de mesure, sans dépendance, lancés avec `node --experimental-transform-types --disable-warning=ExperimentalWarning` : `scripts/eval/evaluate.ts` (qualité du NER, voir [docs/evaluation-ner.md](docs/evaluation-ner.md)) et `scripts/perf/measure.ts` (performances, voir [docs/performances.md](docs/performances.md)).
+Outils de mesure, sans dépendance, lancés directement avec `node` : `scripts/eval/evaluate.ts` (qualité du NER, voir [docs/evaluation-ner.md](docs/evaluation-ner.md)) et `scripts/perf/measure.ts` (performances, voir [docs/performances.md](docs/performances.md)).
 
 ## Principes du projet
 

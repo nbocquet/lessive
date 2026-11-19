@@ -1,14 +1,13 @@
 /**
  * T6.3 — Mesures de performance sous Node, sur des textes synthétiques de taille croissante.
  *
- * Exécution, sans dépendance nouvelle (Node 22), depuis la racine du dépôt :
+ * Exécution, sans dépendance nouvelle (Node 26, qui exécute le TypeScript directement), depuis la
+ * racine du dépôt :
  *
- *   node --experimental-transform-types --disable-warning=ExperimentalWarning \
- *     scripts/perf/measure.ts [options]
+ *   node scripts/perf/measure.ts [options]
  *
- * (`--experimental-transform-types` et non `--experimental-strip-types` : `src/core` utilise des
- * propriétés de paramètre de constructeur, que le mode « strip » refuse. Ajouter `--expose-gc`
- * avant le script rend les mesures de tas plus nettes ; sans lui, elles restent indicatives.)
+ * (Ajouter `--expose-gc` avant le script rend les mesures de tas plus nettes ; sans lui, elles
+ * restent indicatives.)
  *
  * Options :
  *   --sizes 1000,5000,20000,100000   tailles cibles, en caractères

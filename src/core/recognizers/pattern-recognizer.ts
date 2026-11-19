@@ -41,15 +41,15 @@ export class PatternRecognizer implements Recognizer {
   readonly languages: readonly Language[] | "any";
   private readonly source: string;
   private readonly flags: string;
+  private readonly rule: PatternRule;
+  private readonly validator: Validator | undefined;
 
   /**
    * @param validator fonction fournie par le registre ; obligatoire si la règle déclare un validateur.
    */
-  constructor(
-    private readonly rule: PatternRule,
-    packId: string,
-    private readonly validator?: Validator | undefined,
-  ) {
+  constructor(rule: PatternRule, packId: string, validator?: Validator) {
+    this.rule = rule;
+    this.validator = validator;
     this.packId = packId;
     this.id = `${packId}/${rule.id}`;
     this.supportedEntities = [rule.entityType];

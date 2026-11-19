@@ -4,6 +4,10 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ## [Non publié]
 
+### Modifié
+
+- Développement : Node.js 26 ou plus récent est requis (CI et publication comprises, version fixée par `.nvmrc`). Les scripts de mesure se lancent directement avec `node`, sans option expérimentale. Aucun changement pour les personnes qui utilisent l'application.
+
 ### Corrigé
 
 - Le rognage près d'une unité protégée conserve la ponctuation du bord intact ; une détection validée (motif, IBAN…) rognée perd sa validation, qui portait sur la valeur entière, mais sa partie extérieure reste remplacée (#18).

@@ -1,13 +1,9 @@
 /**
  * T3.4 — Évaluation combinée (packs seuls, NER seul, packs + NER) sur `corpus/ner-{fr,en}.jsonl`.
  *
- * Exécution, sans dépendance nouvelle (Node 22) :
+ * Exécution, sans dépendance nouvelle (Node 26, qui exécute le TypeScript directement) :
  *
- *   node --experimental-transform-types --disable-warning=ExperimentalWarning \
- *     scripts/eval/evaluate.ts [--models <dossier>] [--json <fichier>] [--errors <n>]
- *
- * (`--experimental-transform-types` et non `--experimental-strip-types` : `src/core` utilise des
- * propriétés de paramètre de constructeur, que le mode « strip » refuse.)
+ *   node scripts/eval/evaluate.ts [--models <dossier>] [--json <fichier>] [--errors <n>]
  *
  * Le corpus n'annote que PERSON, ORGANIZATION et LOCATION : les autres types détectés par les packs
  * (courriel, date…) sont ignorés dans le calcul, ni vrais ni faux positifs. Corpus 100 % synthétique.

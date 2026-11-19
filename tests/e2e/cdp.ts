@@ -1,5 +1,5 @@
 /**
- * Petit client Chrome DevTools Protocol, sans dépendance (WebSocket natif de Node 22).
+ * Petit client Chrome DevTools Protocol, sans dépendance (WebSocket natif de Node).
  * Sert uniquement aux tests e2e : lancement de Chrome headless, envoi de commandes, événements.
  */
 import { spawn, type ChildProcess } from "node:child_process";

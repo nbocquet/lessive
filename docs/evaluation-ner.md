@@ -18,7 +18,8 @@ temporaire `registerHooks` : pour les fichiers `.ts`, `typescript.transpileModul
 cible ES2022, modules ESNext) fournit le source JavaScript au chargeur Node. Pour la mesure avant, le même
 hook retire uniquement les séquences littérales `\f\v` des deux expressions régulières de
 `src/ner/postprocess.ts`, en mémoire ; la mesure après utilise les sources inchangées. Les autres sources et
-le corpus sont identiques entre les deux mesures.
+le corpus sont identiques entre les deux mesures. Ce contournement n'est plus nécessaire : le moteur n'utilise
+plus que de la syntaxe effaçable, et `node scripts/eval/evaluate.ts` fonctionne tel quel sous Node 26.
 
 Les comptes bruts, les rappels par catégorie de phrase et les exemples d'erreurs sont **strictement
 identiques** avant/après, dans les trois configurations et pour les correspondances exacte et par
@@ -40,15 +41,14 @@ CamemBERT dans le navigateur.
 ```bash
 ONNXRUNTIME_NODE_INSTALL=skip npm ci
 # modèle : models/Xenova/distilbert-base-multilingual-cased-ner-hrl/ (non versionné, voir models/README.md)
-node --experimental-transform-types --disable-warning=ExperimentalWarning \
-  scripts/eval/evaluate.ts --errors 40 --json /tmp/eval.json
+node scripts/eval/evaluate.ts --errors 40 --json /tmp/eval.json
 ```
 
 Options : `--models <dossier>` (défaut : `models/`, puis `/mnt/user-data/uploads/lessive/models/`), `--json <fichier>`
 (comptes bruts, minutes de chargement, exemples d'erreurs), `--errors <n>` (liste d'exemples d'erreurs).
-`--experimental-transform-types` est nécessaire parce que `src/core` utilise des propriétés de paramètre de
-constructeur, que le mode `--experimental-strip-types` refuse ; aucune dépendance n'est ajoutée. La sortie est
-déterministe (deux exécutions identiques).
+Node 26 exécute le TypeScript directement : aucune option ni dépendance n'est nécessaire (`erasableSyntaxOnly`
+dans `tsconfig.json` garantit que le moteur n'utilise que de la syntaxe effaçable). La sortie est déterministe
+(deux exécutions identiques).
 
 ## Conditions de mesure
 
