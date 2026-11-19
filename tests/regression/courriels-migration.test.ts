@@ -6,9 +6,12 @@
  * Après analyse et pseudonymisation, aucune valeur personnelle ne doit rester en clair.
  * Hors champ, par décision documentée (docs/historique/PLAN.md §10) : les références internes (dossier, commande,
  * contrat, serveur) et les données sensibles (« raisons médicales »). « Établissement des
- * Tilleuls » n'est pas reconnu par le modèle NER (limite documentée).
+ * Tilleuls » n'est pas reconnu par le modèle NER (limite documentée). « HexaTech Conseil » non
+ * plus : le modèle n'en étiquette que des morceaux (« He », « Tech ») à l'intérieur du mot, qui
+ * sont écartés plutôt que de couper le mot (#10) ; limite documentée.
  */
 import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   createAnalyzer,
@@ -68,7 +71,7 @@ const ALWAYS = [
 ];
 
 /** Valeurs reconnues seulement par le NER (organisations). */
-const WITH_NER = ["Alpina Solutions", "HexaTech Conseil"];
+const WITH_NER = ["Alpina Solutions"];
 
 /** Hors champ par décision : restent en clair, sans que ce soit une fuite. */
 const OUT_OF_SCOPE = ["ET-2026-003821", "PO-2026-77841", "CT-2026-0847", "raisons médicales"];
@@ -111,7 +114,7 @@ describe("non-régression : courriels de migration", () => {
     expect(leaks(out, OUT_OF_SCOPE)).toEqual(OUT_OF_SCOPE);
   });
 
-  const MODEL = "/mnt/user-data/uploads/lessive/models/";
+  const MODEL = fileURLToPath(new URL("../../models/", import.meta.url));
   const hasModel = existsSync(
     `${MODEL}Xenova/distilbert-base-multilingual-cased-ner-hrl/onnx/model_quantized.onnx`,
   );
@@ -124,6 +127,48 @@ describe("non-régression : courriels de migration", () => {
       try {
         const out = await pseudonymize(ner);
         expect(leaks(out, [...ALWAYS, ...WITH_NER])).toEqual([]);
+        // #8 : aucun fragment de nom ne découpe une adresse e-mail ; #9 : aucune adresse dégradée.
+        expect(out).not.toMatch(/PERSONNE_\d{3}[.@]\w|\w\.PERSONNE_\d{3}|@example/u);
+        expect(out).not.toMatch(/LIEU_\d{3}\d|\d LIEU_\d{3}|rue LIEU_|avenue du LIEU_/u);
+      } finally {
+        await ner.dispose();
+      }
+    },
+    120_000,
+  );
+
+  // Modèle CamemBERT-NER déposé dans models/ (non versionné) : test sauté en son absence.
+  const LOCAL_MODELS = fileURLToPath(new URL("../../models/", import.meta.url));
+  const CAMEMBERT = "Xenova/camembert-ner";
+  const hasCamembert = existsSync(`${LOCAL_MODELS}${CAMEMBERT}/onnx/model_quantized.onnx`);
+  it.skipIf(!hasCamembert)(
+    "avec CamemBERT : ni jeton au milieu d'un mot, ni personne à cheval sur un paragraphe",
+    async () => {
+      const { TransformersNerEngine } = await import("../../src/ner/transformers-engine.ts");
+      const ner = new TransformersNerEngine({
+        modelId: CAMEMBERT,
+        localModelPath: LOCAL_MODELS,
+        device: "cpu",
+      });
+      await ner.load();
+      try {
+        const res = await analyzer().analyze(TEXT, { language: "fr", ner });
+        const out = transform(
+          TEXT,
+          res.detections,
+          { mode: "pseudonymization", defaultOperator: "pseudonymize" },
+          createSession(),
+        ).text;
+        // Libellé intact : « Objet » n'est pas coupé par un repère.
+        expect(out).toContain("**Objet :**");
+        expect(out).not.toMatch(/[\p{L}]\w*(?:PERSONNE|LIEU|ORGANISATION)_\d{3}/u);
+        expect(out).not.toMatch(/(?:PERSONNE|LIEU|ORGANISATION)_\d{3}\p{L}/u);
+        // Aucune entité PERSON ne traverse une ligne vide.
+        for (const d of res.detections) {
+          if (d.entityType === "PERSON") {
+            expect(TEXT.slice(d.start, d.end)).not.toMatch(/\n\s*\n/u);
+          }
+        }
       } finally {
         await ner.dispose();
       }

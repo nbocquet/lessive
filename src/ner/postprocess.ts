@@ -64,6 +64,11 @@ export interface TokenGroup {
   word: string;
   /** Moyenne des scores des jetons. */
   score: number;
+  /**
+   * Mots du groupe (continuations WordPiece rattachées au mot précédent). Sert à recouper un groupe
+   * aux sauts de ligne du texte original ; absent, le groupe est traité d'un bloc.
+   */
+  parts?: readonly string[];
 }
 
 /**
@@ -81,6 +86,7 @@ export function groupRawTokens(tokens: readonly RawToken[]): TokenGroup[] {
   interface Acc {
     label: string;
     word: string;
+    parts: string[];
     scores: number[];
   }
   const groups: Acc[] = [];
@@ -99,9 +105,11 @@ export function groupRawTokens(tokens: readonly RawToken[]): TokenGroup[] {
       (wordPiece || (!startsEntity && current.label === label))
     ) {
       current.word += wordPiece ? piece : ` ${piece}`;
+      if (wordPiece) current.parts[current.parts.length - 1] += piece;
+      else current.parts.push(piece);
       current.scores.push(t.score);
     } else {
-      current = { label, word: piece, scores: [t.score] };
+      current = { label, word: piece, parts: [piece], scores: [t.score] };
       groups.push(current);
     }
     prevIndex = t.index;
@@ -109,6 +117,7 @@ export function groupRawTokens(tokens: readonly RawToken[]): TokenGroup[] {
   return groups.map((g) => ({
     label: g.label,
     word: g.word,
+    parts: g.parts,
     score: g.scores.reduce((a, b) => a + b, 0) / g.scores.length,
   }));
 }
@@ -159,7 +168,8 @@ export function foldForSearch(text: string): FoldedSearchText {
   return { norm, startMap, endMap };
 }
 
-const WORD_CHAR = /[\p{L}\p{N}]/u;
+// Lettres, chiffres et marques combinantes Unicode : pas de `\b` ASCII (accents, chiffres non latins).
+const WORD_CHAR = /[\p{L}\p{N}\p{M}]/u;
 const isWordChar = (c: string | undefined): boolean => c !== undefined && WORD_CHAR.test(c);
 
 /** Premier indice `i` de `sorted` (croissant) tel que `sorted[i] >= value`, ou `sorted.length`. */
@@ -184,7 +194,10 @@ export interface NerSpan {
   end: number;
   entityType: NerEntityType;
   score: number;
-  /** Vrai si seule une occurrence non alignée sur des frontières de mots a été trouvée. */
+  /**
+   * Réservé aux positions non alignées sur des frontières de mots. `locateGroups` n'en produit
+   * plus : une occurrence à l'intérieur d'un mot est écartée (voir ci-dessous).
+   */
   approximate: boolean;
 }
 
@@ -194,11 +207,83 @@ export interface LocateResult {
   unlocated: number;
 }
 
+const MARK = /\p{M}/u;
+
+/** Avance `end` au-delà des marques combinantes (texte NFD) : l'accent suit sa lettre. */
+function extendOverMarks(text: string, end: number): number {
+  let e = end;
+  while (e < text.length && MARK.test(text.charAt(e))) e++;
+  return e;
+}
+
+const LINE_BREAK = /[\n\r\u0085\u2028\u2029]/u;
+/** Un seul saut de ligne, entour\u00e9 d'espaces \u00e9ventuels (pas de ligne vide ni de paragraphe). */
+const SINGLE_LINE_BREAK =
+  /^[^\S\n\r\u0085\u2028\u2029]*(?:\r\n|[\n\r\u0085\u2028])[^\S\n\r\u0085\u2028\u2029]*$/u;
+const HYPHEN = /[-\u2010\u2011]/u;
+
+/**
+ * Vrai si l'\u00e9cart `[prevEnd, next)` est un saut de ligne au milieu d'un mot \u00e0 trait d'union
+ * (\u00ab Jean-\u23cePierre \u00bb) : la ligne pr\u00e9c\u00e9dente se termine par le tiret et rien d'autre que des espaces
+ * et un seul saut de ligne ne s\u00e9pare les deux morceaux. On ne coupe pas le groupe \u00e0 cet endroit.
+ */
+function isHyphenatedWrap(text: string, prevEnd: number, next: number): boolean {
+  return HYPHEN.test(text.charAt(prevEnd - 1)) && SINGLE_LINE_BREAK.test(text.slice(prevEnd, next));
+}
+
+/**
+ * Intervalles `[début, fin)` d'un groupe trouvé à l'indice `found` de la copie normalisée, coupés
+ * à chaque saut de ligne du texte original situé entre deux de ses mots.
+ */
+function splitAtLineBreaks(
+  text: string,
+  { startMap, endMap }: FoldedSearchText,
+  found: number,
+  g: TokenGroup,
+): [number, number][] {
+  const first = startMap[found] as number;
+  const last = extendOverMarks(
+    text,
+    endMap[found + foldForSearch(g.word).norm.length - 1] as number,
+  );
+  const whole: [number, number][] = [[first, last]];
+  if (g.parts === undefined || g.parts.length < 2 || !LINE_BREAK.test(text.slice(first, last))) {
+    return whole;
+  }
+  const runs: [number, number][] = [];
+  let offset = found;
+  let runStart = -1;
+  let prevEnd = -1;
+  for (const part of g.parts) {
+    const n = foldForSearch(part).norm.length;
+    if (n === 0) continue;
+    const s = startMap[offset] as number;
+    const e = extendOverMarks(text, endMap[offset + n - 1] as number);
+    offset += n;
+    if (
+      runStart !== -1 &&
+      LINE_BREAK.test(text.slice(prevEnd, s)) &&
+      !isHyphenatedWrap(text, prevEnd, s)
+    ) {
+      runs.push([runStart, prevEnd]);
+      runStart = -1;
+    }
+    if (runStart === -1) runStart = s;
+    prevEnd = e;
+  }
+  if (runStart !== -1) runs.push([runStart, prevEnd]);
+  return runs;
+}
+
 /**
  * Retrouve les positions des groupes dans `text`. Transformers.js ne fournit ni `start` ni `end` :
  * le mot décodé (casse, accents et espaces possiblement altérés) est cherché à partir de la fin du
  * dernier groupe trouvé, sur une copie normalisée, puis ramené aux indices de l'original. On
- * préfère une occurrence alignée sur des frontières de mots, sinon la première.
+ * ne retient qu'une occurrence alignée sur des frontières de mots (lettres, chiffres Unicode) : un
+ * fragment trouvé à l'intérieur d'un mot (« b » dans « Objet », « BERT » dans « JPLAMBERT ») est
+ * écarté et compté dans `unlocated`, plutôt que de couper le mot. Un groupe qui couvre un saut de
+ * ligne du texte original est recoupé à ce saut : deux personnes de part et d'autre d'un paragraphe
+ * ne forment pas une seule entité. Un mot à trait d'union renvoyé à la ligne (« Jean-⏎Pierre ») n'est pas recoupé.
  *
  * Tous les groupes, même ceux d'un type ignoré (MISC…), sont localisés pour faire avancer le curseur :
  * sans cela, un « Marc » ignoré ferait attribuer au « Marc » suivant la position du premier.
@@ -220,27 +305,23 @@ export function locateGroups(text: string, groups: readonly TokenGroup[]): Locat
     }
     const from = lowerBound(startMap, cursor);
     let found = -1;
-    let fallback = -1;
     for (let i = norm.indexOf(needle, from); i !== -1; i = norm.indexOf(needle, i + 1)) {
       const s = startMap[i] as number;
-      const e = endMap[i + needle.length - 1] as number;
-      if (fallback === -1) fallback = i;
+      const e = extendOverMarks(text, endMap[i + needle.length - 1] as number);
       if (!isWordChar(text[s - 1]) && !isWordChar(text[e])) {
         found = i;
         break;
       }
     }
-    const approximate = found === -1 && fallback !== -1;
-    if (approximate) found = fallback;
     if (found === -1) {
       if (entityType !== null) unlocated++;
       continue;
     }
-    const start = startMap[found] as number;
-    const end = endMap[found + needle.length - 1] as number;
-    cursor = end;
+    cursor = extendOverMarks(text, endMap[found + needle.length - 1] as number);
     if (entityType !== null) {
-      spans.push({ start, end, entityType, score: g.score, approximate });
+      for (const [start, end] of splitAtLineBreaks(text, folded, found, g)) {
+        spans.push({ start, end, entityType, score: g.score, approximate: false });
+      }
     }
   }
   return { spans, unlocated };

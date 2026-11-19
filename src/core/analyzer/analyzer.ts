@@ -169,7 +169,7 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
         ambiguousGivenNames: new Set([...ambiguous.given, ...(options.ambiguousGivenNames ?? [])]),
         ambiguousFamilyNames: ambiguous.family,
       });
-      const { kept, discarded } = resolveConflicts([...known, ...propagated], { minScore });
+      const { kept, discarded } = resolveConflicts([...known, ...propagated], { minScore, text });
 
       return { detections: kept, discarded: [...dropped, ...discarded], warnings };
     },

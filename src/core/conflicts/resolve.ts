@@ -4,6 +4,11 @@ import type { Detection } from "../types/detection.ts";
 export interface ResolveConflictsOptions {
   /** Score minimal (inclus) pour participer à la résolution. Défaut : 0,5. Sans effet sur `manual`. */
   minScore?: number;
+  /**
+   * Texte analysé. Optionnel : il permet de rogner à des frontières de mot une détection qui
+   * déborde d'une unité protégée (adresse e-mail ou postale entière). Sans lui, elle est écartée.
+   */
+  text?: string;
 }
 
 export interface ConflictResolution {
@@ -133,6 +138,148 @@ function discard(d: Detection, line: string, supersededBy?: string): Detection {
   return copy;
 }
 
+/** Identifiant de la détection de rue + code postal + ville produite par la fusion d'adresses. */
+const ADDRESS_MERGE_ID = "core/address-merge";
+
+/**
+ * Unité protégée : une adresse e-mail entière, ou une adresse postale réunie par les règles
+ * (hors ajout manuel, qui suit sa propre priorité).
+ */
+function isProtectedUnit(d: Detection): boolean {
+  return d.source !== "manual" && (d.entityType === "EMAIL" || d.recognizerId === ADDRESS_MERGE_ID);
+}
+
+const WORD_CHAR = /[\p{L}\p{N}\p{M}]/u;
+const BASE_CHAR = /[\p{L}\p{N}]/u;
+const isWordAt = (text: string, i: number): boolean => {
+  const cp = text.codePointAt(i);
+  return cp !== undefined && WORD_CHAR.test(String.fromCodePoint(cp));
+};
+const isLow = (c: number) => c >= 0xdc00 && c <= 0xdfff;
+const isHigh = (c: number) => c >= 0xd800 && c <= 0xdbff;
+
+/** Début du point de code qui précède `pos` (positions UTF-16). */
+function previousCodePoint(text: string, pos: number): number {
+  return pos >= 2 && isLow(text.charCodeAt(pos - 1)) && isHigh(text.charCodeAt(pos - 2))
+    ? pos - 2
+    : pos - 1;
+}
+
+/** Vrai si la coupe en `pos` ne tombe pas au milieu d'un mot (ni d'une paire de substitution). */
+function isWordBoundary(text: string, pos: number): boolean {
+  if (pos <= 0 || pos >= text.length) return true;
+  if (isHigh(text.charCodeAt(pos - 1)) && isLow(text.charCodeAt(pos))) return false;
+  return !(isWordAt(text, previousCodePoint(text, pos)) && isWordAt(text, pos));
+}
+
+/** Resserre sur les lettres et chiffres, en conservant leurs marques combinantes finales. */
+function tighten(text: string, start: number, end: number): [number, number] | null {
+  let s = start;
+  let e = end;
+  while (s < e) {
+    const cp = text.codePointAt(s);
+    if (cp !== undefined && BASE_CHAR.test(String.fromCodePoint(cp))) break;
+    s += cp !== undefined && cp > 0xffff ? 2 : 1;
+  }
+  while (e > s && !isWordAt(text, previousCodePoint(text, e))) e = previousCodePoint(text, e);
+  return s < e ? [s, e] : null;
+}
+
+/**
+ * Applique les unités protégées avant la résolution : une unité l'emporte sur toute détection
+ * non manuelle qu'elle chevauche, quel que soit le score.
+ *  - fragment strictement contenu : écarté ;
+ *  - détection qui déborde d'un côté : rognée à sa partie extérieure si le texte est fourni, si la
+ *    coupe tombe entre deux mots et s'il reste des lettres ou chiffres ; sinon écartée ;
+ *  - détection qui contient l'unité : laissée à la politique habituelle ;
+ *  - ajouts manuels et chevauchement entre deux unités : laissés à la politique habituelle.
+ * Sans la rognure, une détection qui déborde gagnerait seule après l'éviction de ses fragments
+ * internes et laisserait le reste de l'unité en clair.
+ *
+ * C'est un filtre préalable, et non une règle de `decide` : la politique par paire est déjà
+ * non transitive (voir `compareCanonical`) et une règle de plus y créerait des cycles avec des
+ * détections de score intermédiaire, qui défont le tri. Les unités sont parcourues dans l'ordre
+ * canonique : le résultat ne dépend pas de l'ordre d'entrée.
+ */
+function applyProtectedUnits(
+  candidates: Detection[],
+  discarded: Detection[],
+  text: string | undefined,
+): Detection[] {
+  let units = candidates.filter(isProtectedUnit).sort(compareCanonical);
+  if (units.length === 0) return [...candidates];
+  // Une unité battue par un ajout manuel ne doit pas écarter les autres morceaux d'adresse.
+  // Seuls les ajouts retenus comptent : un ajout manuel peut lui-même perdre un conflit.
+  // Cet appel ne repasse pas ici : les détections manuelles ne sont jamais des unités protégées.
+  const manual = resolveConflicts(candidates.filter((d) => d.source === "manual")).kept;
+  let manualIndex = 0;
+  units = units.filter((u) => {
+    while (manualIndex < manual.length && manual[manualIndex]!.end <= u.start) manualIndex++;
+    const first = manual[manualIndex];
+    return first === undefined || first.start >= u.end;
+  });
+  if (units.length === 0) return [...candidates];
+  const maxEnd: number[] = [];
+  units.forEach((u, i) => maxEnd.push(Math.max(u.end, i > 0 ? maxEnd[i - 1]! : u.end)));
+
+  const out: Detection[] = [];
+  for (const d of candidates) {
+    if (d.source === "manual" || isProtectedUnit(d)) {
+      out.push(d);
+      continue;
+    }
+    // Premier indice dont la fin cumulée dépasse d.start.
+    let lo = 0;
+    let hi = units.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (maxEnd[mid]! > d.start) hi = mid;
+      else lo = mid + 1;
+    }
+    let cur = d;
+    let dropped: Detection | undefined;
+    let trimmed = false;
+    for (let j = lo; j < units.length && units[j]!.start < d.end; j++) {
+      const u = units[j]!;
+      if (u.end <= cur.start || u.start >= cur.end) continue;
+      if (u.start <= cur.start && u.end >= cur.end) {
+        dropped = u; // contenue dans l'unité (ou identique)
+        break;
+      }
+      if (cur.start <= u.start && cur.end >= u.end) continue; // d contient l'unité
+      // Chevauchement partiel : on garde la partie extérieure.
+      const left = u.start <= cur.start;
+      const t =
+        text !== undefined && isWordBoundary(text, left ? u.end : u.start)
+          ? tighten(text, left ? u.end : cur.start, left ? cur.end : u.start)
+          : null;
+      if (t === null) {
+        dropped = u;
+        break;
+      }
+      cur = { ...cur, explanation: [...cur.explanation], start: t[0], end: t[1] };
+      trimmed = true;
+    }
+    if (dropped !== undefined) {
+      discarded.push(
+        discard(
+          d,
+          `écartée au profit d'une détection ${dropped.entityType} : unité protégée (adresse entière) qu'elle chevauche`,
+          dropped.id,
+        ),
+      );
+    } else {
+      if (trimmed) {
+        cur.explanation.push(
+          "rognée : sa partie dans une unité protégée (adresse entière) est retirée",
+        );
+      }
+      out.push(cur);
+    }
+  }
+  return out;
+}
+
 /**
  * Résout les conflits entre détections (chevauchements).
  *
@@ -171,7 +318,9 @@ export function resolveConflicts(
     }
   }
 
-  const ordered = [...candidates].sort(compareCanonical).sort(compareDetections);
+  const ordered = applyProtectedUnits(candidates, discarded, options.text)
+    .sort(compareCanonical)
+    .sort(compareDetections);
 
   const kept: Detection[] = [];
   // Détecteurs ayant produit le même intervalle et le même type qu'une gardée.
