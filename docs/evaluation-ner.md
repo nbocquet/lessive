@@ -1,9 +1,39 @@
 # Évaluation du NER et des packs
 
-**Portée du rapport :** mesures historiques avec DistilBERT et les packs de cette évaluation. La version publiée fournit désormais CamemBERT-NER (ADR 0004). Les chiffres ci-dessous ne valident ni ce modèle ni les ajouts ultérieurs aux packs. Une nouvelle évaluation avec CamemBERT reste à faire.
+**Portée du rapport :** vérification ciblée du correctif #20, puis mesures historiques avec DistilBERT et les packs de l'évaluation initiale. La version publiée fournit désormais CamemBERT-NER (ADR 0004). Les chiffres historiques ne valident ni ce modèle ni les ajouts ultérieurs aux packs ; la vérification #20 précise son propre périmètre. Une nouvelle évaluation avec CamemBERT reste à faire.
 
 Rapport reproductible : toutes les valeurs ci-dessous sortent de `scripts/eval/evaluate.ts`, sans donnée réelle
 (corpus synthétique `corpus/ner-fr.jsonl` et `corpus/ner-en.jsonl`, 150 phrases chacun).
+
+## Vérification du correctif #20 — 19 novembre 2026
+
+L'ajout des sauts de page (`\f`) et tabulations verticales (`\v`) aux séparateurs de groupes NER a été
+mesuré avant/après sur les 300 phrases synthétiques, avec `scripts/eval/evaluate.ts`, le modèle local
+`Xenova/distilbert-base-multilingual-cased-ner-hrl` q8, onnxruntime-node sur CPU, Node 26.13.1 et Apple M5
+(10 cœurs). Aucun modèle ni paquet n'a été téléchargé.
+
+Node 26 n'accepte plus `--experimental-transform-types` et son mode de suppression des types refuse les
+propriétés de constructeur du moteur. Le script a donc été exécuté avec `node --import` et un hook local
+temporaire `registerHooks` : pour les fichiers `.ts`, `typescript.transpileModule` (TypeScript déjà installé,
+cible ES2022, modules ESNext) fournit le source JavaScript au chargeur Node. Pour la mesure avant, le même
+hook retire uniquement les séquences littérales `\f\v` des deux expressions régulières de
+`src/ner/postprocess.ts`, en mémoire ; la mesure après utilise les sources inchangées. Les autres sources et
+le corpus sont identiques entre les deux mesures.
+
+Les comptes bruts, les rappels par catégorie de phrase et les exemples d'erreurs sont **strictement
+identiques** avant/après, dans les trois configurations et pour les correspondances exacte et par
+recouvrement. Rappel PERSON par recouvrement :
+
+| Configuration | Français | Anglais |
+|---|---:|---:|
+| NER seul | 0,862 | 0,857 |
+| Packs + NER | 0,927 | 0,905 |
+
+Le corpus général n'exerce pas les nouveaux séparateurs : les tests unitaires de `postprocess.test.ts`
+vérifient spécifiquement les noms distincts séparés par `\f` ou `\v`, la conservation d'un nom à trait
+d'union coupé par un seul saut et la coupure en présence de plusieurs sauts. Ces tests échouaient avant le
+correctif ; les 54 tests du fichier passent après. Cette mesure ne valide pas le comportement de
+CamemBERT dans le navigateur.
 
 ## Reproduire
 

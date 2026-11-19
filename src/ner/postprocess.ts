@@ -216,10 +216,10 @@ function extendOverMarks(text: string, end: number): number {
   return e;
 }
 
-const LINE_BREAK = /[\n\r\u0085\u2028\u2029]/u;
+const LINE_BREAK = /[\n\r\f\v\u0085\u2028\u2029]/u;
 /** Un seul saut de ligne, entour\u00e9 d'espaces \u00e9ventuels (pas de ligne vide ni de paragraphe). */
 const SINGLE_LINE_BREAK =
-  /^[^\S\n\r\u0085\u2028\u2029]*(?:\r\n|[\n\r\u0085\u2028])[^\S\n\r\u0085\u2028\u2029]*$/u;
+  /^[^\S\n\r\f\v\u0085\u2028\u2029]*(?:\r\n|[\n\r\f\v\u0085\u2028])[^\S\n\r\f\v\u0085\u2028\u2029]*$/u;
 const HYPHEN = /[-\u2010\u2011]/u;
 
 /**
