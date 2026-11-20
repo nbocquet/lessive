@@ -5,3 +5,5 @@ tools/
 corpus/
 package-lock.json
 *.md
+
+dist-cli/

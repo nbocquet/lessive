@@ -21,7 +21,7 @@ import {
 import { getValidator } from "../validators/index.ts";
 import { mergeAddressParts } from "./merge-addresses.ts";
 import { mergeAdjacentPersons } from "./merge-persons.ts";
-import { collectAmbiguousNames, propagatePersonNames } from "./propagate-names.ts";
+import { collectAmbiguousNames, createPersonNamePropagator } from "./propagate-names.ts";
 
 /** Seuil par défaut de l'analyse (aligné sur la résolution des conflits). */
 const DEFAULT_MIN_SCORE = 0.5;
@@ -111,7 +111,7 @@ function assertValidManual(text: string, d: Detection, index: number): void {
 export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
   const recognizers = activeRules.map(buildRecognizer);
   const rulesById = new Map<string, Rule>(activeRules.map((a) => [a.globalId, a.rule]));
-  const ambiguous = collectAmbiguousNames(activeRules);
+  const propagate = createPersonNamePropagator(collectAmbiguousNames(activeRules));
 
   return {
     recognizers,
@@ -163,11 +163,12 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
       const minScore = options.minScore ?? DEFAULT_MIN_SCORE;
       // Propagation : prénoms seuls et identifiants dérivés de noms déjà sûrs, avant les conflits.
       const known = [...contextual, ...persons, ...addresses, ...manualWithIds];
-      const propagated = propagatePersonNames(text, known, ctx, {
+      const propagated = propagate(text, known, ctx, {
         minScore,
         ...(options.knownPersons ? { knownPersons: options.knownPersons } : {}),
-        ambiguousGivenNames: new Set([...ambiguous.given, ...(options.ambiguousGivenNames ?? [])]),
-        ambiguousFamilyNames: ambiguous.family,
+        ...(options.ambiguousGivenNames
+          ? { ambiguousGivenNames: options.ambiguousGivenNames }
+          : {}),
       });
       const { kept, discarded } = resolveConflicts([...known, ...propagated], { minScore, text });
 

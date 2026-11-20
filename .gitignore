@@ -12,3 +12,5 @@ tools/**/models/
 .openrouter
 
 .openrouteur
+
+dist-cli/

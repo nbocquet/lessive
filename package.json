@@ -17,7 +17,8 @@
     "test:e2e": "vite build && node --test --test-concurrency=1 tests/e2e/*.test.ts",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "build:cli": "node scripts/build-cli.ts"
   },
   "dependencies": {
     "@huggingface/transformers": "4.3.2",
@@ -44,5 +45,8 @@
     "fsevents": false,
     "onnxruntime-node": false,
     "protobufjs": false
+  },
+  "bin": {
+    "lessive": "dist-cli/src/cli/main.js"
   }
 }
