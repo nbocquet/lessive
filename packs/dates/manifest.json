@@ -5,5 +5,10 @@
   "type": "global",
   "name": "Dates",
   "description": "Dates numériques (JJ.MM.AAAA, JJ/MM/AAAA, JJ-MM-AAAA, AAAA-MM-JJ, JJ.MM.AA) et littérales en français et en anglais.",
-  "rules": ["rules/numeric.json", "rules/literal-fr.json", "rules/literal-en.json"]
+  "rules": [
+    "rules/numeric.json",
+    "rules/literal-fr.json",
+    "rules/literal-en.json",
+    "rules/ranges.json"
+  ]
 }

@@ -6,6 +6,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
+- Les plages et dates coordonnées à deux jours avec mois partagé sont entièrement remplacées (`du 7 au 11 octobre`, `les 23 et 24 novembre`), avec leur année éventuelle ; formes anglaises courantes également couvertes (#14).
+
 - Les analyses répétées contenant des personnes réutilisent les dictionnaires de noms ambigus préparés à la création de l’analyseur, sans conserver les noms des textes précédents.
 
 - CLI : second Ctrl+C pour forcer l’arrêt, statut de succès conservé après publication, diagnostics sans accumulation d’écouteurs et ordre des packs indépendant de la locale. Analyse accélérée en l’absence de personnes à propager ; mesures du débit complétées pour les lignes courtes.
