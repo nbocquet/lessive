@@ -1,3 +1,4 @@
 # Travaux prévus
 
-- [ ] Créer un outil CLI pour traiter des fichiers locaux (notamment des logs) avec le moteur Lessive : pseudonymiser ou masquer les données détectées, puis réidentifier une réponse à l'aide des correspondances locales. Prévoir la lecture et l'écriture de fichiers ainsi que l'entrée/sortie standard, sans envoi réseau ; ne jamais journaliser le contenu source ni les correspondances. Définir les formats pris en charge, le traitement des gros fichiers et la conservation explicite et chiffrée des correspondances. Cet outil n'est pas encore disponible.
+- [ ] Terminer la revue en PR du CLI V1 (#24) ; implémentation et recette locale terminées sur `feat/cli` : voir [le plan et les critères](docs/implementation-cli.md). Le périmètre V1 est le masquage par catégories, ligne par ligne ; la pseudonymisation et la réidentification ne font pas partie de cette version.
+- [ ] Concevoir les futures sous-commandes CLI `wash` (tout masquer), `tidy` (conserver IP et dates, masquer les identifiants) et `clean` (tout pseudonymiser avec des repères stables par fichier) : voir [les intentions et décisions ouvertes](docs/evolution-cli.md).

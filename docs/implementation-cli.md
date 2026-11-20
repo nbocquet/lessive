@@ -1,8 +1,10 @@
 # Implémentation du CLI Lessive
 
-**Statut :** plan de développement validé, fonctionnalité à implémenter sur la branche `feat/cli`.
+**Statut :** implémentation V1 et recette locale terminées sur la branche `feat/cli` ; revue en PR à faire.
 
-Ce document décrit le comportement attendu de la première version du CLI. Les commandes présentées sont des interfaces à développer, pas des commandes déjà disponibles.
+Ce document décrit le comportement de la première version du CLI. Le code est dans `src/cli` ; les commandes sont disponibles après `npm run build:cli` et installation locale. La revue en PR reste à faire.
+
+Les futures sous-commandes `wash`, `tidy` et `clean` sont décrites séparément dans [evolution-cli.md](evolution-cli.md). Elles ne sont pas implémentées et ne changent pas le périmètre V1 ci-dessous.
 
 ## 1. Objectif et décisions retenues
 
@@ -141,12 +143,12 @@ Aucune nouvelle dépendance à l'exécution ni publication npm. Si une dépendan
 
 Chaque étape doit livrer ses tests avec des données synthétiques uniquement.
 
-- [ ] **Socle exécutable** : compilation, binaire, analyse des arguments, aide et version ; exécution depuis un autre répertoire.
-- [ ] **Packs et transformation** : chargement des données distribuées, catégories, langues et activation optionnelle des dates.
-- [ ] **Flux borné** : décodage strict, séparateurs, limite par ligne, traitement séquentiel et contre-pression.
-- [ ] **Fichiers et erreurs** : sortie temporaire, publication sans écrasement, diagnostics contrôlés, codes de sortie et interruptions.
-- [ ] **NER local** : lecture confinée au dossier du modèle, chargement unique, interruption sur échec demandé, libération et absence de réseau.
-- [ ] **Documentation et recette** : README, architecture, limites, confidentialité, todo et entrée « Non publié » du changelog.
+- [x] **Socle exécutable** : compilation, binaire, analyse des arguments, aide et version ; exécution depuis un autre répertoire.
+- [x] **Packs et transformation** : chargement des données distribuées, catégories, langues et activation optionnelle des dates.
+- [x] **Flux borné** : décodage strict, séparateurs, limite par ligne, traitement séquentiel et contre-pression.
+- [x] **Fichiers et erreurs** : sortie temporaire, publication sans écrasement, diagnostics contrôlés, codes de sortie et interruptions.
+- [x] **NER local** : lecture confinée au dossier du modèle, chargement unique, interruption sur échec demandé, libération et absence de réseau.
+- [x] **Documentation et recette** : README, architecture, limites, confidentialité, todo et entrée « Non publié » du changelog.
 
 ## 7. Tests et critères d'acceptation
 
@@ -179,3 +181,11 @@ Les contrôles requis sont `npm run lint`, `npm run typecheck`, `npm test`, `npm
 Mesurer le débit et la mémoire sur un log synthétique d'au moins **100 Mo** avec des lignes courtes, puis comparer à une entrée de taille inférieure. Vérifier que le tampon applicatif et la quantité de travail en attente restent bornés ; reporter séparément la mémoire fixe du NER lorsqu'il est activé. Ne pas fixer de seuil de débit arbitraire avant cette première mesure.
 
 L'implémentation sera proposée dans une PR, sans fusion ni publication automatique pendant le développement. Le compte rendu précisera ce qui est livré, les limites connues, les mesures et les vérifications effectivement exécutées.
+
+## État de la recette sur `feat/cli`
+
+Implémentation et documentation V1 présentes. Recette relancée le 20 novembre 2026 : lint et typecheck sans erreur, 1 788 tests unitaires réussis (3 tests sautés), compilation CLI et web réussies, 15 tests Chrome réussis sans saut. Le lancement Chrome dans le bac à sable est resté bloqué et a été interrompu ; la relance avec les permissions nécessaires a réussi. Le test CLI avec CamemBERT local sur CPU q8 a également réussi, sans téléchargement.
+
+La revue locale a corrigé l'ouverture bloquante des tubes nommés : un chemin d'entrée ou de modèle désignant un tube sans producteur est maintenant refusé sans attendre. L'ouverture non bloquante précède la vérification du descripteur comme fichier ordinaire ; les erreurs de vérification ferment ce descripteur. Deux tests de régression en sous-processus couvrent ces cas sur les systèmes disposant de tubes nommés (sautés sous Windows). Pour l'entrée, le test vérifie aussi l'absence de destination finale et le nettoyage du temporaire.
+
+La mesure sur logs synthétiques de 10 et 100 Mo est consignée dans [performances-cli.md](performances-cli.md). La mesure avec NER CPU q8 est également consignée : initialisation seule, 1 et 10 Mo (10 Mo en 693,19 s, pic RSS 1 179 376 Kio). Le passage de 100 Mo avec NER n’a pas été exécuté. L’essai WebGPU réalisé le 20 novembre réussit avec le modèle local q8, mais les trois séries courtes donnent une médiane de 145,97 ms/ligne contre 56,85 sur CPU ; le CLI reste sur CPU. Voir les conditions et limites dans le rapport de performances. La revue en PR reste à faire avant toute fusion ou publication.

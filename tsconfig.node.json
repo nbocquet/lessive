@@ -10,7 +10,9 @@
     "scripts/fetch-bundled-model.ts",
     "src/core/**/*.ts",
     "tests/e2e/**/*.ts",
-    "tests/regression/**/*.ts"
+    "tests/regression/**/*.ts",
+    "src/cli/**/*.ts",
+    "scripts/build-cli.ts"
   ],
   "exclude": []
 }

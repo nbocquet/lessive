@@ -43,6 +43,28 @@ flowchart TD
 
 Les échanges avec l'assistant se font par copier-coller : Lessive n'appelle aucun LLM. La table de correspondance reste sur votre ordinateur. Relisez le texte pseudonymisé avant de le transmettre ; des informations non détectées peuvent encore identifier une personne.
 
+## CLI : masquer des fichiers locaux
+
+Avec Node.js 26 ou plus récent, depuis le dépôt :
+
+```bash
+ONNXRUNTIME_NODE_INSTALL=skip npm ci
+npm run build:cli
+npm link
+lessive --help
+lessive app.log -o app.masque.log
+cat app.log | lessive --mask-dates > app.masque.log
+lessive app.log --ner ./models/Xenova/camembert-ner
+```
+
+Le CLI remplace les données détectées par leurs catégories (`[PERSONNE]`, `[EMAIL]`, `[IP]`…), sans correspondances ni réidentification. Il lit un seul fichier UTF-8 ou stdin, ligne par ligne ; les dates restent intactes sauf avec `--mask-dates`. `--language fr|en|all` filtre les règles, avec `all` par défaut. Sans `--ner`, seules les règles sont utilisées et des noms peuvent rester en clair. Le modèle facultatif est lu exclusivement sur le disque, sur CPU avec des poids q8 ; si les fichiers ou le runtime CPU manquent, le CLI échoue sans téléchargement ni installation automatique. Aucune publication npm n'est prévue.
+
+Chaque ligne est indépendante : aucune détection ne traverse les sauts de ligne. La limite est de 200 000 unités UTF-16 par ligne ; LF, CRLF, le BOM initial et l'absence de saut final sont conservés. JSON/JSONL est traité comme du texte, sans garantie de conserver un JSON valide. Relisez le résultat : le masquage ne garantit pas l'anonymat.
+
+Préférez `--output` : la destination doit être nouvelle, et n'est publiée qu'après succès, sans écrasement possible. Le temporaire contient seulement le résultat transformé et a les permissions `0600` ; il est supprimé après les erreurs et interruptions gérées. Une coupure brutale peut le laisser sur disque. Sur stdout, une erreur tardive laisse un préfixe déjà émis : contrôlez toujours le code de sortie (`0` succès, `1` traitement, `2` arguments, `130` SIGINT). N'utilisez jamais une redirection shell vers le fichier d'entrée : le shell le tronquerait avant le démarrage de Lessive.
+
+Le plan et les critères de recette sont dans [docs/implementation-cli.md](docs/implementation-cli.md).
+
 ## English
 
 Lessive finds personal data in a text (names, e-mail addresses, phone numbers, IBANs, Swiss AVS and French NIR numbers, postal addresses…) and replaces it with neutral tokens such as `PERSONNE_001`, **entirely in your browser**. You paste the result into ChatGPT, Claude, Gemini or any other assistant; when the assistant answers, Lessive puts the original values back, still on your computer.

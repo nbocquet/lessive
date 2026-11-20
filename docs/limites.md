@@ -107,3 +107,9 @@ Lessive en est à sa première version publique (0.1.0). Ses tests automatiques 
 3. Cherchez ce qui permettrait de reconnaître la personne **sans son nom** (fonction rare, lieu, date, situation) et retirez-le ou reformulez-le.
 4. Installez ou chargez le modèle de reconnaissance des noms ; sans lui, une grande partie des noms ne sont pas détectés.
 5. En cas de doute sur la sensibilité du texte, ne l'envoyez pas.
+
+## CLI et fichiers de logs
+
+Le CLI traite chaque ligne UTF-8 indépendamment, sans contexte entre lignes : une adresse ou un secret multiligne peut rester partiellement en clair. Il refuse les lignes de plus de 200 000 unités UTF-16 et les encodages invalides. Sans NER explicitement chargé, les règles seules peuvent manquer des noms. Les dates restent visibles par défaut. Le remplacement par catégorie peut rendre un JSON/JSONL invalide.
+
+Une erreur tardive laisse les lignes déjà écrites sur stdout ; contrôlez le code de sortie. Avec `--output`, le fichier final est publié seulement après succès et sans écrasement. Une coupure brutale peut laisser le temporaire transformé. Aucun export de correspondances ni réidentification n'est disponible dans le CLI.

@@ -4,7 +4,7 @@ import svelte from "eslint-plugin-svelte";
 import globals from "globals";
 
 export default tseslint.config(
-  { ignores: ["dist/", "node_modules/", "tools/", "models/", "coverage/"] },
+  { ignores: ["dist/", "dist-cli/", "node_modules/", "tools/", "models/", "coverage/"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...svelte.configs.recommended,
@@ -17,6 +17,10 @@ export default tseslint.config(
   {
     files: ["**/*.svelte", "**/*.svelte.ts"],
     languageOptions: { parserOptions: { parser: tseslint.parser } },
+  },
+  {
+    files: ["src/cli/**/*.ts", "scripts/build-cli.ts"],
+    languageOptions: { globals: { ...globals.node } },
   },
   // Frontières : le moteur est indépendant de l'interface et du NER (R3).
   {

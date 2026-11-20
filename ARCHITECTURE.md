@@ -143,3 +143,11 @@ Implémenter `NerEngine` (`load`, `recognize`, `dispose`) dans `src/ner/`, sans 
 ### Un opérateur de transformation
 
 Fichier dans `src/core/transform/operators/` (un `Operator` : `id` et `apply`), enregistré dans `OPERATORS` (`operators/index.ts`), identifiant ajouté à `OperatorId` (`types/transform.ts`, contrat : R11). Côté interface, le libellé et les modes où il est proposé sont dans `components/review-labels.ts` (`operatorsForMode`). Un opérateur ne reçoit que la valeur de sa détection et, pour la pseudonymisation, la session ; ses erreurs ne citent jamais de valeur (R5).
+
+## Adaptateur CLI Node
+
+`src/cli/main.ts` exécute `run.ts` : arguments validés, packs distribués chargés une fois, NER local facultatif, puis lignes UTF-8 strictes (`lines.ts`) analysées séquentiellement par le moteur existant. La transformation utilise `masking` et `categorize`, sans session. Aucun contrat public du moteur ne change.
+
+`output.ts` attend chaque écriture. Pour un fichier, il crée un temporaire privé dans le dossier de destination, le ferme puis publie par lien physique sans remplacement ; une collision fait échouer la publication. `ner.ts` confine les fichiers du modèle à leur dossier réel, désactive réseau et caches persistants, et mémorise les échecs de reconnaissance pour empêcher le mode dégradé silencieux de l'analyseur.
+
+`npm run build:cli` compile le graphe du point d'entrée en JavaScript ES2022 dans `dist-cli/` et y copie uniquement manifestes et règles. Le binaire résout les packs par rapport à son module, indépendamment du répertoire courant. `pretest` compile avant les tests en sous-processus. L'adaptateur ne dépend d'aucun composant web ni worker.

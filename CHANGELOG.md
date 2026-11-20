@@ -4,6 +4,10 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ## [Non publié]
 
+### Ajouté
+
+- CLI local `lessive` pour masquer un fichier UTF-8 ou stdin par catégories, ligne par ligne : dates optionnelles, NER CPU local facultatif, sortie fichier publiée sans écrasement après succès (#24). Compilation et installation depuis le dépôt, sans publication npm. Les chemins d'entrée et de modèle doivent désigner des fichiers ordinaires ; les tubes nommés sont refusés sans attendre de producteur.
+
 ### Modifié
 
 - Développement : Node.js 26 ou plus récent est requis (CI et publication comprises, version fixée par `.nvmrc`). Les scripts de mesure se lancent directement avec `node`, sans option expérimentale. Aucun changement pour les personnes qui utilisent l'application.
