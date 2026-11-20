@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { AnalysisContext, Detection } from "../types/index.ts";
 import {
+  createPersonNamePropagator,
   PROPAGATED_GIVEN_NAME_SCORE,
   PROPAGATED_NAME_SCORE,
   PROPAGATION_RECOGNIZER_ID,
@@ -410,5 +411,44 @@ describe("propagation sans personne", () => {
       }),
     ).toEqual([]);
     expect(iterate).not.toHaveBeenCalled();
+  });
+});
+
+describe("propagation préparée par analyseur", () => {
+  it("réutilise les dictionnaires repliés avec les mêmes détections", () => {
+    const given = new Set(["elodie"]);
+    const family = new Set(["blanc"]);
+    const iterateGiven = vi.spyOn(given, Symbol.iterator);
+    const iterateFamily = vi.spyOn(family, Symbol.iterator);
+    const propagate = createPersonNamePropagator({ given, family });
+    for (const text of [
+      "Élodie Blanc. Puis Élodie, blanc, Blanc et eblanc.",
+      "😀 Élodie Blanc. Puis Élodie et BLANC.",
+    ]) {
+      const detections = [det(text, "Élodie Blanc")];
+      const options = { minScore: 0.5 };
+      expect(propagate(text, detections, makeCtx(), options)).toEqual(
+        propagatePersonNames(text, detections, makeCtx(), {
+          ...options,
+          ambiguousGivenNames: new Set(["Élodie"]),
+          ambiguousFamilyNames: new Set(["Blanc"]),
+        }),
+      );
+    }
+    expect(iterateGiven).not.toHaveBeenCalled();
+    expect(iterateFamily).not.toHaveBeenCalled();
+  });
+
+  it("relit les ambigus supplémentaires sans les conserver entre analyses", () => {
+    const propagate = createPersonNamePropagator({ given: new Set(), family: new Set() });
+    const extra = new Set(["Élodie"]);
+    const options = { minScore: 0.5, knownPersons: ["Élodie"], ambiguousGivenNames: extra };
+    const text = "Bonjour Élodie.";
+    expect(propagate(text, [], makeCtx(), options)).toEqual([]);
+    extra.clear();
+    expect(propagate(text, [], makeCtx(), options).map((d) => text.slice(d.start, d.end))).toEqual([
+      "Élodie",
+    ]);
+    expect(propagate(text, [], makeCtx(), { minScore: 0.5 })).toEqual([]);
   });
 });

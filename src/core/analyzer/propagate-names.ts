@@ -415,6 +415,25 @@ function unionIntervals(items: ReadonlyArray<readonly [number, number]>): Array<
   return out;
 }
 
+/** Prépare les dictionnaires une fois ; aucune donnée du texte n'est conservée. */
+export function createPersonNamePropagator(ambiguous: ReturnType<typeof collectAmbiguousNames>) {
+  return (
+    text: string,
+    detections: readonly Detection[],
+    ctx: AnalysisContext,
+    options: Pick<PropagateOptions, "minScore" | "knownPersons" | "ambiguousGivenNames">,
+  ): Detection[] => {
+    const extra = options.ambiguousGivenNames;
+    const given = extra?.size
+      ? new Set([...ambiguous.given, ...[...extra].map(foldString)])
+      : ambiguous.given;
+    return propagateWithAmbiguity(text, detections, ctx, options, {
+      given,
+      family: ambiguous.family,
+    });
+  };
+}
+
 /**
  * Cherche dans `text` les formes dérivées des noms sûrs de `detections` (et de
  * `options.knownPersons`) ; renvoie les nouvelles détections PERSON, sans modifier l'entrée.
@@ -429,11 +448,22 @@ export function propagatePersonNames(
   if (!options.knownPersons?.length && !detections.some((d) => d.entityType === "PERSON"))
     return [];
 
-  const { minScore } = options;
-  const amb: Ambiguity = {
+  return propagateWithAmbiguity(text, detections, ctx, options, {
     given: new Set([...(options.ambiguousGivenNames ?? [])].map(foldString)),
     family: new Set([...(options.ambiguousFamilyNames ?? [])].map(foldString)),
-  };
+  });
+}
+
+function propagateWithAmbiguity(
+  text: string,
+  detections: readonly Detection[],
+  ctx: AnalysisContext,
+  options: Pick<PropagateOptions, "minScore" | "knownPersons">,
+  amb: Ambiguity,
+): Detection[] {
+  if (!options.knownPersons?.length && !detections.some((d) => d.entityType === "PERSON"))
+    return [];
+  const { minScore } = options;
 
   // 1. Noms sûrs → formes.
   const forms = new FormSet();

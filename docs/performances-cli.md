@@ -40,6 +40,32 @@ Les 3,63–4,02 Mo/s ci-dessus concernent uniquement des lignes de 1 000 octets 
 
 Les deux corpus contiennent un courriel synthétique par ligne et du remplissage en `x`, sans personne à propager. Le coût par ligne et celui par caractère contribuent au débit : même après correction, les Mo/s des lignes longues ne prédisent pas ceux des lignes courtes. Ces relevés ponctuels, avec caches et charge de la machine non contrôlés, ne constituent ni une garantie de débit ni une mesure exhaustive de logs réels. Les mesures NER ci-dessous restent les relevés initiaux et n’ont pas été répétées après cette correction.
 
+## Lignes contenant une personne — suivi du 20 novembre 2026
+
+L’analyseur réutilise désormais les ensembles de noms ambigus déjà repliés lors de sa création. La normalisation ne se répète plus pour chaque ligne contenant une personne. Les prénoms ambigus supplémentaires fournis par l’appelant sont toujours relus à chaque analyse ; aucun nom issu du texte n’est mémorisé entre deux analyses.
+
+Comparaison locale sur macOS arm64, Node v26.13.1 : 50 000 répétitions de la ligne synthétique `connexion de Jean Dupont depuis 192.0.2.1`, LF inclus. Même fichier en entrée, CLI compilé avant chaque version, sans NER ; stdout ignorée par le parent. La durée comprend le lancement du processus et l’initialisation des packs.
+
+| Version | Durée | Lignes/s |
+|---|---:|---:|
+| Avant cette optimisation (`7337526`) | 10,44 s | 4 788 |
+| Après réutilisation des dictionnaires | 4,55 s | 10 995 |
+
+Soit environ 2,3 fois plus vite sur ce passage. Un seul relevé par version, sans contrôle des caches ni de la charge ; ces résultats ne garantissent pas un débit général. Ils ne sont pas directement comparables aux tableaux utilisant `--output`, dont la publication du fichier est incluse.
+
+Pour reproduire ce passage après `npm run build:cli` :
+
+```bash
+node --input-type=module -e '
+import { writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+writeFileSync("/tmp/lessive-person-perf.txt", "connexion de Jean Dupont depuis 192.0.2.1\n".repeat(50000));
+const start = performance.now();
+const result = spawnSync(process.execPath, ["dist-cli/src/cli/main.js", "/tmp/lessive-person-perf.txt"], { stdio: ["ignore", "ignore", "pipe"] });
+console.log(JSON.stringify({ lines: 50000, seconds: (performance.now() - start) / 1000, status: result.status }));
+'
+```
+
 ## Ce qui borne le travail en attente
 
 La lecture d'un fichier utilise des blocs de 64 Kio. `readLines` conserve le bloc courant et la ligne en construction ; la limite de ligne est de 200 000 unités UTF-16, avec un CR terminal éventuellement retenu en attente de LF. L'analyse et l'écriture sont attendues avant de demander la ligne suivante. Aucune file cumulative de lignes ou de détections n'est créée ; les noms ne sont pas retenus d'une ligne à l'autre. Les packs et l'analyseur sont initialisés une seule fois.
