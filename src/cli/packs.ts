@@ -12,7 +12,7 @@ export async function loadRules(maskDates: boolean): Promise<ActiveRule[]> {
   const root = new URL("../../packs/", import.meta.url);
   const registry = new PackRegistry();
   const entries = await readdir(root, { withFileTypes: true });
-  for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+  for (const entry of entries.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))) {
     if (!entry.isDirectory() || entry.name.startsWith("_")) continue;
     const directory = new URL(`${entry.name}/`, root);
     const raw: unknown = JSON.parse(await readFile(new URL("manifest.json", directory), "utf8"));

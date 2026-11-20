@@ -47,19 +47,26 @@ export async function createFileOutput(destination: string): Promise<Output> {
   };
 }
 
+// Un seul gardien par flux, y compris pour les erreurs émises après un callback.
+const streamFailures = new WeakMap<Writable, { error?: Error }>();
+
 /** Attendre chaque callback borne aussi les écritures lorsque le consommateur est lent. */
 export function streamOutput(stream: Writable, signal?: AbortSignal): Output {
-  let failure: Error | undefined;
-  const onError = (error: Error) => {
-    failure = error;
-  };
-  stream.on("error", onError);
+  let failure = streamFailures.get(stream);
+  if (!failure) {
+    const state: { error?: Error } = {};
+    streamFailures.set(stream, state);
+    stream.on("error", (error: Error) => {
+      state.error = error;
+    });
+    failure = state;
+  }
   const interrupt = () => stream.destroy(new Error("INTERRUPTED"));
   signal?.addEventListener("abort", interrupt, { once: true });
   return {
     async write(text) {
       if (signal?.aborted) throw new Error("INTERRUPTED");
-      if (failure) throw failure;
+      if (failure.error) throw failure.error;
       await new Promise<void>((resolve, reject) => {
         const finish = (error?: Error | null) => {
           stream.removeListener("error", fail);
@@ -75,7 +82,7 @@ export function streamOutput(stream: Writable, signal?: AbortSignal): Output {
       });
     },
     async commit() {
-      if (failure) throw failure;
+      if (failure.error) throw failure.error;
     },
     // Garder le gestionnaire jusqu'à la sortie du processus : une erreur peut suivre le callback.
     async cleanup() {

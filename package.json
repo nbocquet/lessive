@@ -18,8 +18,7 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
-    "build:cli": "node scripts/build-cli.ts",
-    "pretest": "npm run build:cli"
+    "build:cli": "node scripts/build-cli.ts"
   },
   "dependencies": {
     "@huggingface/transformers": "4.3.2",

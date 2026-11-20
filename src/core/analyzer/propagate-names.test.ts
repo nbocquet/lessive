@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { AnalysisContext, Detection } from "../types/index.ts";
 import {
   PROPAGATED_GIVEN_NAME_SCORE,
@@ -393,5 +393,22 @@ describe("propagatePersonNames : performance", () => {
     const elapsed = performance.now() - t0;
     expect(out.length).toBeGreaterThan(1000);
     expect(elapsed).toBeLessThan(500);
+  });
+});
+
+describe("propagation sans personne", () => {
+  it("ne parcourt pas les noms ambigus sans personne à propager", () => {
+    const ambiguous = new Set(["Églantine"]);
+    const iterate = vi.spyOn(ambiguous, Symbol.iterator);
+    const text = "probe@example.org";
+    expect(
+      propagatePersonNames(text, [det(text, text, { entityType: "EMAIL" })], makeCtx(), {
+        minScore: 0.5,
+        knownPersons: [],
+        ambiguousGivenNames: ambiguous,
+        ambiguousFamilyNames: ambiguous,
+      }),
+    ).toEqual([]);
+    expect(iterate).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Mesure le binaire compilé : node scripts/perf/measure-cli.ts [--sizes 10,100] [--ner dossier].
+ * Mesure le binaire compilé : node scripts/perf/measure-cli.ts [--sizes 10,100] [--line-bytes 1000] [--ner dossier].
  * Les tailles sont exprimées en Mo décimaux. Aucune donnée réelle n'est lue ou conservée.
  */
 import { spawn } from "node:child_process";
@@ -11,26 +11,35 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const args = process.argv.slice(2);
 let sizeList = "10,100";
 let ner: string | undefined;
+let lineBytes = 1000;
 for (let i = 0; i < args.length; i += 2) {
   const value = args[i + 1];
-  if (!value || (args[i] !== "--sizes" && args[i] !== "--ner")) {
-    throw new Error("Usage : node scripts/perf/measure-cli.ts [--sizes 10,100] [--ner dossier]");
+  if (!value || !["--sizes", "--ner", "--line-bytes"].includes(args[i]!)) {
+    throw new Error(
+      "Usage : node scripts/perf/measure-cli.ts [--sizes 10,100] [--line-bytes 1000] [--ner dossier]",
+    );
   }
   if (args[i] === "--sizes") sizeList = value;
+  else if (args[i] === "--line-bytes") lineBytes = Number(value);
   else ner = resolve(value);
 }
 const sizes = sizeList.split(",").map(Number);
 if (sizes.some((size) => !Number.isFinite(size) || size < 0 || size > 10_000)) {
   throw new Error("Tailles invalides (Mo décimaux, de 0 à 10 000 inclus).");
 }
+if (!Number.isInteger(lineBytes) || lineBytes < 25 || lineBytes > 200_000) {
+  throw new Error("Longueur de ligne invalide (25 à 200 000 octets, LF inclus).");
+}
 const directory = await mkdtemp(join(tmpdir(), "lessive-cli-perf-"));
 const binary = fileURLToPath(new URL("../../dist-cli/src/cli/main.js", import.meta.url));
-// Ligne ASCII de 1 000 octets : un courriel synthétique et un remplissage sans entité.
+// Ligne ASCII de longueur configurable : un courriel synthétique et un remplissage sans entité.
 const prefix = "event probe@example.org ";
-const line = Buffer.from(prefix + "x".repeat(999 - prefix.length) + "\n");
+const line = Buffer.from(prefix + "x".repeat(lineBytes - 1 - prefix.length) + "\n");
 const block = Buffer.concat(Array.from({ length: 64 }, () => line));
 const measurements: {
   bytes: number;
+  lines: number;
+  linesPerSecond: number;
   seconds: number;
   megabytesPerSecond: number;
   maxRssKiB: number;
@@ -91,6 +100,8 @@ try {
     if (!rss) throw new Error("Mesure mémoire indisponible.");
     const measurement = {
       bytes,
+      lines: bytes / line.length,
+      linesPerSecond: bytes / line.length / seconds,
       seconds,
       megabytesPerSecond: bytes / 1_000_000 / seconds,
       maxRssKiB: Number(rss[1]),

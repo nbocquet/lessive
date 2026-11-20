@@ -1,6 +1,6 @@
 # Performances du CLI
 
-Mesures de la V1 du CLI le 19 novembre 2026, sans NER puis avec CamemBERT local sur CPU q8. Le binaire compilé est exécuté dans un nouveau processus pour chaque taille, avec lecture d'un fichier UTF-8 synthétique et écriture par `--output`. Le temps comprend l'initialisation des packs, le chargement du modèle lorsqu'il est demandé, le traitement, les écritures et la publication du fichier final. Une taille de `0` mesure une exécution complète sur entrée vide : initialisation et libération, sans inférence.
+Mesures initiales de la V1 du CLI le 19 novembre 2026, complétées le 20 novembre après relecture, sans NER puis avec CamemBERT local sur CPU q8. Le binaire compilé est exécuté dans un nouveau processus pour chaque taille, avec lecture d'un fichier UTF-8 synthétique et écriture par `--output`. Le temps comprend l'initialisation des packs, le chargement du modèle lorsqu'il est demandé, le traitement, les écritures et la publication du fichier final. Une taille de `0` mesure une exécution complète sur entrée vide : initialisation et libération, sans inférence.
 
 ## Reproduire
 
@@ -8,23 +8,37 @@ Mesures de la V1 du CLI le 19 novembre 2026, sans NER puis avec CamemBERT local 
 npm run build:cli
 node scripts/perf/measure-cli.ts
 node scripts/perf/measure-cli.ts --sizes 10,100,200
+node scripts/perf/measure-cli.ts --sizes 7 --line-bytes 35
 node scripts/perf/measure-cli.ts --sizes 0,1,10 --ner models/Xenova/camembert-ner
 ```
 
-Le script ne lit aucune donnée utilisateur : il génère des lignes ASCII de 1 000 octets, contenant chacune un courriel synthétique `@example.org` et du remplissage sans entité. Les tailles demandées, en Mo décimaux, sont arrondies à la ligne complète supérieure. Entrée synthétique, sortie transformée et module de mesure sont créés dans un dossier temporaire puis supprimés à la fin. Aucun texte traité n'est imprimé dans les résultats.
+Le script ne lit aucune donnée utilisateur : il génère des lignes ASCII de 1 000 octets par défaut (`--line-bytes` permet de varier leur longueur, LF inclus), contenant chacune un courriel synthétique `@example.org` et du remplissage sans entité. Les tailles demandées, en Mo décimaux, sont arrondies à la ligne complète supérieure. Entrée synthétique, sortie transformée et module de mesure sont créés dans un dossier temporaire puis supprimés à la fin. Aucun texte traité n'est imprimé dans les résultats.
 
 La durée est mesurée par le processus parent. Un module temporaire chargé avec `node --import` relève `process.resourceUsage().maxRSS` à la sortie du processus enfant : il s'agit du pic de mémoire résidente du CLI en Kio, et non d'un échantillonnage du seul tas JavaScript. La génération du fichier d'entrée et le processus parent sont exclus des mesures.
 
-## Résultats sans NER
+## Résultats initiaux sans NER — avant correction
 
 Environnement : Apple M5, macOS/Darwin 27.0.0, Node v26.13.1. Un passage par taille ; cache du système de fichiers et charge de la machine non contrôlés.
 
-| Entrée | Lignes | Durée | Débit | Pic RSS du CLI |
-|---|---:|---:|---:|---:|
-| 10 000 000 octets (10 Mo) | 10 000 | 2,76 s | 3,63 Mo/s | 118 240 Kio |
-| 100 000 000 octets (100 Mo) | 100 000 | 24,90 s | 4,02 Mo/s | 146 800 Kio |
+| Entrée | Lignes | Durée | Débit | Lignes/s | Pic RSS du CLI |
+|---|---:|---:|---:|---:|---:|
+| 10 000 000 octets (10 Mo) | 10 000 | 2,76 s | 3,63 Mo/s | 3 623 | 118 240 Kio |
+| 100 000 000 octets (100 Mo) | 100 000 | 24,90 s | 4,02 Mo/s | 4 016 | 146 800 Kio |
 
 La taille d'entrée est multipliée par dix et le pic RSS observé par environ 1,24. Ces deux mesures sont compatibles avec le traitement progressif ; elles ne constituent pas une garantie de plafond RSS. Le ramasse-miettes, l'allocation des objets de détection, les packs et le runtime Node contribuent aussi à la mémoire résidente. Le débit dépend du contenu et de la densité d'entités : ce remplissage synthétique ne représente pas tous les logs.
+
+## Lignes courtes et correction — 20 novembre 2026
+
+Les 3,63–4,02 Mo/s ci-dessus concernent uniquement des lignes de 1 000 octets et ne représentent pas un débit général pour des logs. La relecture a relevé environ 39 s pour 200 000 lignes courtes d’environ 35 octets avant correction (environ 5 128 lignes/s). Ce relevé utilise un autre contenu ; il ne permet pas une comparaison exacte avec les nouvelles mesures.
+
+`propagatePersonNames` ne reconstruit désormais plus les ensembles de noms ambigus lorsqu’il n’y a aucune détection de personne ni personne connue à propager. Le script rapporte aussi le nombre de lignes et les lignes/s. Nouvelles mesures sans NER, même environnement Apple M5 et Node v26.13.1, un passage retenu par longueur :
+
+| Octets/ligne (LF inclus) | Entrée | Lignes | Durée | Débit | Lignes/s | Pic RSS |
+|---:|---:|---:|---:|---:|---:|---:|
+| 35 | 7 Mo | 200 000 | 9,67 s | 0,72 Mo/s | 20 672 | 124 544 Kio |
+| 1 000 | 10 Mo | 10 000 | 1,34 s | 7,45 Mo/s | 7 454 | 130 016 Kio |
+
+Les deux corpus contiennent un courriel synthétique par ligne et du remplissage en `x`, sans personne à propager. Le coût par ligne et celui par caractère contribuent au débit : même après correction, les Mo/s des lignes longues ne prédisent pas ceux des lignes courtes. Ces relevés ponctuels, avec caches et charge de la machine non contrôlés, ne constituent ni une garantie de débit ni une mesure exhaustive de logs réels. Les mesures NER ci-dessous restent les relevés initiaux et n’ont pas été répétées après cette correction.
 
 ## Ce qui borne le travail en attente
 
@@ -52,7 +66,7 @@ Le passage de 100 Mo avec NER n'a pas été exécuté. Le passage de 100 Mo sans
 
 ## Limites des mesures
 
-Les longues suites de `x` du remplissage ne représentent pas la distribution de jetons d'un log habituel. Les mesures portent sur ce corpus et ne prédisent pas le débit sur d'autres données. Il reste à comparer des contenus et longueurs de lignes variés. Aucun seuil minimal de débit n'est fixé à partir de ce premier relevé.
+Les longues suites de `x` du remplissage ne représentent pas la distribution de jetons d'un log habituel. Les mesures portent sur ce corpus et ne prédisent pas le débit sur d'autres données. Deux longueurs sont comparées ci-dessus ; il reste à varier les contenus et la densité de détections. Aucun seuil minimal de débit n'est fixé à partir de ce premier relevé.
 
 Le CLI V1 impose le CPU. Aucun résultat GPU n'est inclus dans les chiffres du CLI CPU ci-dessus. Le fournisseur CoreML n'a pas été essayé.
 

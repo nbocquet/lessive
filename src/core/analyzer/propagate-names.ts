@@ -425,6 +425,10 @@ export function propagatePersonNames(
   ctx: AnalysisContext,
   options: PropagateOptions,
 ): Detection[] {
+  // Sans personne à propager, inutile de replier les dictionnaires de noms ambigus.
+  if (!options.knownPersons?.length && !detections.some((d) => d.entityType === "PERSON"))
+    return [];
+
   const { minScore } = options;
   const amb: Ambiguity = {
     given: new Set([...(options.ambiguousGivenNames ?? [])].map(foldString)),

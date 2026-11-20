@@ -2,7 +2,10 @@
 import { run } from "./run.ts";
 
 const controller = new AbortController();
-process.on("SIGINT", () => controller.abort());
+process.on("SIGINT", () => {
+  if (controller.signal.aborted) process.exit(130);
+  controller.abort();
+});
 process.exitCode = await run(process.argv.slice(2), {
   stdin: process.stdin,
   stdout: process.stdout,

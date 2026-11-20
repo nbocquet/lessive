@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { beforeAll, describe, it, expect } from "vitest";
 import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
 import { mkdtemp, writeFile, readFile, readdir, rm } from "node:fs/promises";
@@ -25,6 +25,11 @@ function execute(args: string[], input: string | Uint8Array = "", timeout = 1000
   });
 }
 describe("binaire CLI compilé", () => {
+  beforeAll(async () => {
+    await promisify(execFile)(process.execPath, [
+      fileURLToPath(new URL("../../scripts/build-cli.ts", import.meta.url)),
+    ]);
+  }, 30000);
   it("fonctionne hors du dépôt et conserve les octets de structure", async () => {
     const result = await execute([], "\ufefftest@example.org\r\n\n192.0.2.1");
     expect(result.code).toBe(0);

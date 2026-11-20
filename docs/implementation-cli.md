@@ -126,7 +126,7 @@ Ajouter une compilation dédiée avec TypeScript déjà installé : émission Ja
 - Copier les manifestes et règles des packs livrés en conservant leur arborescence relative ; les résoudre depuis le programme installé, jamais depuis le répertoire courant de l'utilisateur.
 - Déclarer `lessive` dans `package.json`, avec un point d'entrée JavaScript portant le shebang Node.
 - Inclure les sources CLI dans les contrôles TypeScript et ESLint appropriés à Node.
-- Garantir que la compilation précède les tests en sous-processus du binaire, notamment via un script `pretest`.
+- Garantir que la compilation précède les tests en sous-processus du binaire, via un `beforeAll` dans `cli.test.ts` afin de ne compiler que pour cette suite.
 
 Parcours d'installation à documenter une fois implémenté :
 

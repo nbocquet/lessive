@@ -4,6 +4,10 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ## [Non publié]
 
+### Corrigé
+
+- CLI : second Ctrl+C pour forcer l’arrêt, statut de succès conservé après publication, diagnostics sans accumulation d’écouteurs et ordre des packs indépendant de la locale. Analyse accélérée en l’absence de personnes à propager ; mesures du débit complétées pour les lignes courtes.
+
 ### Ajouté
 
 - CLI local `lessive` pour masquer un fichier UTF-8 ou stdin par catégories, ligne par ligne : dates optionnelles, NER CPU local facultatif, sortie fichier publiée sans écrasement après succès (#24). Compilation et installation depuis le dépôt, sans publication npm. Les chemins d'entrée et de modèle doivent désigner des fichiers ordinaires ; les tubes nommés sont refusés sans attendre de producteur.

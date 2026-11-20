@@ -33,9 +33,10 @@ export async function run(argv: string[], io: RunOptions): Promise<number> {
   const interrupt = () => {
     input?.destroy(new Error("INTERRUPTED"));
   };
+  const diagnostics = streamOutput(io.stderr);
   const diagnostic = async (message: string) => {
     try {
-      await streamOutput(io.stderr).write(`${message}\n`);
+      await diagnostics.write(`${message}\n`);
     } catch {
       /* stderr fermé */
     }
@@ -47,7 +48,6 @@ export async function run(argv: string[], io: RunOptions): Promise<number> {
       output = streamOutput(io.stdout, io.signal);
       await output.write(args.help ? HELP : `${ENGINE_VERSION}\n`);
       await output.commit();
-      checkAbort();
     } else {
       checkAbort();
       phase = "SORTIE";
@@ -106,7 +106,6 @@ export async function run(argv: string[], io: RunOptions): Promise<number> {
       checkAbort();
       phase = "PUBLICATION";
       await output.commit();
-      checkAbort();
     }
   } catch (error) {
     status = io.signal?.aborted ? 130 : error instanceof ArgumentError ? 2 : 1;

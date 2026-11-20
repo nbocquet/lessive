@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import type { AnalysisContext, Detection, NerEngine } from "../core/types/index.ts";
+import * as outputs from "./output.ts";
 import { run } from "./run.ts";
 
 function capture() {
@@ -42,6 +43,39 @@ function person(text: string, context: AnalysisContext): Detection[] {
 }
 
 describe("run avec moteur injecté", () => {
+  it("conserve le succès si SIGINT arrive juste après la publication du fichier", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "lessive-cli-published-"));
+    const controller = new AbortController();
+    const create = outputs.createFileOutput;
+    const spy = vi.spyOn(outputs, "createFileOutput").mockImplementation(async (target) => {
+      const output = await create(target);
+      return {
+        ...output,
+        async commit() {
+          await output.commit();
+          controller.abort();
+        },
+      };
+    });
+    const stdout = capture();
+    const stderr = capture();
+    try {
+      expect(
+        await run(["-o", join(directory, "resultat.txt")], {
+          stdin: Readable.from([Buffer.from("essai@example.org")]),
+          stdout: stdout.stream,
+          stderr: stderr.stream,
+          signal: controller.signal,
+        }),
+      ).toBe(0);
+      expect(await readdir(directory)).toEqual(["resultat.txt"]);
+      expect(stderr.text()).not.toContain("interrompu");
+    } finally {
+      spy.mockRestore();
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
   it("charge une seule fois, masque chaque ligne puis libère le moteur", async () => {
     const engine = fakeNer(async (text, context) => person(text, context));
     const loadNer = vi.fn(async () => engine);

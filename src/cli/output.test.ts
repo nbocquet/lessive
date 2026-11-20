@@ -6,6 +6,23 @@ import { Writable } from "node:stream";
 import { createFileOutput, streamOutput } from "./output.ts";
 
 describe("sortie CLI", () => {
+  it("partage un seul gardien d’erreur entre les adaptateurs d’un même flux", async () => {
+    const stream = new Writable({
+      write(_chunk, _encoding, callback) {
+        callback();
+      },
+    });
+    for (let i = 0; i < 20; i++) {
+      const output = streamOutput(stream);
+      await output.write("diagnostic\n");
+      await output.cleanup();
+    }
+    expect(stream.listenerCount("error")).toBe(1);
+    stream.destroy(new Error("synthetic"));
+    await new Promise((resolve) => setImmediate(resolve));
+    await expect(streamOutput(stream).write("suite")).rejects.toThrow("synthetic");
+  });
+
   it("publie avec permissions privées et refuse une collision tardive", async () => {
     const dir = await mkdtemp(join(tmpdir(), "lessive-output-"));
     try {
