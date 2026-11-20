@@ -86,13 +86,14 @@ describe("propagation avec les packs livrés", () => {
     expect(session.entities().filter((e) => e.entityType === "PERSON")).toHaveLength(1);
   });
 
-  it("l'identifiant dérivé (CMARTIN) devient une entité séparée mais est masqué", async () => {
+  it("l'identifiant dérivé (CMARTIN) rejoint la personne correspondante (#13)", async () => {
     const text = "Claire Martin a le compte CMARTIN.";
     const result = await analyzer.analyze(text, { language: "fr" });
     const session = createSession();
     const out = transform(text, result.detections, pseudo, session);
-    // La session ne relie pas « CMARTIN » à « Claire Martin » : deux entités, deux pseudonymes.
-    expect(out.text).toBe("PERSONNE_001 a le compte PERSONNE_002.");
+    expect(out.text).toBe("PERSONNE_001 a le compte PERSONNE_001.");
+    expect(session.entities()).toHaveLength(1);
+    expect(session.entities()[0]?.needsReview).toBe(true);
     expect(out.text).not.toMatch(/cmartin/iu);
   });
 
@@ -157,6 +158,6 @@ describe("propagation avec les packs livrés", () => {
     expect(values).not.toContain("EMOREL");
     // Même entité que dans le premier document : même pseudonyme.
     expect(pseudonymOf(doc2, r2.detections, session, "Sophie")).toBe("PERSONNE_001");
-    expect(pseudonymOf(doc2, r2.detections, session, "cmartin")).toBe("PERSONNE_003");
+    expect(pseudonymOf(doc2, r2.detections, session, "cmartin")).toBe("PERSONNE_002");
   });
 });

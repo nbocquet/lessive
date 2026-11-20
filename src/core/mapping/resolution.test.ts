@@ -152,6 +152,85 @@ describe("résolution des personnes", () => {
   });
 });
 
+describe("identifiants dérivés de personnes (#13)", () => {
+  it.each([
+    ["Claire Martin", "CMARTIN"],
+    ["Élodie Morel", "EMOREL"],
+    ["Jean-Pierre Lambert", "JPLAMBERT"],
+    ["Claire Martin", "claire.martin"],
+    ["Claire Martin", "claire_martin"],
+    ["Claire Martin", "claire-martin"],
+    ["Claire Martin", "martinc"],
+    ["Jean-Pierre Lambert", "jeanpierre.lambert"],
+    ["Marc de La Tour", "MDELATOUR"],
+    ["Marc de La Tour", "mlatour"],
+    ["Anne d’Aubigné", "ADAUBIGNE"],
+    ["Anne d’Aubigné", "aaubigne"],
+  ])("rattache %s et %s avec une revue humaine", (name, login) => {
+    const session = createSession();
+    const person = session.resolve(name, "PERSON");
+    const account = session.resolve(login, "PERSON");
+    expect(account.id).toBe(person.id);
+    expect(account.needsReview).toBe(true);
+    expect(account.surfaceForms).toEqual([name, login]);
+    expect(session.entities()).toHaveLength(1);
+  });
+
+  it("ne choisit pas entre deux personnes partageant l’identifiant dérivé", () => {
+    const session = createSession();
+    session.resolve("Claire Martin", "PERSON");
+    session.resolve("Camille Martin", "PERSON");
+    const account = session.resolve("CMARTIN", "PERSON");
+    expect(account.pseudonym).toBe("PERSONNE_003");
+    expect(account.needsReview).toBe(true);
+    expect(session.entities()).toHaveLength(3);
+  });
+
+  it("garde l’ambiguïté entre un patronyme et l’identifiant d’une autre personne", () => {
+    const session = createSession();
+    session.resolve("Claire Martin", "PERSON");
+    session.resolve("Paul Cmartin", "PERSON");
+    const account = session.resolve("CMARTIN", "PERSON");
+    expect(account.pseudonym).toBe("PERSONNE_003");
+    expect(account.needsReview).toBe(true);
+  });
+
+  it("ne rattache ni une initiale seule ni un identifiant seulement ressemblant", () => {
+    const session = createSession();
+    const person = session.resolve("Jean-Pierre Lambert", "PERSON");
+    for (const value of ["JP", "JLAMBERT", "JPLAMBERT2", "JPLAMBERTX", "XJPLAMBERT"]) {
+      expect(session.resolve(value, "PERSON").id).not.toBe(person.id);
+    }
+  });
+
+  it("respecte la séparation manuelle d’un login déjà rattaché", () => {
+    const session = createSession();
+    const person = session.resolve("Claire Martin", "PERSON");
+    session.resolve("CMARTIN", "PERSON");
+    const account = session.split(person.id, "CMARTIN");
+    expect(session.resolve("cmartin", "PERSON").id).toBe(account.id);
+    expect(session.resolve("Claire Martin", "PERSON").id).toBe(person.id);
+  });
+
+  it.each([
+    ["Agent007 Bond", "ABOND"],
+    [`Claire${"x".repeat(80)} Martin`, "CMARTIN"],
+    ["Claire de de de de de de Martin", "CDEDEDEDEDEDEMARTIN"],
+  ])("ne dérive pas depuis une forme hors du périmètre des noms sûrs : %s", (name, login) => {
+    const session = createSession();
+    const person = session.resolve(name, "PERSON");
+    expect(session.resolve(login, "PERSON").id).not.toBe(person.id);
+  });
+
+  it("ne dérive pas un identifiant depuis une simple initiale ou un nom trop court", () => {
+    const session = createSession();
+    const initial = session.resolve("C. Martin", "PERSON");
+    expect(session.resolve("CMARTIN", "PERSON").id).not.toBe(initial.id);
+    const short = session.resolve("Claire Li", "PERSON");
+    expect(session.resolve("CLI", "PERSON").id).not.toBe(short.id);
+  });
+});
+
 describe("autres types", () => {
   it("organisations et lieux : correspondance après normalisation uniquement", () => {
     const o = ids(["Société Alpha SA", "SOCIETE ALPHA SA.", "Alpha"], "ORGANIZATION");

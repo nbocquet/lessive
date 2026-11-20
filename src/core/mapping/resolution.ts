@@ -21,7 +21,9 @@
  *     needsReview. Plusieurs candidats : nouvelle entité, needsReview ;
  *  3. un seul mot, ou un nom seul avec particule (« La Tour »), égal au
  *     premier prénom ou au cœur du nom d'exactement une entité : rattachée,
- *     needsReview. Plusieurs entités : nouvelle entité, needsReview ;
+ *     needsReview. Pour un mot unique, les identifiants dérivés d’un nom complet
+ *     (CMARTIN, EMOREL, JPLAMBERT, claire.martin…) participent à la même recherche ;
+ *     une initiale seule ne suffit pas. Plusieurs entités : nouvelle entité, needsReview ;
  *  4. sinon : nouvelle entité.
  *
  * Limites connues
@@ -49,6 +51,11 @@
  * `normalizeForm`).
  */
 import type { Entity, EntityType } from "../types/index.ts";
+import {
+  derivedPersonIdentifiers,
+  familyNameVariants,
+  isPersonNameParticle,
+} from "./person-identifiers.ts";
 
 const TITLES: ReadonlySet<string> = new Set([
   "m",
@@ -66,30 +73,6 @@ const TITLES: ReadonlySet<string> = new Set([
   "maitre",
   "docteur",
   "professeur",
-]);
-
-const PARTICLES: ReadonlySet<string> = new Set([
-  "de",
-  "du",
-  "des",
-  "d'",
-  "la",
-  "le",
-  "les",
-  "l'",
-  "van",
-  "von",
-  "der",
-  "den",
-  "di",
-  "da",
-  "del",
-  "della",
-  "dos",
-  "das",
-  "el",
-  "ter",
-  "ten",
 ]);
 
 /** Types dont la valeur est un identifiant : espaces, points et tirets sont sans signification. */
@@ -171,21 +154,38 @@ interface ParsedName {
   given: string[];
   /** Nom sans les particules de tête (« tour » pour « de la tour »). */
   core: string;
+  /** Mots du patronyme, particules comprises. */
+  family: string[];
 }
 
 function parseName(form: string): ParsedName {
   const ws = stripTitles(words(form));
   const key = join(ws);
-  const p = ws.findIndex((w) => PARTICLES.has(w));
+  const p = ws.findIndex(isPersonNameParticle);
   const coreOf = (family: string[]): string => {
     let i = 0;
-    while (i < family.length - 1 && PARTICLES.has(family[i] as string)) i++;
+    while (i < family.length - 1 && isPersonNameParticle(family[i] as string)) i++;
     return join(family.slice(i));
   };
-  if (p === 0) return { key, kind: "family", given: [], core: coreOf(ws) };
-  if (p > 0) return { key, kind: "full", given: ws.slice(0, p), core: coreOf(ws.slice(p)) };
-  if (ws.length <= 1) return { key, kind: "single", given: [], core: key };
-  return { key, kind: "full", given: ws.slice(0, -1), core: ws[ws.length - 1] as string };
+  if (p === 0)
+    return { key, kind: "family", given: [], core: coreOf(ws), family: join(ws).split(" ") };
+  if (p > 0)
+    return {
+      key,
+      kind: "full",
+      given: ws.slice(0, p),
+      core: coreOf(ws.slice(p)),
+      family: join(ws.slice(p)).split(" "),
+    };
+  if (ws.length <= 1)
+    return { key, kind: "single", given: [], core: key, family: join(ws).split(" ") };
+  return {
+    key,
+    kind: "full",
+    given: ws.slice(0, -1),
+    core: ws[ws.length - 1] as string,
+    family: ws.slice(-1),
+  };
 }
 
 /** Résultat de la résolution d'une forme. */
@@ -244,7 +244,17 @@ export function matchSurfaceForm(
           const p = parseName(f);
           const asFamily = p.core === query.core;
           if (query.kind === "family") return asFamily;
-          return asFamily || (p.kind === "full" && p.given[0] === query.key);
+          const asGiven = p.kind === "full" && p.given[0] === query.key;
+          if (asFamily || asGiven) return true;
+          // Même grammaire que la propagation ; une simple initiale connue ne suffit pas.
+          return (
+            p.kind === "full" &&
+            p.key.length <= 80 &&
+            p.given.length + p.family.length <= 6 &&
+            /^[\p{L}][\p{L}' -]*$/u.test(p.key) &&
+            (p.given[0]?.match(/\p{L}/gu)?.length ?? 0) >= 2 &&
+            derivedPersonIdentifiers(p.given, familyNameVariants(p.family)).includes(query.key)
+          );
         }),
       ),
     );
