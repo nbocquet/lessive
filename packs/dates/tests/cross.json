@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "id": "plage-courriel-ip",
+      "language": "fr",
+      "text": "😀 du 7 au 11 octobre inclus ; probe@example.org ; 192.0.2.1",
+      "expectAll": [
+        {
+          "type": "DATE",
+          "value": "du 7 au 11 octobre"
+        },
+        {
+          "type": "EMAIL",
+          "value": "probe@example.org"
+        },
+        {
+          "type": "IP_ADDRESS",
+          "value": "192.0.2.1"
+        }
+      ]
+    },
+    {
+      "id": "plage-et-date-simple",
+      "language": "fr",
+      "text": "Les 23 et 24 novembre 2027 ; le 12.03.2027.",
+      "expectAll": [
+        {
+          "type": "DATE",
+          "value": "Les 23 et 24 novembre 2027"
+        },
+        {
+          "type": "DATE",
+          "value": "12.03.2027"
+        }
+      ]
+    }
+  ]
+}

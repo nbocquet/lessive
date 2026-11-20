@@ -40,7 +40,7 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
-import { isSafePattern } from "redos-detector";
+import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import { createAnalyzer, PackRegistry, type Language } from "../../src/core/index.ts";
 import { bundledPackDirs, loadPackDir } from "./load.ts";
@@ -109,19 +109,32 @@ describe("packs livrés", () => {
         if (rule.kind !== "pattern") continue;
         const globalId = `${pack.manifest.id}/${rule.id}`;
         const flags = rule.flags ?? "";
+        // Le vérificateur accumule de la mémoire sur une série de motifs : isoler chaque
+        // contrôle, sans changer ses options, borne aussi un dépassement de son délai interne.
+        const check = exceptions.has(globalId)
+          ? undefined
+          : spawnSync(
+              process.execPath,
+              [
+                new URL("./check-pattern.ts", import.meta.url).pathname,
+                JSON.stringify({
+                  pattern: `^(?:${rule.pattern})`,
+                  timeout: STATIC_CHECK_TIMEOUT_MS,
+                  caseInsensitive: flags.includes("i"),
+                  unicode: flags.includes("u"),
+                  dotAll: flags.includes("s"),
+                  multiLine: flags.includes("m"),
+                }),
+              ],
+              { encoding: "utf8", timeout: STATIC_CHECK_TIMEOUT_MS + 5_000, maxBuffer: 64 * 1024 },
+            );
         const staticSafe =
-          exceptions.has(globalId) ||
-          isSafePattern(`^(?:${rule.pattern})`, {
-            // Garde-fou : un motif trop complexe à analyser échoue proprement (non sûr) au lieu
-            // d'épuiser la mémoire du processus de test (incident du 17 novembre 2026).
-            timeout: STATIC_CHECK_TIMEOUT_MS,
-            caseInsensitive: flags.includes("i"),
-            unicode: flags.includes("u"),
-            dotAll: flags.includes("s"),
-            multiLine: flags.includes("m"),
-          }).safe;
+          check === undefined || (check.status === 0 && check.stdout.trim() === "true");
         it(`motif ${rule.id} : contrôle statique ReDoS (ancré)`, () => {
-          expect(staticSafe, `motif ${globalId} potentiellement catastrophique`).toBe(true);
+          expect(
+            staticSafe,
+            `motif ${globalId} potentiellement catastrophique ou contrôle interrompu : ${check?.error?.message ?? check?.stderr.slice(0, 1000) ?? ""}`,
+          ).toBe(true);
         });
         // Le test de durée n'est lancé que si le contrôle statique passe : un motif réellement
         // exponentiel bloquerait le processus au lieu d'échouer proprement.

@@ -759,6 +759,317 @@
           "value": "March\u202f12,\u202f1985"
         }
       ]
+    },
+    {
+      "id": "range-issue-medical",
+      "language": "fr",
+      "text": "Arrêt du 7 au 11 octobre inclus.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "du 7 au 11 octobre"
+        }
+      ]
+    },
+    {
+      "id": "range-issue-absence",
+      "language": "fr",
+      "text": "Absence du 16 au 20 novembre.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "du 16 au 20 novembre"
+        }
+      ]
+    },
+    {
+      "id": "range-issue-presence",
+      "language": "fr",
+      "text": "Présence les 23 et 24 novembre.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "les 23 et 24 novembre"
+        }
+      ]
+    },
+    {
+      "id": "range-fr-long",
+      "language": "fr",
+      "text": "Absence du 7 au 11 octobre 2027 inclus.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "du 7 au 11 octobre 2027"
+        }
+      ]
+    },
+    {
+      "id": "coordinated-fr-long",
+      "language": "fr",
+      "text": "Présence les 23 et 24 novembre 2027.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "les 23 et 24 novembre 2027"
+        }
+      ]
+    },
+    {
+      "id": "range-fr-first",
+      "language": "fr",
+      "text": "du 1er au 3 février",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "du 1er au 3 février"
+        }
+      ]
+    },
+    {
+      "id": "coordinated-fr-first",
+      "language": "fr",
+      "text": "les 1er et 2 août 2027",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "les 1er et 2 août 2027"
+        }
+      ]
+    },
+    {
+      "id": "range-fr-nbsp",
+      "language": "fr",
+      "text": "😀 du\u00a007\u202fau\u00a009\u202ffévr.\u00a02027 !",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "du\u00a007\u202fau\u00a009\u202ffévr.\u00a02027"
+        }
+      ]
+    },
+    {
+      "id": "range-fr-caps",
+      "language": "fr",
+      "text": "DU 8 AU 12 DÉCEMBRE",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "DU 8 AU 12 DÉCEMBRE"
+        }
+      ]
+    },
+    {
+      "id": "range-fr-same",
+      "language": "fr",
+      "text": "du 9 au 9 mai",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "du 9 au 9 mai"
+        }
+      ]
+    },
+    {
+      "id": "range-en-dm",
+      "language": "en",
+      "text": "From 7 to 11 October inclusive.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "7 to 11 October"
+        }
+      ]
+    },
+    {
+      "id": "range-en-dm-year",
+      "language": "en",
+      "text": "From 7 to 11 October 2027.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "7 to 11 October 2027"
+        }
+      ]
+    },
+    {
+      "id": "coordinated-en-dm",
+      "language": "en",
+      "text": "On 23 and 24 November.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "23 and 24 November"
+        }
+      ]
+    },
+    {
+      "id": "coordinated-en-dm-year",
+      "language": "en",
+      "text": "On 23 and 24 November, 2027.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "23 and 24 November, 2027"
+        }
+      ]
+    },
+    {
+      "id": "range-en-md",
+      "language": "en",
+      "text": "October 7–11 inclusive.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "October 7–11"
+        }
+      ]
+    },
+    {
+      "id": "range-en-md-year",
+      "language": "en",
+      "text": "October 7-11 2027.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "October 7-11 2027"
+        }
+      ]
+    },
+    {
+      "id": "range-en-md-comma-year",
+      "language": "en",
+      "text": "October 7-11, 2027.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "October 7-11, 2027"
+        }
+      ]
+    },
+    {
+      "id": "coordinated-en-md",
+      "language": "en",
+      "text": "November 23 and 24.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "November 23 and 24"
+        }
+      ]
+    },
+    {
+      "id": "coordinated-en-md-year",
+      "language": "en",
+      "text": "November 23 and 24, 2027.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "November 23 and 24, 2027"
+        }
+      ]
+    },
+    {
+      "id": "range-en-md-to",
+      "language": "en",
+      "text": "October 7 to 11 2027.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "October 7 to 11 2027"
+        }
+      ]
+    },
+    {
+      "id": "range-en-nbsp",
+      "language": "en",
+      "text": "😀 NOV.\u00a007\u202fand\u00a009,\u202f2027",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "NOV.\u00a007\u202fand\u00a009,\u202f2027"
+        }
+      ]
+    },
+    {
+      "id": "range-pages",
+      "language": "fr",
+      "text": "Lire les pages du 7 au 11, articles 23 et 24.",
+      "expect": []
+    },
+    {
+      "id": "range-no-month",
+      "language": "fr",
+      "text": "du 7 au 11 et les 23 et 24",
+      "expect": []
+    },
+    {
+      "id": "range-bad-month",
+      "language": "fr",
+      "text": "du 7 au 11 octobrette",
+      "expect": []
+    },
+    {
+      "id": "range-bad-days",
+      "language": "fr",
+      "text": "du 0 au 32 octobre et les 99 et 00 novembre",
+      "expect": []
+    },
+    {
+      "id": "range-bad-first",
+      "language": "fr",
+      "text": "du 32 au 11 octobre",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "11 octobre"
+        }
+      ]
+    },
+    {
+      "id": "range-first-long-number",
+      "language": "fr",
+      "text": "du 107 au 11 octobre",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "11 octobre"
+        }
+      ]
+    },
+    {
+      "id": "range-last-long-number",
+      "language": "fr",
+      "text": "du 7 au 111 octobre",
+      "expect": []
+    },
+    {
+      "id": "range-en-bad-last",
+      "language": "en",
+      "text": "October 7-111",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "October 7"
+        }
+      ]
+    },
+    {
+      "id": "range-en-bad-first",
+      "language": "en",
+      "text": "107 to 11 October",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "11 October"
+        }
+      ]
+    },
+    {
+      "id": "range-wrong-language",
+      "language": "en",
+      "text": "du 7 au 11 octobre",
+      "expect": []
     }
   ]
 }
