@@ -84,9 +84,11 @@ En mode Pseudonymisation, vous collez la réponse de l'assistant dans Lessive, q
 
 ## 5. Les variantes d'un même nom
 
-Lessive rattache entre elles les variantes d'une même personne (« Claire Martin », « Mme Martin », « C. Martin ») pour leur donner le même repère. Les cas incertains sont marqués « à vérifier ». Il se trompe ou rate encore ceci :
+Lessive rattache entre elles les variantes d'une même personne (« Claire Martin », « Mme Martin », « C. Martin ») pour leur donner le même repère. Les identifiants dérivés (`CMARTIN`, `EMOREL`, `JPLAMBERT`, `claire.martin`…) rejoignent aussi une personne connue si leur forme correspond à un seul nom complet, même lorsqu’ils sont détectés séparément par le modèle de reconnaissance des noms. Les noms complets du document sont résolus avant les formes partielles : le login peut donc précéder le nom dans ce document. Les cas incertains sont marqués « à vérifier ». Si deux personnes partagent la même forme dérivée (par exemple Claire Martin et Camille Martin pour `CMARTIN`), le login reste une entité distincte à vérifier. Une initiale seule ne suffit pas à établir ce lien.
 
-- « Claire » citée seule **avant** « Claire Martin » : deux repères différents, à fusionner à la main.
+Il se trompe ou rate encore ceci :
+
+- Si une forme partielle ou un login a reçu son propre repère dans un document précédent, un nom complet découvert dans un nouveau document ne fusionne pas automatiquement les deux entités : elles restent à fusionner à la main.
 - « M. Dupont » et « Mme Dupont » reçoivent le **même** repère : si ce sont deux personnes de la même famille, séparez-les à la main.
 - Les prénoms composés (« Jean-Pierre » et « Jean »), les noms composés sans trait d'union, l'ordre inversé (« Martin Claire »), les surnoms et les fautes de frappe ne sont pas rapprochés.
 

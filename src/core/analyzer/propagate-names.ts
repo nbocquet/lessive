@@ -30,6 +30,11 @@
  *
  * Les explications ne citent jamais la valeur (R5).
  */
+import {
+  derivedPersonIdentifiers,
+  familyNameVariants,
+  isPersonNameParticle,
+} from "../mapping/person-identifiers.ts";
 import { normalizeForm } from "../mapping/index.ts";
 import type { ActiveRule } from "../registry/index.ts";
 import type { AnalysisContext, Detection } from "../types/index.ts";
@@ -199,32 +204,8 @@ const TITLE_WORDS = new Set([
   "professeure",
 ]);
 
-const PARTICLES: ReadonlySet<string> = new Set([
-  "de",
-  "du",
-  "des",
-  "la",
-  "le",
-  "les",
-  "van",
-  "von",
-  "der",
-  "den",
-  "di",
-  "da",
-  "del",
-  "della",
-  "dos",
-  "das",
-  "el",
-  "ter",
-  "ten",
-]);
-
 /** Jetons normalisés valides : lettres, apostrophe, tiret ; au plus 6 mots. */
 const NAME_TOKEN = /^\p{L}[\p{L}'-]*$/u;
-
-const isParticle = (t: string): boolean => PARTICLES.has(t) || /^[dl]'./u.test(t);
 
 function letterCount(s: string): number {
   let c = 0;
@@ -259,8 +240,8 @@ function parseName(raw: string, titled: boolean): ParsedName | undefined {
   const tokens = key.split(" ").filter((t) => t.length > 0);
   if (tokens.length === 0 || tokens.length > 6) return undefined;
   if (!tokens.every((t) => NAME_TOKEN.test(t))) return undefined;
-  if (tokens.every((t) => isParticle(t))) return undefined;
-  const p = tokens.findIndex(isParticle);
+  if (tokens.every((t) => isPersonNameParticle(t))) return undefined;
+  const p = tokens.findIndex(isPersonNameParticle);
   if (p === 0) return { given: [], family: tokens };
   if (p > 0) return { given: tokens.slice(0, p), family: tokens.slice(p) };
   if (tokens.length === 1) {
@@ -313,7 +294,6 @@ interface Ambiguity {
   family: ReadonlySet<string>;
 }
 
-/** Variantes du nom de famille : « de la tour », « la tour » (suffixes commençant par une particule). */
 /** Vrai si la position suit une fin de phrase sur la même ligne (espaces ignorées). */
 function followsSentenceEnd(text: string, pos: number): boolean {
   for (let k = pos - 1; k >= 0; k--) {
@@ -323,18 +303,6 @@ function followsSentenceEnd(text: string, pos: number): boolean {
     return c === "." || c === "!" || c === "?" || c === "…";
   }
   return false;
-}
-
-function familyVariants(family: readonly string[]): string[] {
-  const out = new Set<string>();
-  for (let i = 0; i < family.length; i++) {
-    if (i === 0 || isParticle(family[i] as string)) out.add(family.slice(i).join(" "));
-  }
-  if (family.length === 1) {
-    const stripped = /^[dl]'(.{2,})$/u.exec(family[0] as string);
-    if (stripped) out.add(stripped[1] as string);
-  }
-  return [...out].filter((v) => letterCount(v) >= 3);
 }
 
 function addName(forms: FormSet, parsed: ParsedName, amb: Ambiguity): void {
@@ -353,7 +321,7 @@ function addName(forms: FormSet, parsed: ParsedName, amb: Ambiguity): void {
     return;
   }
 
-  const variants = familyVariants(family);
+  const variants = familyNameVariants(family);
   for (const v of variants) forms.add(v, "name", ambiguous(amb.family, v));
 
   const g0 = given[0];
@@ -372,31 +340,7 @@ function addName(forms: FormSet, parsed: ParsedName, amb: Ambiguity): void {
     }
   }
 
-  // Identifiants dérivés : il faut un nom d'au moins 3 lettres.
-  if (g0 === undefined || variants.length === 0) return;
-  const initials = g0
-    .split("-")
-    .map((part) => part[0] ?? "")
-    .join("");
-  const givenVariants = new Set([g0, g0.replace(/-/gu, "")]);
-  const familyCompact = new Set<string>();
-  for (const v of variants) {
-    const compact = v.replace(/[ ']/gu, "");
-    familyCompact.add(compact);
-    familyCompact.add(compact.replace(/-/gu, ""));
-  }
-  for (const f of familyCompact) {
-    forms.add(`${initials}${f}`, "id", false);
-    forms.add(`${f}${initials}`, "id", false);
-    forms.add(`${initials}.${f}`, "id", false);
-    for (const g of givenVariants) {
-      forms.add(`${g}.${f}`, "id", false);
-      forms.add(`${g}_${f}`, "id", false);
-      forms.add(`${g}-${f}`, "id", false);
-      forms.add(`${g}${f}`, "id", false);
-      forms.add(`${f}.${g}`, "id", false);
-    }
-  }
+  for (const id of derivedPersonIdentifiers(given, variants)) forms.add(id, "id", false);
 }
 
 // ---------------------------------------------------------------------------

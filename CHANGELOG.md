@@ -11,6 +11,7 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 - L'écran « Réponse du LLM » n'est plus une impasse : en Masquage, il explique pourquoi rien ne peut être réidentifié et propose de passer en Pseudonymisation ; après un rechargement, la table chiffrée s'importe directement sur cet écran, sans nouvelle analyse.
 
 - Les plages et dates coordonnées à deux jours avec mois partagé sont entièrement remplacées (`du 7 au 11 octobre`, `les 23 et 24 novembre`), avec leur année éventuelle ; formes anglaises courantes également couvertes (#14).
+- Les identifiants dérivés (`CMARTIN`, `EMOREL`, `JPLAMBERT`…) détectés comme personnes rejoignent le pseudonyme du nom complet correspondant, même s’ils le précèdent dans le document. Un identifiant partagé par plusieurs personnes reste distinct et à vérifier (#13).
 
 - Les analyses répétées contenant des personnes réutilisent les dictionnaires de noms ambigus préparés à la création de l’analyseur, sans conserver les noms des textes précédents.
 
