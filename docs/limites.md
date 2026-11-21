@@ -12,6 +12,18 @@ Le mode Pseudonymisation conserve la structure du texte : les mêmes repères re
 
 Le mode Masquage remplace chaque donnée par des astérisques de même longueur (ou par la catégorie, ou la supprime, si vous le choisissez) : la longueur d'un nom masqué reste visible. Il ne garde aucune correspondance : on ne peut pas remettre les vrais noms dans la réponse de l'assistant.
 
+### Choisir les catégories à nettoyer
+
+L’interface propose douze choix, tous cochés par défaut : identité (personnes et identifiants dérivés), dates, adresses postales, lieux, courriels, téléphones, organisations, adresses web, adresses IP, données bancaires (IBAN et cartes), identifiants administratifs (AVS, IDE, NIR, SIREN, SIRET) et secrets techniques.
+
+Les catégories décochées restent lisibles. Le choix s’applique en Masquage et en Pseudonymisation, avant l’analyse ou dans le résultat. Modifier la sélection actualise l’aperçu sans relancer l’analyse et retire la validation : relisez le nouveau résultat avant de copier ou télécharger. Sans catégorie sélectionnée, aucun remplacement automatique n’est effectué ; les ajouts et corrections manuels par passage restent prioritaires. Une suppression manuelle (« laisser en clair ») reste également respectée.
+
+Les packs, règles, seuils et le modèle des réglages avancés déterminent ce qui est détecté ; cocher une catégorie n’active pas une règle désactivée. Choisir un opérateur global pour un type ne réactive pas sa catégorie décochée. La sélection ne change ni les détections du moteur ni les correspondances déjà établies : les pseudonymes restent stables quand vous réactivez une catégorie. La sélection des catégories et les réglages avancés restent en mémoire, sont conservés lors d’un nouveau document et sont remis par défaut au rechargement ; aucune préférence n’est enregistrée.
+
+**Adresses et lieux.** Les rues, cases postales, codes postaux et localités associés reconnus par les règles d’adresse sont regroupés dans « Adresses postales ». Une ville citée seule relève de « Lieux » ; les IPv4 et IPv6 de « Adresses IP ». Une adresse regroupée reste une unité entière : décocher « Lieux » ne laisse pas sa localité en clair si « Adresses postales » est coché. Inversement, décocher l’adresse la conserve entière, même si un fragment aurait pu être classé comme lieu ou personne. Un lieu reconnu seulement par le modèle, sans indice d’adresse reconnu par les règles, reste classé dans « Lieux » : relisez les adresses inhabituelles.
+
+Ce choix concerne l’interface web ; les options du CLI restent celles décrites dans son aide.
+
 ## 2. Ce que Lessive peut manquer
 
 Lessive cherche les données de deux façons : par des **règles** (la forme d'un courriel, d'un IBAN, d'un numéro AVS…) et par un **modèle de reconnaissance des noms**, à installer en un clic dans la version en ligne ou à charger depuis votre disque (voir [deploiement.md](deploiement.md)). Ni l'un ni l'autre ne trouve tout.

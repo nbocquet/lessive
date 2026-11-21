@@ -15,6 +15,13 @@
   let fallbackText = $state<string | null>(null);
   let fallbackField: HTMLTextAreaElement | undefined = $state();
 
+  // Un nouvel aperçu invalide aussi le champ de copie manuelle d’un ancien résultat.
+  $effect(() => {
+    void app.transformed;
+    message = "";
+    fallbackText = null;
+  });
+
   const canValidate = $derived(app.transformed !== null && !app.analysisStale);
   const pseudonymization = $derived(app.mode === "pseudonymization");
 
@@ -36,7 +43,10 @@
       return;
     }
     const text = buildCopyText(result.text, { withNotice, language });
-    if (await copyToClipboard(text)) {
+    const copied = await copyToClipboard(text);
+    // Le navigateur peut répondre après une modification du résultat ou le retrait de la validation.
+    if (app.transformed !== result || !app.canCopy) return;
+    if (copied) {
       message = withNotice
         ? "Texte copié avec la consigne pour l'IA."
         : "Texte copié dans le presse-papiers.";
@@ -47,6 +57,7 @@
     message =
       "La copie automatique est impossible ici : le texte est sélectionné ci-dessous, copiez-le avec Ctrl+C (ou Cmd+C).";
     await tick();
+    if (app.transformed !== result || !app.canCopy) return;
     fallbackField?.focus();
     fallbackField?.select();
   }
@@ -59,7 +70,7 @@
   }
 </script>
 
-<section aria-labelledby="h-copy">
+<section class="copy" aria-labelledby="h-copy">
   <h3 id="h-copy">Validation et copie</h3>
   <label class="validate">
     <input
@@ -72,7 +83,7 @@
   </label>
   <p class="hint">
     La copie reste bloquée tant que vous n'avez pas coché cette case. Toute modification (texte,
-    corrections, mode, session) la décoche.
+    corrections, catégories, mode, session) la décoche.
   </p>
 
   <div class="actions">
@@ -100,16 +111,25 @@
 </section>
 
 <style>
+  /* Point d'arrivée de l'étape : un seul bloc teinté, juste sous l'aperçu « après ». */
+  .copy {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+  }
+
   h3 {
-    margin: 0 0 0.25rem;
-    font-size: 1rem;
+    margin: 0 0 0.75rem;
   }
 
   .validate {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    min-height: 2.75rem;
     font-weight: 600;
+    cursor: pointer;
   }
 
   .validate input {
@@ -117,16 +137,31 @@
     height: 1.25rem;
   }
 
+  .copy .hint {
+    margin: 0.25rem 0 1rem;
+  }
+
   .actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 0.5rem;
+  }
+
+  /* Étroit : boutons pleine largeur, cibles égales empilées. */
+  @media (max-width: 40rem) {
+    .actions button {
+      flex: 1 1 100%;
+    }
   }
 
   .status {
     min-height: 1.5rem;
-    margin: 0.5rem 0 0;
+    margin: 0.75rem 0 0;
+  }
+
+  .status:empty {
+    min-height: 0;
+    margin: 0;
   }
 
   .fallback textarea {

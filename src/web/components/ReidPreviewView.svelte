@@ -30,7 +30,9 @@
     </p>
     <ul>
       {#each preview.unknown as g (g.pseudonym)}
-        <li><code>{g.pseudonym}</code> ({countLabel(g.occurrences, "fois", "fois")})</li>
+        <li>
+          <code class="token">{g.pseudonym}</code> ({countLabel(g.occurrences, "fois", "fois")})
+        </li>
       {/each}
     </ul>
   </div>
@@ -51,7 +53,9 @@
     </p>
     <ul>
       {#each preview.ambiguous as g (g.pseudonym)}
-        <li><code>{g.pseudonym}</code> ({countLabel(g.occurrences, "fois", "fois")})</li>
+        <li>
+          <code class="token">{g.pseudonym}</code> ({countLabel(g.occurrences, "fois", "fois")})
+        </li>
       {/each}
     </ul>
   </div>

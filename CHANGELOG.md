@@ -6,18 +6,38 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
+- La description du mode Masquage annonce ce qu'il produit réellement : des astérisques de même longueur, la catégorie (`[PERSONNE]`) restant au choix à l'étape « Vérification ».
+
+- L'écran « Réponse du LLM » n'est plus une impasse : en Masquage, il explique pourquoi rien ne peut être réidentifié et propose de passer en Pseudonymisation ; après un rechargement, la table chiffrée s'importe directement sur cet écran, sans nouvelle analyse.
+
 - Les plages et dates coordonnées à deux jours avec mois partagé sont entièrement remplacées (`du 7 au 11 octobre`, `les 23 et 24 novembre`), avec leur année éventuelle ; formes anglaises courantes également couvertes (#14).
 - Les identifiants dérivés (`CMARTIN`, `EMOREL`, `JPLAMBERT`…) détectés comme personnes rejoignent le pseudonyme du nom complet correspondant, même s’ils le précèdent dans le document. Un identifiant partagé par plusieurs personnes reste distinct et à vérifier (#13).
 
 - Les analyses répétées contenant des personnes réutilisent les dictionnaires de noms ambigus préparés à la création de l’analyseur, sans conserver les noms des textes précédents.
 
+- Accessibilité : les confirmations « Nouvelle session » et « Remplacer la session » prennent le focus à leur apparition, se ferment avec Échap et rendent le focus au bouton d’origine ; les aperçus « Avant / Après » ne sont plus annoncés comme des champs de saisie.
+
+- Lisibilité : les textes d’aide et les descriptions passent de 12 à 14 px, les titres d’écran et de section se distinguent nettement du texte courant, et la liste de langue n’est plus en petit corps (zoom automatique évité sur iPhone). Les encadrés d’état du modèle, d’erreur et la consigne pour l’IA adoptent le même cadre que les autres avis ; l’indicateur « Prêt hors ligne » reste lisible en thème sombre.
+
 - CLI : second Ctrl+C pour forcer l’arrêt, statut de succès conservé après publication, diagnostics sans accumulation d’écouteurs et ordre des packs indépendant de la locale. Analyse accélérée en l’absence de personnes à propager ; mesures du débit complétées pour les lignes courtes.
 
 ### Ajouté
 
+- Textes d'exemple entièrement inventés dans `docs/exemples/` (courriel RH, compte rendu, demande de remboursement, dossier administratif français, ticket de support en anglais, journal d'accès nginx, note qui illustre les limites), avec ce que le moteur repère et manque sur chacun ; référencés dans le README.
+
+- Choix des catégories à nettoyer dans l’interface : identité, dates, adresses postales, lieux, coordonnées et identifiants. Les catégories décochées restent lisibles dans les deux modes ; l’aperçu s’actualise sans nouvelle analyse et exige une nouvelle validation avant copie. Les corrections manuelles par passage restent prioritaires (#26).
+
 - CLI local `lessive` pour masquer un fichier UTF-8 ou stdin par catégories, ligne par ligne : dates optionnelles, NER CPU local facultatif, sortie fichier publiée sans écrasement après succès (#24). Compilation et installation depuis le dépôt, sans publication npm. Les chemins d'entrée et de modèle doivent désigner des fichiers ordinaires ; les tubes nommés sont refusés sans attendre de producteur.
 
 ### Modifié
+
+- Écran « Résultat » : la validation et la copie suivent directement l'aperçu « après » ; les catégories, la consigne pour l'IA et la sauvegarde chiffrée de la session sont repliées avec un résumé. Au-delà de 20 entités, la table des pseudonymes est écourtée (les entités à vérifier restent affichées). Sur téléphone, les étapes tiennent sur une ligne.
+
+- Après une analyse à jour, « Passer à la vérification » devient l'action principale de l'écran « Texte ».
+
+- Les jetons de remplacement (`PERSONNE_001`, `[PERSONNE]`, `*****`) apparaissent en capsule turquoise, reprise du logo, dans l'aperçu « après », la table des pseudonymes, l'écran « Réponse du LLM » et la description des modes ; la marque Lessive est agrandie au-dessus des titres d'étape.
+
+- Avertissements moins répétitifs : l'absence de modèle de reconnaissance des noms, déjà annoncée en tête de l'écran « Texte », n'y est plus répétée sous les boutons et ne bloque plus le passage direct à la vérification. Dans le résultat, seuls les avis propres à l'analyse restent dans l'encadré d'alerte ; les limites permanentes passent en texte d'aide, et les passages remplacés sont repérés en bleu plutôt qu'en jaune.
 
 - Développement : Node.js 26 ou plus récent est requis (CI et publication comprises, version fixée par `.nvmrc`). Les scripts de mesure se lancent directement avec `node`, sans option expérimentale. Aucun changement pour les personnes qui utilisent l'application.
 
