@@ -117,6 +117,34 @@ describe(
       );
     });
 
+    it("n'affiche pas un ancien résultat si le presse-papiers refuse après un changement", async () => {
+      await s.evaluate(`
+        Object.defineProperty(navigator, 'clipboard', {
+          configurable: true,
+          value: {
+            writeText: () => new Promise((_resolve, reject) => {
+              window.__rejectClipboard = () => reject(new DOMException('Refus synthétique'));
+            })
+          }
+        })
+      `);
+      await s.evaluate(`document.querySelector('.validate input').click()`);
+      await s.clickButton("Copier le texte");
+      await s.waitFor(`typeof window.__rejectClipboard === 'function'`, "copie en attente");
+      await s.evaluate(`document.querySelector('#cleaning-emails').click()`);
+      await s.waitFor(`!document.querySelector('.validate input').checked`, "validation retirée");
+      await s.evaluate(`window.__rejectClipboard()`);
+      await s.evaluate(`new Promise(resolve => setTimeout(resolve, 50))`);
+      assert.equal(
+        await s.evaluate<boolean>(`Boolean(document.querySelector('.fallback textarea'))`),
+        false,
+      );
+      assert.equal(
+        await s.evaluate<string>(`document.querySelector('.copy .status').textContent.trim()`),
+        "",
+      );
+    });
+
     it("reste lisible et utilisable sur téléphone sans débordement", async () => {
       await s.send("Emulation.setDeviceMetricsOverride", {
         width: 375,

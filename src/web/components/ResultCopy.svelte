@@ -43,7 +43,10 @@
       return;
     }
     const text = buildCopyText(result.text, { withNotice, language });
-    if (await copyToClipboard(text)) {
+    const copied = await copyToClipboard(text);
+    // Le navigateur peut répondre après une modification du résultat ou le retrait de la validation.
+    if (app.transformed !== result || !app.canCopy) return;
+    if (copied) {
       message = withNotice
         ? "Texte copié avec la consigne pour l'IA."
         : "Texte copié dans le presse-papiers.";
@@ -54,6 +57,7 @@
     message =
       "La copie automatique est impossible ici : le texte est sélectionné ci-dessous, copiez-le avec Ctrl+C (ou Cmd+C).";
     await tick();
+    if (app.transformed !== result || !app.canCopy) return;
     fallbackField?.focus();
     fallbackField?.select();
   }
