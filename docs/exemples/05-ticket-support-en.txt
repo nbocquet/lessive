@@ -1,0 +1,16 @@
+Subject: Login failures on the customer portal since Monday
+
+Hi team,
+
+Since Monday 16 November 2026, our user Oliver Brantwood (oliver.brantwood@example.com) cannot log in to the customer portal. The error appears right after the password step.
+
+What we checked so far:
+- His requests come from 198.51.100.24 and 2001:db8::7a1e; both addresses are allowed in the firewall.
+- The failing page is https://portal.example.com/account/login?user=obrantwood
+- Our network admin, Priya Lindqvist, reproduced the issue from 192.0.2.15 with a test account.
+
+Could you check the authentication logs for Monday between 09:00 and 11:30 (CET)? You can reach me at +41 21 693 72 48 if you need more details.
+
+Thanks,
+Daniel Okafor
+IT support, Riverside Analytics Ltd

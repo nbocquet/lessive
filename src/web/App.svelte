@@ -41,7 +41,7 @@
 
 <div class="page">
   <header>
-    <h1><img src="./lessive-mark.svg" width="40" height="48" alt="" />Lessive</h1>
+    <h1><img src="./lessive-mark.svg" width="50" height="60" alt="" />Lessive</h1>
     <p>Traitement local : votre texte reste dans ce navigateur.</p>
   </header>
 
@@ -95,21 +95,27 @@
     padding: 1.25rem clamp(1rem, 3vw, 2rem);
   }
 
+  /*
+   * La marque domine les titres d'étape : logo et nom au corps --text-brand, au-dessus de
+   * --text-heading, l'accroche centrée sur la marque.
+   */
   header {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.35rem 1.5rem;
-    margin-bottom: 1rem;
+    gap: 0.25rem 1.75rem;
+    margin-bottom: 1.25rem;
   }
 
   h1 {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.7rem;
     margin: 0;
-    font-size: 1.3rem;
-    font-weight: 650;
+    font-size: var(--text-brand);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
   }
 
   h1 img {
@@ -120,7 +126,7 @@
   header p {
     margin: 0;
     color: var(--muted);
-    font-size: 0.8rem;
+    font-size: var(--text-small);
   }
 
   main {
@@ -141,13 +147,13 @@
   summary {
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   summary .hint {
     margin-left: 0.75rem;
     font-weight: 400;
-    font-size: 0.8rem;
+    font-size: var(--text-meta);
   }
 
   footer {
@@ -155,7 +161,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 0.5rem;
-    font-size: 0.75rem;
+    font-size: var(--text-meta);
   }
 
   @media (max-width: 40rem) {

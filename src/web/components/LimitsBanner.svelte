@@ -14,7 +14,7 @@
     background: var(--warn-bg);
     color: var(--warn-text);
     text-align: center;
-    font-size: 0.78rem;
+    font-size: var(--text-small);
     line-height: 1.5;
   }
 

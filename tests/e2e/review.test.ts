@@ -13,7 +13,9 @@ describe(
       await s.navigate("/");
       await s.type("#source-text", "Contact : exemple@example.org. Référence : dossierfictif.");
       await s.clickButton("Analyser");
-      await s.clickButton("Passer à la vérification");
+      // Sans modèle, l'absence de NER est déjà annoncée en tête d'écran : aucun avis nouveau ne
+      // retient l'utilisateur sur « Texte », l'application passe directement à la vérification.
+      await s.waitFor(`document.querySelector("#h-review")`, "passage direct à la vérification");
     });
 
     after(async () => {

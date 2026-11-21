@@ -38,7 +38,7 @@
     margin: 0 0 1.25rem;
     padding: 0;
     list-style: none;
-    font-size: 0.8rem;
+    font-size: var(--text-small);
   }
 
   .count {

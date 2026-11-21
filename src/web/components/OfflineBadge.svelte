@@ -35,8 +35,15 @@
   .offline {
     margin-left: 1rem;
   }
+  /* Pastille d'état : le libellé porte l'information, la couleur la confirme. */
   .ready::before {
-    content: "● ";
-    color: #1a7f37;
+    content: "";
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+    margin-right: 0.4em;
+    border-radius: 50%;
+    background: var(--success);
+    vertical-align: 0.05em;
   }
 </style>

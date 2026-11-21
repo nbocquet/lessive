@@ -102,7 +102,7 @@
   table {
     border-collapse: collapse;
     width: 100%;
-    font-size: 0.9rem;
+    font-size: var(--text-small);
   }
 
   th,

@@ -4,7 +4,9 @@
   (app.refreshTransform) puis effacé par l'état à toute modification.
 -->
 <script lang="ts">
+  import CleaningCategories from "./CleaningCategories.svelte";
   import { untrack } from "svelte";
+  import { CLEANING_CATEGORIES } from "../cleaning-categories.ts";
   import { app } from "../state.svelte.ts";
   import ResultBeforeAfter from "./ResultBeforeAfter.svelte";
   import ResultCopy from "./ResultCopy.svelte";
@@ -14,6 +16,14 @@
 
   // Langue de la consigne : français par défaut, anglais en option. Purement visuel.
   let language = $state<NoticeLanguage>("fr");
+
+  const categoriesSummary = $derived.by(() => {
+    const total = CLEANING_CATEGORIES.length;
+    const count = app.cleaningCategories.length;
+    if (count === total) return `toutes (${total})`;
+    if (count === 0) return "aucune : le texte reste inchangé";
+    return `${count} sur ${total}`;
+  });
 
   // Calcule le texte transformé à l'affichage et après toute invalidation (corrections, session…).
   $effect(() => {
@@ -31,6 +41,14 @@
 </script>
 
 <div class="result">
+  <!-- Repliées par défaut : le résumé dit l'état, le parcours principal reste lire → valider → copier. -->
+  <details class="categories">
+    <summary>
+      <span class="summary-label">Catégories remplacées</span>
+      <span class="hint">{categoriesSummary}</span>
+    </summary>
+    <CleaningCategories />
+  </details>
   {#if app.analysisStale}
     <p class="notice">
       Les réglages ont changé depuis l'analyse : relancez-la (écran « Texte ») pour obtenir un
@@ -48,16 +66,35 @@
   {#if app.transformed}
     <ResultWarnings />
     <ResultBeforeAfter original={app.text} result={app.transformed} />
+    <ResultCopy {language} />
     {#if app.mode === "pseudonymization"}
       <ResultNotice bind:language />
     {/if}
-    <ResultCopy {language} />
   {/if}
 </div>
 
 <style>
   .result {
     display: grid;
-    gap: 1rem;
+    gap: 1.5rem;
+  }
+
+  .categories {
+    border-bottom: 1px solid var(--border-soft);
+    padding-bottom: 0.75rem;
+  }
+
+  .categories summary {
+    padding: 0.6rem 0 0;
+    cursor: pointer;
+  }
+
+  .categories .summary-label {
+    margin-right: 0.75rem;
+    font-weight: 600;
+  }
+
+  .categories[open] summary {
+    margin-bottom: 0.25rem;
   }
 </style>

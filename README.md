@@ -71,9 +71,11 @@ Lessive finds personal data in a text (names, e-mail addresses, phone numbers, I
 
 - **Local processing.** The text never leaves the browser. A Content Security Policy forbids any connection other than the app's own origin; no analytics, no remote API, no LLM.
 - **Rules plus a local NER model.** Validated identifiers (checksums for IBAN, AVS, NIR, SIRET…), Swiss and French formats, first-name and surname lists, and an optional named-entity recognition model (CamemBERT-NER, ~114 MB, run with ONNX Runtime Web).
+- **Choose what to replace.** Select categories such as identity, dates or postal addresses; unchecked categories remain readable. The choice applies to both modes and can be changed in the result preview.
 - **Review before sending.** Every detection is highlighted; you can add what was missed or remove false positives.
 - **Round trip.** Tokens are stable, so the assistant's answer can be re-identified; the mapping table lives only in memory, with an optional passphrase-encrypted export.
 - **Works offline** after the first visit.
+- **Try it with sample texts.** Seven synthetic examples (HR e-mail, meeting notes, refund request, French administrative file, English support ticket, nginx access log, and a text that shows the limits) are in [docs/exemples/](docs/exemples/).
 
 > **Lessive reduces risk; it does not anonymise.** A text without names can still identify someone (a rare job title, a place and a date). Always read the result before sending it.
 
@@ -93,15 +95,30 @@ Lessive repère les données personnelles d'un texte (noms, courriels, télépho
 
 Le parcours :
 
-1. **Coller** le texte (ou importer un fichier `.txt` ou `.md`), choisir le mode, lancer l'analyse.
+1. **Coller** le texte (ou importer un fichier `.txt` ou `.md`), choisir le mode et les catégories à nettoyer, puis lancer l’analyse.
    - **Pseudonymisation** : chaque donnée devient un repère stable (`PERSONNE_001`, `EMAIL_001`…), ce qui permet de retrouver les valeurs dans la réponse de l'assistant.
    - **Masquage** : chaque donnée est remplacée par des astérisques, sa catégorie (`[PERSONNE]`) ou rien. Aucune correspondance n'est gardée.
+   - **Catégories** : toutes sont cochées par défaut. Vous pouvez, par exemple, remplacer l’identité et les adresses postales tout en conservant les dates. Le choix reste modifiable dans le résultat, avec aperçu actualisé et nouvelle validation avant copie.
 2. **Vérifier** les détections surlignées : ajouter ce qui manque (toutes les occurrences sont traitées), retirer ce qui est détecté à tort. Les noms qui pourraient désigner la même personne sont signalés « à vérifier ».
 3. **Copier avec la consigne** : la consigne jointe demande à l'assistant de recopier les repères tels quels.
 4. **Coller la réponse** de l'assistant dans Lessive.
 5. **Remettre les noms** : les repères sont remplacés par les valeurs d'origine ; un repère inconnu ou déformé est signalé, jamais remplacé sans votre action.
 
 La table des correspondances (qui est `PERSONNE_001` ?) ne vit qu'en mémoire : recharger la page l'efface. Un export chiffré par phrase de passe permet de la conserver ; sans la phrase, le fichier est inutilisable.
+
+**Pour essayer sans vos propres documents**, sept textes d'exemple entièrement inventés sont dans **[docs/exemples/](docs/exemples/)** :
+
+| Exemple | Pour voir |
+|---|---|
+| [Courriel RH](docs/exemples/01-courriel-rh.txt) | Téléphones suisses, AVS, adresse, et l'apport du modèle sur les noms rares |
+| [Compte rendu de réunion](docs/exemples/02-compte-rendu-reunion.md) | Personnes, organisations et lieux ; repères stables en Pseudonymisation |
+| [Demande de remboursement](docs/exemples/03-demande-remboursement.txt) | Carte bancaire et IBAN |
+| [Dossier administratif (France)](docs/exemples/04-dossier-administratif-fr.txt) | NIR, SIREN, SIRET, téléphones français |
+| [Ticket de support (anglais)](docs/exemples/05-ticket-support-en.txt) | Adresses IP, URL, texte en anglais |
+| [Note sans nom](docs/exemples/06-limites.txt) | Ce que Lessive ne remplace pas : une personne reconnaissable par sa situation |
+| [Journal d'accès nginx](docs/exemples/07-acces-nginx.log) | Adresses IP, courriels et IBAN dans des logs ; à essayer avec le CLI |
+
+Importez-les avec « Ou importer un fichier texte », ou copiez-les dans la zone de texte. Ce que le moteur repère et manque sur chacun : [docs/exemples/README.md](docs/exemples/README.md).
 
 ### Ce que Lessive détecte
 
@@ -136,6 +153,7 @@ npm run preview                        # le site tel qu'il sera servi
 
 | Pour… | Lire |
 |---|---|
+| Essayer avec des textes d'exemple | [docs/exemples/](docs/exemples/) |
 | Savoir ce que Lessive peut manquer | [docs/limites.md](docs/limites.md) |
 | Comprendre les garanties de confidentialité et leurs tests | [docs/confidentialite.md](docs/confidentialite.md) |
 | Héberger Lessive, gérer le modèle NER | [docs/deploiement.md](docs/deploiement.md) |

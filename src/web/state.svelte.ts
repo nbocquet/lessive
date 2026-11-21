@@ -19,6 +19,7 @@
  * ajouts manuels `m1`, `m2`… (dans l'ordre d'ajout). Les corrections par détection
  * (suppressions, types, opérateurs) sont indexées par ces identifiants.
  */
+import { NER_INACTIVE_WARNING } from "../core/analyzer/analyzer.ts";
 import {
   ENTITY_TYPES,
   MAX_INPUT_LENGTH,
@@ -55,6 +56,12 @@ import {
 } from "./model-store.ts";
 import { fetchBundledModel, probeBundledModel, type BundledManifest } from "./bundled-model.ts";
 import { loadBundledRegistry } from "./packs.ts";
+
+import {
+  ALL_CLEANING_CATEGORIES,
+  selectCleaningDetections,
+  type CleaningCategory,
+} from "./cleaning-categories.ts";
 
 export type LanguageChoice = Language | "auto";
 export type ScreenId = "text" | "review" | "result" | "reidentify";
@@ -153,6 +160,9 @@ export class AppState {
   /** Opérateur par type d'entité (priorité entre le défaut du mode et les choix par détection). */
   operatorByType = $state.raw<Partial<Record<EntityType, OperatorId>>>({});
 
+  /** Catégories à remplacer ; les catégories décochées restent lisibles. En mémoire seulement. */
+  cleaningCategories = $state.raw<readonly CleaningCategory[]>([...ALL_CLEANING_CATEGORIES]);
+
   // ---- Réglages : packs et règles ----
   disabledPackIds = $state.raw<readonly string[]>([]);
   /** Surcharges d'activation par identifiant global de règle (`<pack>/<règle>`). */
@@ -175,16 +185,20 @@ export class AppState {
   // ---- Dérivés ----
   readonly registry: PackRegistry;
 
-  /** Détections effectives : résultat du moteur moins les suppressions, avec les types corrigés. */
+  /** Détections à remplacer : catégories choisies, suppressions et corrections manuelles appliquées. */
   detections = $derived.by<Detection[]>(() => {
     if (!this.analysis) return [];
     const { removedIds, typeOverrides } = this.corrections;
-    return this.analysis.detections
+    const corrected = this.analysis.detections
       .filter((d) => !removedIds.includes(d.id))
       .map((d) => {
         const type = typeOverrides[d.id];
         return type && type !== d.entityType ? { ...d, entityType: type } : d;
       });
+    return selectCleaningDetections(corrected, this.analysis.discarded, this.cleaningCategories, [
+      ...Object.keys(this.corrections.typeOverrides),
+      ...Object.keys(this.corrections.operatorOverrides),
+    ]);
   });
 
   /** Détections écartées par le moteur (sous le seuil ou perdantes d'un conflit). */
@@ -327,6 +341,33 @@ export class AppState {
     if (enabled === this.ner) return;
     this.ner = enabled;
     this.#analysisInputsChanged();
+  }
+
+  /** Change les catégories de sortie, sans relancer l’analyse ni effacer les corrections. */
+  setCleaningCategories(categories: readonly CleaningCategory[]): void {
+    const next = ALL_CLEANING_CATEGORIES.filter((c) => categories.includes(c));
+    if (
+      next.length === this.cleaningCategories.length &&
+      next.every((c, i) => c === this.cleaningCategories[i])
+    )
+      return;
+    this.cleaningCategories = next;
+    this.selectedDetectionId = null;
+    this.textSelection = null;
+    this.#invalidateOutput();
+  }
+
+  setCleaningCategory(category: CleaningCategory, enabled: boolean): void {
+    this.setCleaningCategories(
+      enabled
+        ? [...this.cleaningCategories, category]
+        : this.cleaningCategories.filter((c) => c !== category),
+    );
+  }
+
+  /** Les valeurs par défaut remplacent toutes les catégories reconnues. */
+  resetCleaningCategories(): void {
+    this.setCleaningCategories(ALL_CLEANING_CATEGORIES);
   }
 
   /** Active ou désactive un pack entier : l'analyse devient obsolète. */
@@ -719,6 +760,26 @@ export class AppState {
   modelBusy = $state(false);
   /** Développement seulement : `models/` du dépôt est servi par Vite. */
   devModelAvailable = $state(false);
+
+  /**
+   * Vrai quand l'encadré d'état du modèle (écran « Texte ») annonce déjà que les noms ne seront pas
+   * reconnus : même condition que ModelStatus, hors installation et chargement en cours.
+   */
+  modelLimitShown = $derived.by(
+    () =>
+      !this.modelBusy &&
+      this.modelStatus !== "loading" &&
+      (this.modelStatus === "absent" || this.modelStatus === "error" || !this.ner),
+  );
+
+  /**
+   * Avertissements d'analyse que l'écran « Texte » n'affiche pas déjà : l'absence de NER y est
+   * annoncée par l'état du modèle, la répéter sous les boutons doublait le message et empêchait
+   * le passage direct à la vérification. L'écran « Résultat » garde la liste complète.
+   */
+  newWarnings = $derived.by(() =>
+    this.modelLimitShown ? this.warnings.filter((w) => w !== NER_INACTIVE_WARNING) : this.warnings,
+  );
   /** Modèle fourni par cette version publiée (ADR 0004), `null` si elle n'en contient pas. */
   bundledModel = $state.raw<BundledManifest | null>(null);
   /** Téléchargement du modèle fourni en cours : entre 0 et 1 ; `null` sinon. */
