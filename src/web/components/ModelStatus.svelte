@@ -80,9 +80,10 @@
   .model-status {
     margin-bottom: 1.25rem;
     padding: 0.75rem 1rem;
-    border-left: 3px solid var(--border);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
     background: var(--surface);
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   .limited {
@@ -109,7 +110,7 @@
 
   .hint {
     color: inherit;
-    font-size: 0.8rem;
+    font-size: var(--text-small);
   }
 
   .error {

@@ -10,6 +10,7 @@
 
   function resetAll(): void {
     app.resetRules();
+    app.resetCleaningCategories();
     app.setMinScore(DEFAULT_MIN_SCORE);
     app.setNer(false);
   }

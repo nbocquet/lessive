@@ -35,9 +35,10 @@
   <p class="notice error" role="alert">{app.errorMessage}</p>
 {/if}
 
-{#if app.analysisStatus === "done" && app.warnings.length > 0}
+<!-- L'absence de modèle est déjà annoncée en tête d'écran (ModelStatus) : seuls les avis nouveaux. -->
+{#if app.analysisStatus === "done" && app.newWarnings.length > 0}
   <ul class="warnings" aria-label="Avertissements de l'analyse">
-    {#each app.warnings as warning (warning)}
+    {#each app.newWarnings as warning (warning)}
       <li class="notice">{warning}</li>
     {/each}
   </ul>

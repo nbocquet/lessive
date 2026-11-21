@@ -7,6 +7,7 @@
   import type { Session } from "../../core/index.ts";
   import { app } from "../state.svelte.ts";
   import { readFileAsText } from "./PseudoDom.ts";
+  import { confirmFocus } from "./confirm-focus.ts";
   import {
     MAX_IMPORT_BYTES,
     describeSessionError,
@@ -22,6 +23,13 @@
   /** Session déchiffrée, en attente de confirmation du remplacement. */
   let pending = $state.raw<Session | null>(null);
   let fileInput: HTMLInputElement | undefined = $state();
+  let submitButton: HTMLButtonElement | undefined = $state();
+
+  /** Annuler garde le fichier choisi et rend le focus au bouton Importer. */
+  function cancelReplace(): void {
+    pending = null;
+    submitButton?.focus();
+  }
 
   function onFile(event: Event & { currentTarget: HTMLInputElement }): void {
     file = event.currentTarget.files?.[0] ?? null;
@@ -34,10 +42,17 @@
     app.replaceSession(session);
     pending = null;
     file = null;
-    if (fileInput) fileInput.value = "";
-    done = `Session importée : ${session.entities().length} ${
-      session.entities().length === 1 ? "entité" : "entités"
-    }. Le résultat va être recalculé avec ces pseudonymes ; relisez-le et validez-le.`;
+    if (fileInput) {
+      fileInput.value = "";
+      fileInput.focus();
+    }
+    const count = session.entities().length;
+    // Sans analyse en cours (import depuis l'étape 4), il n'y a pas de résultat à recalculer.
+    done = `Session importée : ${count} ${count === 1 ? "entité" : "entités"}. ${
+      app.analysis
+        ? "Le résultat va être recalculé avec ces pseudonymes ; relisez-le et validez-le."
+        : "Vous pouvez coller la réponse du LLM."
+    }`;
   }
 
   async function submit(event: SubmitEvent): Promise<void> {
@@ -92,7 +107,9 @@
       />
     </label>
     <div class="actions">
-      <button type="submit" class="primary" disabled={busy || !file}> Importer </button>
+      <button type="submit" class="primary" bind:this={submitButton} disabled={busy || !file}>
+        Importer
+      </button>
       {#if busy}
         <label class="progress">
           Déchiffrement en cours, quelques secondes…
@@ -105,7 +122,13 @@
     <p class="notice error" role="alert">{error}</p>
   {/if}
   {#if pending}
-    <div class="notice" role="alertdialog" aria-labelledby="h-import-confirm">
+    <div
+      class="notice"
+      role="group"
+      aria-labelledby="h-import-confirm"
+      tabindex="-1"
+      {@attach confirmFocus(cancelReplace)}
+    >
       <p id="h-import-confirm">
         <strong>Remplacer la session actuelle ?</strong>
         Elle contient des correspondances : celles qui n'ont pas été exportées seront perdues.
@@ -114,7 +137,7 @@
         <button type="button" class="primary" onclick={() => pending && apply(pending)}>
           Remplacer la session
         </button>
-        <button type="button" onclick={() => (pending = null)}>Annuler</button>
+        <button type="button" onclick={cancelReplace}>Annuler</button>
       </div>
     </div>
   {/if}

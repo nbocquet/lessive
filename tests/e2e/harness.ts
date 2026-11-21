@@ -346,19 +346,10 @@ export class Session {
     // Le NER s'active d'office quand un modèle est chargé : on fixe l'état voulu, sans basculer.
     await this.setChecked("Reconnaître les noms", opts.ner);
     await this.type("#source-text", INPUT_TEXT);
-    await this.clickButton("Analyser");
-    // Soit passage direct à la vérification, soit avertissements à lire d'abord.
-    await this.waitFor(
-      `document.querySelector("#h-review") || [...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "Passer à la vérification" && !b.disabled)`,
-      "fin de l'analyse",
-      opts.ner ? 180_000 : 30_000,
-    );
-    if (!(await this.evaluate<boolean>(`Boolean(document.querySelector("#h-review"))`))) {
-      await this.clickButton("Passer à la vérification");
-    }
+    await this.analyzeAndReview(opts.ner ? 180_000 : 30_000);
     await this.clickButton("Voir le résultat");
     await this.waitFor(
-      `document.querySelector('[aria-label="Texte transformé"]')?.innerText.trim()`,
+      `document.querySelector('[aria-labelledby="h-after"]')?.innerText.trim()`,
       "résultat",
     );
     await this.clickLabelled("J'ai relu le résultat");
@@ -366,7 +357,7 @@ export class Session {
       `[...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "Copier le texte" && !b.disabled)`,
       "validation du résultat",
     );
-    const transformed = await this.text('[aria-label="Texte transformé"]');
+    const transformed = await this.text('[aria-labelledby="h-after"]');
     const tokens = [...new Set(transformed.match(/\b[A-ZÉ]+_\d{3}\b/g) ?? [])];
     await this.clickButton("Réponse du LLM");
     await this.type(
@@ -380,6 +371,23 @@ export class Session {
     );
     const reidentified = await this.text("main");
     return { transformed, reidentified, tokens };
+  }
+
+  /**
+   * Lance l'analyse puis rejoint l'écran de vérification : l'application y passe directement
+   * quand aucun avertissement nouveau n'est à lire, sinon elle reste sur « Texte » le temps de
+   * les lire et l'on clique « Passer à la vérification ».
+   */
+  async analyzeAndReview(timeoutMs = 30_000): Promise<void> {
+    await this.clickButton("Analyser");
+    await this.waitFor(
+      `document.querySelector("#h-review") || [...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "Passer à la vérification" && !b.disabled)`,
+      "fin de l'analyse",
+      timeoutMs,
+    );
+    if (!(await this.evaluate<boolean>(`Boolean(document.querySelector("#h-review"))`))) {
+      await this.clickButton("Passer à la vérification");
+    }
   }
 
   /**

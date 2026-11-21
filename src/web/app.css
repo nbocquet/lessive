@@ -18,14 +18,29 @@
   --danger-bg: #fde8e8;
   --danger-border: #a31919;
   --danger-text: #5c0d0d;
+  --success: #1a7f37;
+  /* Jeton de remplacement : la capsule turquoise du logo (valeur masquée), seule couleur de marque. */
+  --token-bg: #e2f5f3;
+  --token-border: #279187;
+  --token-text: #04625b;
   --radius: 4px;
+  /*
+   * Échelle typographique par rôle (une seule famille, système). Les tailles inférieures au
+   * corps sont réservées aux aides (small) et aux métadonnées (meta) ; rien sous 13 px.
+   */
+  --text-meta: 0.8125rem;
+  --text-small: 0.875rem;
+  --text-body: 1rem;
+  --text-subheading: 1.125rem;
+  --text-heading: 1.5rem;
+  --text-brand: 1.875rem;
   font-family:
     system-ui,
     -apple-system,
     "Segoe UI",
     Roboto,
     sans-serif;
-  font-size: 1rem;
+  font-size: var(--text-body);
   line-height: 1.5;
 }
 
@@ -48,6 +63,10 @@
     --danger-bg: #3d1414;
     --danger-border: #f08080;
     --danger-text: #fbd0d0;
+    --success: #4ac26b;
+    --token-bg: #11312e;
+    --token-border: #2f8a81;
+    --token-text: #86e2d8;
   }
 }
 
@@ -65,14 +84,32 @@ body {
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
   line-height: 1.25;
+  text-wrap: balance;
 }
 
 h2 {
   margin: 0 0 1rem;
-  font-size: 1.25rem;
+  font-size: var(--text-heading);
+  font-weight: 650;
+}
+
+h3 {
+  font-size: var(--text-subheading);
   font-weight: 600;
+}
+
+h4 {
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+p,
+li,
+dd {
+  text-wrap: pretty;
 }
 
 ::selection {
@@ -82,6 +119,25 @@ h2 {
 
 a {
   color: var(--accent);
+}
+
+/*
+ * Jeton de remplacement (PERSONNE_001, [EMAIL], *****) : l'objet que l'on copie dans l'IA et que
+ * l'on retrouve dans sa réponse. Capsule reprise du logo, chasse fixe parce qu'il se recopie à
+ * l'identique ; la capsule se poursuit proprement si un long masque passe à la ligne.
+ */
+.token {
+  padding: 0.05em 0.45em;
+  border: 1px solid var(--token-border);
+  border-radius: 999px;
+  background: var(--token-bg);
+  color: var(--token-text);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* Le focus doit toujours être visible, y compris sur fond sombre. */
@@ -153,7 +209,7 @@ progress {
 
 input[type="file"] {
   max-width: 100%;
-  font-size: 0.875rem;
+  font-size: var(--text-small);
 }
 
 input[type="file"]::file-selector-button {
@@ -206,7 +262,7 @@ legend {
 
 .hint {
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: var(--text-small);
 }
 
 .notice {
@@ -228,7 +284,7 @@ legend {
   max-width: 76rem;
   margin: 0 auto 1.5rem;
   padding: 0 clamp(1rem, 3vw, 2rem);
-  font-size: 0.8rem;
+  font-size: var(--text-small);
   color: var(--muted);
 }
 
@@ -237,15 +293,22 @@ legend {
 }
 
 .about-content {
-  max-width: 75ch;
+  max-width: 62ch;
   padding-top: 1rem;
 }
 
 .about h2,
 .about h3 {
-  margin: 1rem 0 0.5rem;
-  font-size: 1rem;
+  margin: 1.25rem 0 0.5rem;
   color: var(--text);
+}
+
+.about h2 {
+  font-size: var(--text-subheading);
+}
+
+.about h3 {
+  font-size: var(--text-body);
 }
 
 @media (prefers-reduced-motion: reduce) {

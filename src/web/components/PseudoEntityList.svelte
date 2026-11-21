@@ -21,6 +21,18 @@
   });
   const reviewCount = $derived(countNeedingReview(rows));
 
+  /**
+   * Au-delà de ce seuil, la liste est écourtée : un long document (des centaines de courriels)
+   * repousserait sinon la suite de l'écran de plusieurs dizaines d'écrans. Les entités à vérifier
+   * et celle en cours de fusion restent toujours affichées.
+   */
+  const INITIAL_ROWS = 20;
+  let showAll = $state(false);
+  const visibleRows = $derived(
+    showAll ? rows : rows.filter((r, i) => i < INITIAL_ROWS || r.needsReview || r.id === mergingId),
+  );
+  const hiddenCount = $derived(rows.length - visibleRows.length);
+
   function changed(): void {
     revision++;
     // Même objet de session : l'appel invalide texte transformé et validation, l'aperçu se recalcule.
@@ -69,10 +81,10 @@
     <p>Aucune entité pour l'instant : la table se remplit au calcul du résultat.</p>
   {:else}
     <ul class="entities">
-      {#each rows as row (row.id)}
+      {#each visibleRows as row (row.id)}
         <li class:review={row.needsReview}>
           <div class="head">
-            <strong>{row.pseudonym}</strong>
+            <strong class="token">{row.pseudonym}</strong>
             <span class="category">{row.categoryLabel}</span>
             {#if row.needsReview}
               <span class="badge">À vérifier</span>
@@ -115,6 +127,22 @@
         </li>
       {/each}
     </ul>
+    <!-- Un seul bouton dont le libellé change : le focus clavier reste en place au basculement. -->
+    {#if hiddenCount > 0 || (showAll && rows.length > INITIAL_ROWS)}
+      <button
+        type="button"
+        class="more"
+        aria-expanded={showAll}
+        onclick={() => (showAll = !showAll)}
+      >
+        {#if showAll}
+          Réduire la liste
+        {:else}
+          Afficher les {hiddenCount.toLocaleString("fr-CH")}
+          {hiddenCount === 1 ? "autre entité" : "autres entités"}
+        {/if}
+      </button>
+    {/if}
   {/if}
   <p class="status" role="status" aria-live="polite">{message}</p>
 </section>
@@ -132,15 +160,20 @@
     list-style: none;
   }
 
+  /* Même trait que les autres conteneurs (1 px) ; l'état « à vérifier » s'épaissit sans décaler. */
   .entities > li {
     padding: 0.6rem 0.8rem;
-    border: 2px solid var(--border);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
+  }
+
+  .entities > li > :last-child {
+    margin-bottom: 0;
   }
 
   .entities > li.review {
     border-color: var(--warn-border);
-    border-width: 3px;
+    box-shadow: inset 0 0 0 1px var(--warn-border);
     background: var(--warn-bg);
     color: var(--warn-text);
   }
@@ -154,7 +187,7 @@
 
   .category {
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: var(--text-small);
   }
 
   .review .category {
@@ -167,7 +200,7 @@
     border-radius: 999px;
     background: var(--bg);
     color: var(--warn-text);
-    font-size: 0.85rem;
+    font-size: var(--text-small);
     font-weight: 700;
   }
 
@@ -189,8 +222,18 @@
     overflow-wrap: anywhere;
   }
 
+  .more {
+    margin-top: 0.5rem;
+  }
+
   .status {
     min-height: 1.5rem;
     margin: 0.5rem 0 0;
+  }
+
+  /* Vide, la région reste annoncée mais ne creuse pas de trou avant « Nouvelle session ». */
+  .status:empty {
+    min-height: 0;
+    margin: 0;
   }
 </style>

@@ -1,0 +1,19 @@
+Objet : Demande de remboursement — commande n° 2026-11-4471
+
+Madame, Monsieur,
+
+Le 28 octobre 2026, j'ai commandé un fauteuil de bureau sur votre site, réglé par carte bancaire (4111 1111 1111 1111, expiration 09/29). Le colis est arrivé endommagé le 4 novembre ; je vous ai renvoyé l'article le jour même, avec le numéro de retour indiqué par votre service client.
+
+Je vous remercie de bien vouloir me rembourser la somme de 389,00 CHF sur mon compte :
+
+Titulaire : Romain Vuilleumier
+IBAN : CH93 0076 2011 6238 5295 7
+Banque : Banque Cantonale fictive, Neuchâtel
+
+Pour toute question, vous pouvez me joindre au +41 32 725 18 64 ou à romain.vuilleumier@example.org.
+
+Adresse de facturation : rue du Seyon 21, 2000 Neuchâtel
+
+Avec mes salutations distinguées,
+
+Romain Vuilleumier

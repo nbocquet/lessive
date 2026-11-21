@@ -359,7 +359,7 @@
 
   .hint {
     color: var(--muted);
-    font-size: 0.8rem;
+    font-size: var(--text-small);
   }
 
   .status {
@@ -375,7 +375,7 @@
   summary {
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   details > fieldset,
@@ -391,7 +391,7 @@
   legend {
     padding: 0;
     margin-bottom: 0.5rem;
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   .add-missing {

@@ -202,7 +202,6 @@
 
   h3 {
     margin: 0;
-    font-size: 1rem;
   }
 
   dl {
@@ -210,13 +209,13 @@
     grid-template-columns: max-content minmax(0, 1fr);
     gap: 0.4rem 0.65rem;
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   dt {
     margin: 0;
     color: var(--muted);
-    font-size: 0.8rem;
+    font-size: var(--text-meta);
     font-weight: 500;
   }
 
@@ -237,7 +236,7 @@
   .hint {
     display: block;
     color: var(--muted);
-    font-size: 0.8rem;
+    font-size: var(--text-small);
   }
 
   .explain {
@@ -263,7 +262,7 @@
 
   summary {
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: var(--text-small);
     font-weight: 600;
   }
 

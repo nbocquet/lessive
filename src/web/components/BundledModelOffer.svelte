@@ -55,12 +55,18 @@
     display: grid;
     gap: 0.4rem;
     padding: 0.6rem 0.8rem;
-    border-left: 3px solid currentColor;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
     margin: 0.5rem 0 1rem;
   }
 
+  /* Dans l'encadré d'état du modèle : un simple séparateur, pas un second cadre. */
   .offer.compact {
-    margin: 0.25rem 0;
+    margin: 0.75rem 0 0;
+    padding: 0.75rem 0 0;
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+    border-radius: 0;
   }
 
   p {

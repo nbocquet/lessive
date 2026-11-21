@@ -3,6 +3,7 @@
 -->
 <script lang="ts">
   import { MAX_INPUT_LENGTH } from "../../core/index.ts";
+  import CleaningCategories from "../components/CleaningCategories.svelte";
   import AnalysisStatus from "../components/AnalysisStatus.svelte";
   import ModelStatus from "../components/ModelStatus.svelte";
   import LanguageSelect from "../components/LanguageSelect.svelte";
@@ -14,6 +15,9 @@
 
   const tooLong = $derived(app.text.length > MAX_INPUT_LENGTH);
   const nearLimit = $derived(!tooLong && app.text.length > MAX_INPUT_LENGTH * 0.9);
+  const canContinue = $derived(
+    app.analysis !== null && !app.analysisStale && app.analysisStatus !== "running",
+  );
 
   let importError = $state<string | null>(null);
   let importing = $state(false);
@@ -26,7 +30,7 @@
     if (
       app.screen === "text" &&
       app.analysisStatus === "done" &&
-      app.warnings.length === 0 &&
+      app.newWarnings.length === 0 &&
       !app.analysisStale
     ) {
       app.goTo("review");
@@ -120,15 +124,20 @@
       </div>
     </div>
 
+    <CleaningCategories />
+
+    <!-- Une analyse à jour fait de la vérification l'étape suivante : elle prend l'accent. -->
     <div class="actions">
-      <button type="submit" class="primary" disabled={!app.canAnalyze}>
+      <button type="submit" class:primary={!canContinue} disabled={!app.canAnalyze}>
         {app.analysis ? "Analyser à nouveau" : "Analyser"}
       </button>
       {#if app.analysisStatus === "running"}
         <button type="button" onclick={() => app.cancelAnalysis()}>Annuler</button>
       {/if}
       {#if app.analysis && app.analysisStatus !== "running"}
-        <button type="button" onclick={() => app.goTo("review")}>Passer à la vérification</button>
+        <button type="button" class:primary={canContinue} onclick={() => app.goTo("review")}
+          >Passer à la vérification</button
+        >
       {/if}
     </div>
   </form>
@@ -155,7 +164,7 @@
   .writing-field label {
     display: block;
     margin-bottom: 0.5rem;
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   textarea {
@@ -172,12 +181,12 @@
   #source-count {
     margin: 0.35rem 0 0;
     text-align: right;
-    font-size: 0.75rem;
+    font-size: var(--text-meta);
     font-variant-numeric: tabular-nums;
   }
 
   .import-field {
-    font-size: 0.8rem;
+    font-size: var(--text-small);
   }
 
   .import-field label {
@@ -187,7 +196,6 @@
 
   .import-field .hint {
     margin-bottom: 0;
-    font-size: 0.75rem;
   }
 
   .options {
@@ -195,7 +203,7 @@
     gap: 1.25rem;
     padding-left: 1.5rem;
     border-left: 1px solid var(--border-soft);
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   .actions {
@@ -203,7 +211,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem;
-    margin-top: 0.75rem;
+    margin: 0.75rem 0 1rem;
   }
 
   .over {

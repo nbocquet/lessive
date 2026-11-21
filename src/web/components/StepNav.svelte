@@ -49,7 +49,7 @@
     border-radius: 0;
     background: transparent;
     color: var(--muted);
-    font-size: 0.875rem;
+    font-size: var(--text-small);
     font-weight: 500;
   }
 
@@ -65,14 +65,17 @@
     font-weight: 700;
   }
 
+  /* Étroit : une seule rangée de quatre, le libellé passe à la ligne plutôt qu'une grille 2×2. */
   @media (max-width: 40rem) {
     ol {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.5rem;
     }
 
     button {
-      text-align: left;
-      padding-left: 0;
+      padding: 0.5rem 0;
+      font-size: var(--text-meta);
+      line-height: 1.25;
+      hyphens: auto;
     }
   }
 </style>

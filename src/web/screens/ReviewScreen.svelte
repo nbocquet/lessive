@@ -101,12 +101,11 @@
 
   h3 {
     margin: 0 0 0.35rem;
-    font-size: 1rem;
   }
 
   .instructions {
     margin: 0 0 0.75rem;
-    font-size: 0.8rem;
+    font-size: var(--text-small);
   }
 
   .side {

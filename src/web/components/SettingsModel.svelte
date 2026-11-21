@@ -33,7 +33,7 @@
   </p>
 
   {#if app.ner && (app.modelStatus === "absent" || app.modelStatus === "error")}
-    <p class="warn" role="alert">
+    <p class="notice" role="alert">
       La reconnaissance des noms est activée, mais aucun modèle utilisable n'est chargé : elle sera
       ignorée à l'analyse. Installez ou chargez d'abord un modèle (boutons ci-dessous).
     </p>
@@ -41,7 +41,7 @@
 
   <BundledModelOffer compact />
 
-  {#if app.modelError}<p class="error" role="alert">{app.modelError}</p>{/if}
+  {#if app.modelError}<p class="notice error" role="alert">{app.modelError}</p>{/if}
   {#if app.modelNotice}<p class="hint">{app.modelNotice}</p>{/if}
 
   {#if app.modelInfo}
@@ -125,14 +125,7 @@
 
   h3 {
     margin: 0;
-    font-size: 1rem;
     scroll-margin-top: 1rem;
-  }
-
-  .warn,
-  .error {
-    padding: 0.4rem 0.6rem;
-    border-left: 3px solid currentColor;
   }
 
   .info {
