@@ -62,6 +62,7 @@ import {
 } from "./model-store.ts";
 import { fetchBundledModel, probeBundledModel, type BundledManifest } from "./bundled-model.ts";
 import { loadBundledRegistry } from "./packs.ts";
+import { remapCorrections } from "./remap-corrections.ts";
 
 import {
   ALL_CLEANING_CATEGORIES,
@@ -463,19 +464,19 @@ export class AppState {
    * Analyse automatique : rien sans `autoAnalysisDelayMs`, ni pour un texte vide ou trop long.
    * `delay` à 0 : tout de suite ; `null` : rien.
    */
-  #autoAnalyze(delay: number | null, keepIdCorrections: boolean): void {
+  #autoAnalyze(delay: number | null, keepCorrections: boolean): void {
     this.#cancelScheduled();
     if (this.#autoDelay === null || delay === null) return;
     if (this.text.trim().length === 0 || this.text.length > MAX_INPUT_LENGTH) return;
     if (delay <= 0) {
-      void this.#run(keepIdCorrections);
+      void this.#run(keepCorrections);
       return;
     }
     this.analysisScheduled = true;
     this.#autoTimer = setTimeout(() => {
       this.#autoTimer = undefined;
       this.analysisScheduled = false;
-      void this.#run(keepIdCorrections);
+      void this.#run(keepCorrections);
     }, delay);
   }
 
@@ -493,7 +494,7 @@ export class AppState {
     this.analysisStatus = this.analysis ? "done" : "idle";
   }
 
-  async #run(keepIdCorrections: boolean): Promise<void> {
+  async #run(keepCorrections: boolean): Promise<void> {
     this.#cancelScheduled();
     if (this.text.length > MAX_INPUT_LENGTH) {
       this.analysisStatus = "error";
@@ -532,13 +533,16 @@ export class AppState {
     try {
       const result = await job.result;
       if (runId !== this.#runId) return;
+      const previous = this.analysis;
       this.analysis = result;
       this.analysisStatus = "done";
       this.analysisStale = false;
-      if (!keepIdCorrections) {
+      if (keepCorrections) {
+        this.corrections = remapCorrections(this.corrections, previous, result);
+      } else {
         this.corrections = { ...EMPTY_CORRECTIONS, added: this.corrections.added };
-        this.selectedDetectionId = null;
       }
+      this.selectedDetectionId = null;
       this.#invalidateOutput();
     } catch (err) {
       if (runId !== this.#runId || err instanceof AnalysisCancelledError) return;

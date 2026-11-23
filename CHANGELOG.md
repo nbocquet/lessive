@@ -6,6 +6,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
+- Les corrections par passage restent attachées à la bonne détection lorsqu'un réglage relance l'analyse : un identifiant réattribué ne peut plus laisser un autre passage en clair. Les corrections sans correspondance certaine sont abandonnées et le résultat doit être relu et validé.
+
 - La description du mode Masquage annonce ce qu'il produit réellement : des astérisques de même longueur, la catégorie (`[PERSONNE]`) restant au choix à l'étape « Vérification ».
 
 - L'écran « Réponse du LLM » n'est plus une impasse : en Masquage, il explique pourquoi rien ne peut être réidentifié et propose de passer en Pseudonymisation ; après un rechargement, la table chiffrée s'importe directement sur cet écran, sans nouvelle analyse.

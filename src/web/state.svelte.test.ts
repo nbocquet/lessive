@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { AnalysisResult, Detection } from "../core/index.ts";
+import { createAnalyzer, type AnalysisResult, type Detection } from "../core/index.ts";
+import { loadBundledRegistry } from "./packs.ts";
 import {
   AnalysisCancelledError,
   AnalysisFailure,
@@ -682,5 +683,60 @@ describe("AppState : analyse automatique (#38)", () => {
     app.setText(TEXT, { immediate: true });
     vi.advanceTimersByTime(2000);
     expect(calls).toHaveLength(0);
+  });
+
+  it("transfère les corrections vers les nouveaux identifiants et retire la validation", async () => {
+    const { app, calls } = auto();
+    app.setText(TEXT, { immediate: true });
+    calls[0]!.resolve(RESULT);
+    await Promise.resolve();
+    app.removeDetection("d1");
+    app.setDetectionType("d2", "PERSON");
+    app.setDetectionOperator("d2", "categorize");
+    app.refreshTransform();
+    expect(app.validate()).toBe(true);
+    app.selectDetection("d2");
+    app.setLanguage("fr");
+    await vi.advanceTimersByTimeAsync(800);
+    calls[1]!.resolve({
+      ...RESULT,
+      detections: [det("d2", 10, 31), det("d1", 35, 57)],
+    });
+    await Promise.resolve();
+    expect(app.corrections.removedIds).toEqual(["d2"]);
+    expect(app.corrections.typeOverrides).toEqual({ d1: "PERSON" });
+    expect(app.corrections.operatorOverrides).toEqual({ d1: "categorize" });
+    expect(app.selectedDetectionId).toBeNull();
+    expect(app.validated).toBe(false);
+    expect(app.canCopy).toBe(false);
+    app.dispose();
+  });
+
+  it("ne laisse pas une URL en clair après retrait d'un courriel et désactivation de sa règle", async () => {
+    const registry = loadBundledRegistry();
+    const service: AnalysisService = {
+      start(params) {
+        const rules = registry
+          .activeRules()
+          .filter((r) => params.activeRuleIds.includes(r.globalId));
+        return {
+          result: createAnalyzer(rules).analyze(params.text, { minScore: params.minScore }),
+          cancel() {},
+        };
+      },
+      dispose() {},
+    };
+    const app = new AppState({ registry, service, autoAnalysisDelayMs: 0 });
+    app.setText("Courriel : test@example.org ; site : https://example.org");
+    await app.analyze();
+    const email = app.analysis!.detections.find((d) => d.entityType === "EMAIL")!;
+    expect(email).toBeDefined();
+    app.removeDetection(email.id);
+    app.setRuleEnabled(email.recognizerId, false);
+    await vi.waitFor(() => expect(app.analysisStatus).toBe("done"));
+    expect(app.corrections.removedIds).toEqual([]);
+    expect(app.detections.some((d) => d.entityType === "URL")).toBe(true);
+    expect(app.refreshTransform()!.text).not.toContain("https://example.org");
+    app.dispose();
   });
 });
