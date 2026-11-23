@@ -6,6 +6,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
+- Les corrections par passage restent attachées à la bonne détection lorsqu'un réglage relance l'analyse : un identifiant réattribué ne peut plus laisser un autre passage en clair. Les corrections sans correspondance certaine sont abandonnées et le résultat doit être relu et validé.
+
 - La description du mode Masquage annonce ce qu'il produit réellement : des astérisques de même longueur, la catégorie (`[PERSONNE]`) restant au choix à l'étape « Vérification ».
 
 - L'écran « Réponse du LLM » n'est plus une impasse : en Masquage, il explique pourquoi rien ne peut être réidentifié et propose de passer en Pseudonymisation ; après un rechargement, la table chiffrée s'importe directement sur cet écran, sans nouvelle analyse.
@@ -30,6 +32,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 - CLI local `lessive` pour masquer un fichier UTF-8 ou stdin par catégories, ligne par ligne : dates optionnelles, NER CPU local facultatif, sortie fichier publiée sans écrasement après succès (#24). Compilation et installation depuis le dépôt, sans publication npm. Les chemins d'entrée et de modèle doivent désigner des fichiers ordinaires ; les tubes nommés sont refusés sans attendre de producteur.
 
 ### Modifié
+
+- Parcours sur une seule page (#38) : texte original, données à vérifier et texte à copier côte à côte, puis la réponse de l'assistant en dessous ; zones empilées avec liens d'accès directs sur téléphone. Plus de navigation par étapes ni de bouton « Analyser » : l'analyse se lance au collage ou à l'import, et après une courte pause de la saisie ; un changement de réglage la relance en gardant les corrections. La colonne « À vérifier » regroupe les formes par entité : une case par entité (état partiel quand seules certaines formes restent en clair), une case par forme quand l'entité en a plusieurs, changement de type, « Séparer » et « Rattacher à… » en pseudonymisation. Le texte est figé dès la première correction ; « Modifier le texte » les abandonne après confirmation. La réponse de l'assistant est réidentifiée en direct, et suit les corrections de la table ; elle n'est plus déclenchée par un bouton. Interface allégée : thème clair par défaut (thème sombre au choix en pied de page, pour la visite), état du modèle sur une ligne dans la barre d'outils, rappel sur les noms non détectés au moment de valider, vocabulaire unifié (« repère », « assistant »), titres d'étape de même taille, mode de traitement en liste déroulante, langue du texte déplacée dans les réglages, limites permanentes repliées, un seul bouton « Copier le texte pour l'IA » (la consigne pour l'IA est incluse par défaut en pseudonymisation, une case permet de l'exclure), en-tête réduit au minimum, avertissement permanent intégré à l'en-tête, et étapes numérotées de 1 à 4 (coller, vérifier, copier, retrouver les données).
 
 - Écran « Résultat » : la validation et la copie suivent directement l'aperçu « après » ; les catégories, la consigne pour l'IA et la sauvegarde chiffrée de la session sont repliées avec un résumé. Au-delà de 20 entités, la table des pseudonymes est écourtée (les entités à vérifier restent affichées). Sur téléphone, les étapes tiennent sur une ligne.
 

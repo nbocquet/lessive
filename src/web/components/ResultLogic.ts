@@ -151,7 +151,7 @@ export function buildWarnings(input: WarningInput): ResultWarning[] {
   if (input.mode === "masking") {
     out.push({
       kind: "limit",
-      text: "En mode Masquage, les valeurs d'origine ne sont pas conservées : la réponse du LLM ne pourra pas être réidentifiée.",
+      text: "En mode Masquage, les valeurs d'origine ne sont pas conservées : la réponse de l'assistant ne pourra pas être réidentifiée.",
     });
   }
   if (input.detectionCount === 0) {

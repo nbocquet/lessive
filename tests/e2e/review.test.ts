@@ -1,103 +1,111 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { SKIP_MESSAGE, Session, chromeOrNull } from "./harness.ts";
+import { RESULT_PREVIEW, SKIP_MESSAGE, Session, chromeOrNull } from "./harness.ts";
+
+const preview = `document.querySelector('${RESULT_PREVIEW}').textContent`;
+
+/** Case de l'entité qui contient `value` dans la colonne « À vérifier » (une seule forme ici). */
+const formBox = (value: string) =>
+  `[...document.querySelectorAll('#verifier .entity')].find(e => e.textContent.includes(${JSON.stringify(value)}))?.querySelector('.entity-title input')`;
 
 describe(
-  "vérification : corrections contextuelles",
+  "parcours sur une page : vérification et corrections (#38)",
   { skip: chromeOrNull() ? false : SKIP_MESSAGE },
   () => {
     let s: Session;
 
     before(async () => {
       s = await Session.start();
+      await s.send("Emulation.setDeviceMetricsOverride", {
+        width: 1400,
+        height: 900,
+        deviceScaleFactor: 1,
+        mobile: false,
+      });
       await s.navigate("/");
       await s.type("#source-text", "Contact : exemple@example.org. Référence : dossierfictif.");
-      await s.clickButton("Analyser");
-      // Sans modèle, l'absence de NER est déjà annoncée en tête d'écran : aucun avis nouveau ne
-      // retient l'utilisateur sur « Texte », l'application passe directement à la vérification.
-      await s.waitFor(`document.querySelector("#h-review")`, "passage direct à la vérification");
+      // Aucun bouton : l'analyse se lance après la pause de saisie.
+      await s.waitForResult();
     });
 
     after(async () => {
       await s?.close();
     });
 
-    it("garde la navigation au-dessus du texte sans afficher de formulaire inactif", async () => {
-      assert.equal(await s.evaluate<boolean>(`Boolean(document.querySelector('#rv-type'))`), false);
+    it("affiche texte, vérification et résultat côte à côte, sans navigation par étapes", async () => {
       assert.equal(
-        await s.evaluate<boolean>(`document.querySelector('details.add-missing').open`),
+        await s.evaluate<boolean>(
+          `Boolean(document.querySelector('nav[aria-label="Étapes du parcours"]'))`,
+        ),
         false,
       );
+      assert.ok(await s.evaluate<boolean>(`Boolean(${formBox("exemple@example.org")})`));
+      assert.ok(!(await s.evaluate<string>(preview)).includes("exemple@example.org"));
+      // Sans correction, le texte reste modifiable.
+      assert.ok(await s.evaluate<boolean>(`Boolean(document.querySelector('#source-text'))`));
+      // Les trois colonnes sont sur une même ligne en grand écran.
       assert.ok(
-        await s.evaluate<boolean>(
-          `Boolean(document.querySelector('.review-header').compareDocumentPosition(document.querySelector('#review-text')) & Node.DOCUMENT_POSITION_FOLLOWING)`,
-        ),
-      );
-      assert.ok(
-        await s.evaluate<boolean>(
-          `(() => { const button = [...document.querySelectorAll('.review-header button')].find(b => b.textContent.trim() === 'Voir le résultat'); const r = button.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })()`,
-        ),
+        await s.evaluate<boolean>(`(() => {
+          const tops = ['#texte', '#verifier', '#resultat'].map(id => Math.round(document.querySelector(id).getBoundingClientRect().top));
+          return tops.every(t => t === tops[0]);
+        })()`),
       );
     });
 
-    it("affiche d'abord la correction du passage et replie les explications", async () => {
-      await s.evaluate(`document.querySelector('#review-text [role="button"]').click()`);
-      await s.waitFor(`document.querySelector('#rv-type')`, "correction du passage sélectionné");
+    it("décocher une forme la garde en clair, retire la validation et fige le texte", async () => {
+      await s.evaluate(`document.querySelector('.validate input').click()`);
+      await s.evaluate(`(${formBox("exemple@example.org")}).click()`);
+      await s.waitFor(`${preview}.includes('exemple@example.org')`, "forme laissée en clair");
       assert.equal(
-        await s.evaluate<boolean>(`document.querySelector('details.technical').open`),
+        await s.evaluate<boolean>(`document.querySelector('.validate input').checked`),
         false,
       );
-      assert.ok(
-        await s.evaluate<boolean>(
-          `Boolean(document.querySelector('#rv-type').compareDocumentPosition(document.querySelector('details.add-missing')) & Node.DOCUMENT_POSITION_FOLLOWING)`,
-        ),
+      await s.waitFor(`document.querySelector('#review-text')`, "texte figé après correction");
+      assert.equal(
+        await s.evaluate<boolean>(`Boolean(document.querySelector('#source-text'))`),
+        false,
       );
-      await s.clickButton("Laisser ce passage en clair");
-      await s.waitFor(`!document.querySelector('#rv-type')`, "passage laissé en clair");
-      await s.evaluate(
-        `document.querySelector('[aria-label="Corrections"] details:last-child').open = true`,
-      );
-      await s.clickButton("Restaurer");
-      await s.waitFor(`document.querySelector('#rv-type')`, "passage restauré");
+      await s.evaluate(`(${formBox("exemple@example.org")}).click()`);
+      await s.waitFor(`!${preview}.includes('exemple@example.org')`, "forme de nouveau remplacée");
     });
 
-    it("ouvre l'ajout dès qu'un passage non détecté est sélectionné", async () => {
+    it("ajoute une donnée oubliée depuis une sélection dans la zone de saisie", async () => {
+      // Sans correction en cours, le texte est dans la zone de saisie : on y sélectionne.
       await s.evaluate(`(() => {
-      const span = [...document.querySelectorAll('#review-text span[data-start]')].find(el => el.textContent.includes('dossierfictif'));
-      const start = span.textContent.indexOf('dossierfictif');
-      const range = document.createRange();
-      range.setStart(span.firstChild, start);
-      range.setEnd(span.firstChild, start + 'dossierfictif'.length);
-      const selection = getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-      document.dispatchEvent(new Event('selectionchange'));
-    })()`);
+        const area = document.querySelector('#source-text');
+        const start = area.value.indexOf('dossierfictif');
+        area.focus();
+        area.setSelectionRange(start, start + 'dossierfictif'.length);
+        area.dispatchEvent(new Event('select'));
+      })()`);
+      await s.clickButton("Prendre la sélection");
+      await s.waitFor(`Boolean(${formBox("dossierfictif")})`, "donnée ajoutée à la vérification");
       await s.waitFor(
-        `document.querySelector('details.add-missing').open`,
-        "ajout ouvert sur sélection",
-      );
-      await s.clickButton("Ajouter");
-      await s.waitFor(
-        `document.querySelector('#review-text [aria-label="Personne : dossierfictif"]')`,
-        "passage ajouté à la détection",
+        `document.querySelector('${RESULT_PREVIEW}') && !${preview}.includes('dossierfictif')`,
+        "donnée remplacée dans le résultat",
       );
     });
 
-    it("affiche les commandes sélectionnées sur téléphone sans débordement horizontal", async () => {
+    it("« Modifier le texte » demande confirmation puis rend le texte modifiable", async () => {
+      await s.clickButton("Modifier le texte");
+      await s.clickButton("Oui, modifier");
+      await s.waitFor(`document.querySelector('#source-text')`, "texte de nouveau modifiable");
+      await s.waitForResult();
+      assert.equal(await s.evaluate<boolean>(`Boolean(${formBox("dossierfictif")})`), false);
+    });
+
+    it("empile les zones sur téléphone sans débordement horizontal", async () => {
       await s.send("Emulation.setDeviceMetricsOverride", {
         width: 375,
         height: 812,
         deviceScaleFactor: 1,
         mobile: true,
       });
-      await s.evaluate(`document.querySelector('#review-text [role="button"]').click()`);
-      await s.waitFor(`document.querySelector('#rv-type')`, "commandes sur téléphone");
-      assert.ok(await s.evaluate<boolean>(`document.documentElement.scrollWidth <= innerWidth`));
       await s.waitFor(
-        `(() => { const r = document.querySelector('aside.side').getBoundingClientRect(); return r.top >= -1 && r.top < innerHeight; })()`,
-        "panneau de correction visible",
+        `getComputedStyle(document.querySelector('nav.jump')).display !== 'none'`,
+        "liens d'accès directs sur téléphone",
       );
+      assert.ok(await s.evaluate<boolean>(`document.documentElement.scrollWidth <= innerWidth`));
       assert.deepEqual(s.foreign, []);
     });
   },

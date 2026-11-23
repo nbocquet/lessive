@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { SKIP_MESSAGE, Session, chromeOrNull } from "./harness.ts";
+import { RESULT_PREVIEW, SKIP_MESSAGE, Session, chromeOrNull } from "./harness.ts";
 
 const TEXT =
   "Claire Martin, née le 12 mars 1985. Adresse : 18 rue des Mélèzes, 1205 Genève. Courriel probe@example.org. IP 192.0.2.1.";
@@ -20,6 +20,8 @@ describe(
 
     it("permet un choix au clavier puis remplace seulement l’identité et l’adresse", async () => {
       await s.type("#source-text", TEXT);
+      // Les catégories sont repliées dans la barre d'outils.
+      await s.evaluate(`document.querySelector('details.categories').open = true`);
       assert.equal(
         await s.evaluate<number>(
           `document.querySelectorAll('.cleaning-categories input:checked').length`,
@@ -45,14 +47,9 @@ describe(
         "catégorie activée au clavier",
       );
       await s.evaluate(`document.querySelector('#cleaning-addresses').click()`);
-      await s.analyzeAndReview();
-      await s.clickButton("Voir le résultat");
-      await s.waitFor(
-        `document.querySelector('[aria-labelledby="h-after"]')`,
-        "aperçu du résultat",
-      );
+      await s.waitForResult();
       const output = await s.evaluate<string>(
-        `document.querySelector('[aria-labelledby="h-after"]').textContent`,
+        `document.querySelector('${RESULT_PREVIEW}').textContent`,
       );
       assert.ok(!output.includes("Claire Martin"));
       assert.ok(!output.includes("18 rue des Mélèzes"));
@@ -64,12 +61,12 @@ describe(
     it("actualise l’aperçu et exige une nouvelle validation avant copie", async () => {
       await s.evaluate(`document.querySelector('.validate input').click()`);
       await s.waitFor(
-        `![...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Copier le texte').disabled`,
+        `![...document.querySelectorAll('button')].find(b => b.textContent.trim() === "Copier le texte pour l'IA").disabled`,
         "copie autorisée après validation",
       );
       await s.evaluate(`document.querySelector('#cleaning-dates').click()`);
       await s.waitFor(
-        `!document.querySelector('[aria-labelledby="h-after"]').textContent.includes('12 mars 1985')`,
+        `!document.querySelector('${RESULT_PREVIEW}').textContent.includes('12 mars 1985')`,
         "date remplacée sans relancer l’analyse",
       );
       assert.equal(
@@ -78,13 +75,13 @@ describe(
       );
       assert.equal(
         await s.evaluate<boolean>(
-          `[...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Copier le texte').disabled`,
+          `[...document.querySelectorAll('button')].find(b => b.textContent.trim() === "Copier le texte pour l'IA").disabled`,
         ),
         true,
       );
       await s.clickButton("Tout désélectionner");
       await s.waitFor(
-        `document.querySelector('[aria-labelledby="h-after"]').textContent.includes('Claire Martin')`,
+        `document.querySelector('${RESULT_PREVIEW}').textContent.includes('Claire Martin')`,
         "aperçu sans remplacement automatique",
       );
       assert.ok(
@@ -94,7 +91,7 @@ describe(
       );
       await s.clickButton("Tout sélectionner");
       await s.waitFor(
-        `!document.querySelector('[aria-labelledby="h-after"]').textContent.includes('probe@example.org')`,
+        `!document.querySelector('${RESULT_PREVIEW}').textContent.includes('probe@example.org')`,
         "catégories par défaut restaurées",
       );
     });
@@ -104,7 +101,7 @@ describe(
         `Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async () => { throw new DOMException('Refus synthétique'); } } })`,
       );
       await s.evaluate(`document.querySelector('.validate input').click()`);
-      await s.clickButton("Copier le texte");
+      await s.clickButton("Copier le texte pour l'IA");
       await s.waitFor(`document.querySelector('.fallback textarea')`, "champ de copie manuelle");
       await s.evaluate(`document.querySelector('#cleaning-dates').click()`);
       await s.waitFor(
@@ -129,7 +126,7 @@ describe(
         })
       `);
       await s.evaluate(`document.querySelector('.validate input').click()`);
-      await s.clickButton("Copier le texte");
+      await s.clickButton("Copier le texte pour l'IA");
       await s.waitFor(`typeof window.__rejectClipboard === 'function'`, "copie en attente");
       await s.evaluate(`document.querySelector('#cleaning-emails').click()`);
       await s.waitFor(`!document.querySelector('.validate input').checked`, "validation retirée");

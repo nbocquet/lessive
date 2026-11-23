@@ -3,12 +3,18 @@
   `app.canCopy` fait foi : tant que le résultat n'est pas validé et à jour, rien ne sort.
 -->
 <script lang="ts">
-  import { tick } from "svelte";
+  import { tick, type Snippet } from "svelte";
   import { app } from "../state.svelte.ts";
   import { copyToClipboard, downloadTextFile } from "./ResultDom.ts";
   import { buildCopyText, resultFileName, type NoticeLanguage } from "./ResultLogic.ts";
 
-  let { language }: { language: NoticeLanguage } = $props();
+  /** `notice` : réglage de la consigne (langue), affiché sous la case « Inclure la consigne ». */
+  let { language, notice }: { language: NoticeLanguage; notice?: Snippet } = $props();
+
+  /** En pseudonymisation, la consigne accompagne le texte par défaut : elle permet la réidentification. */
+  let withNotice = $state(true);
+  /** La validation retirée par une modification est annoncée (elle n'est pas sous les yeux). */
+  let wasValidated = false;
 
   let message = $state("");
   /** Texte à copier à la main quand le presse-papiers est refusé. */
@@ -20,6 +26,14 @@
     void app.transformed;
     message = "";
     fallbackText = null;
+  });
+
+  $effect(() => {
+    const validated = app.validated;
+    if (wasValidated && !validated) {
+      message = "Le résultat a changé : relisez-le, puis cochez de nouveau la case.";
+    }
+    wasValidated = validated;
   });
 
   const canValidate = $derived(app.transformed !== null && !app.analysisStale);
@@ -70,8 +84,14 @@
   }
 </script>
 
-<section class="copy" aria-labelledby="h-copy">
-  <h3 id="h-copy">Validation et copie</h3>
+<section class="copy" aria-label="Validation et copie">
+  {#if app.modelLimitShown}
+    <!-- Au moment de valider : sans modèle, les noms sont ce qui échappe le plus. -->
+    <p class="names-warning">
+      Sans reconnaissance des noms, les personnes, lieux et organisations ne sont pas détectés :
+      relisez-les.
+    </p>
+  {/if}
   <label class="validate">
     <input
       type="checkbox"
@@ -79,26 +99,30 @@
       disabled={!canValidate}
       onchange={onValidationChange}
     />
-    <span>J'ai relu le résultat</span>
+    <span>J'ai relu le résultat et les passages non détectés</span>
   </label>
-  <p class="hint">
-    La copie reste bloquée tant que vous n'avez pas coché cette case. Toute modification (texte,
-    corrections, catégories, mode, session) la décoche.
-  </p>
+  <p class="hint">Toute modification demande une nouvelle validation.</p>
 
   <div class="actions">
-    <button type="button" class="primary" disabled={!app.canCopy} onclick={() => copy(false)}>
-      Copier le texte
+    <button
+      type="button"
+      class="primary"
+      disabled={!app.canCopy}
+      onclick={() => copy(pseudonymization && withNotice)}
+    >
+      Copier le texte pour l'IA
     </button>
-    {#if pseudonymization}
-      <button type="button" disabled={!app.canCopy} onclick={() => copy(true)}>
-        Copier avec la consigne pour l'IA
-      </button>
-    {/if}
-    <button type="button" disabled={!app.canCopy} onclick={download}>
-      Télécharger le résultat (.txt)
+    <button type="button" class="link" disabled={!app.canCopy} onclick={download}>
+      Télécharger (.txt)
     </button>
   </div>
+  {#if pseudonymization}
+    <label class="with-notice">
+      <input type="checkbox" bind:checked={withNotice} />
+      <span>Inclure la consigne pour l'IA</span>
+    </label>
+    {@render notice?.()}
+  {/if}
 
   <p class="status" role="status" aria-live="polite">{message}</p>
 
@@ -113,14 +137,10 @@
 <style>
   /* Point d'arrivée de l'étape : un seul bloc teinté, juste sous l'aperçu « après ». */
   .copy {
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--accent-soft);
-  }
-
-  h3 {
-    margin: 0 0 0.75rem;
+    display: grid;
+    gap: 0.6rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-soft);
   }
 
   .validate {
@@ -138,12 +158,47 @@
   }
 
   .copy .hint {
-    margin: 0.25rem 0 1rem;
+    margin: -0.4rem 0 0;
+    font-size: var(--text-small);
+  }
+
+  /* Désactivé, le bouton principal garde sa forme : la hiérarchie se lit avant la coche. */
+  .actions button.primary:disabled {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-text);
+    opacity: 0.45;
+  }
+
+  .names-warning {
+    margin: 0;
+    padding: 0.45rem 0.7rem;
+    border-left: 3px solid var(--warn-border);
+    background: var(--warn-bg);
+    color: var(--warn-text);
+    font-size: var(--text-small);
+  }
+
+  .with-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-small);
+    cursor: pointer;
+  }
+
+  .actions button.link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    text-decoration: underline;
   }
 
   .actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
   }
 

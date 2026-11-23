@@ -41,6 +41,9 @@ export function chromeOrNull(): string | null {
   return findChrome() ?? null;
 }
 
+/** Aperçu du texte à copier (colonne « Texte à copier »). */
+export const RESULT_PREVIEW = '[aria-label="Aperçu du texte transformé"]';
+
 export const SKIP_MESSAGE =
   "Aucun Chrome/Chromium trouvé : test e2e sauté. Définissez CHROME_PATH (sur macOS : " +
   '"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome") puis relancez `npm run test:e2e`.';
@@ -320,6 +323,15 @@ export class Session {
     );
   }
 
+  /** Choisit le mode de traitement dans la liste déroulante de la barre d'outils. */
+  async setMode(mode: "masking" | "pseudonymization"): Promise<void> {
+    const find = `document.querySelector(".compact-mode select")`;
+    await this.waitFor(find, "liste du mode de traitement");
+    await this.evaluate(
+      `(() => { const el = ${find}; el.value = ${JSON.stringify(mode)}; el.dispatchEvent(new Event("change", { bubbles: true })); })()`,
+    );
+  }
+
   /** Saisit du texte dans un champ (focus puis insertion, comme au clavier). */
   async type(selector: string, text: string): Promise<void> {
     await this.waitFor(`document.querySelector(${JSON.stringify(selector)})`, `champ ${selector}`);
@@ -336,58 +348,47 @@ export class Session {
   }
 
   /**
-   * Parcours complet par l'interface : saisie, analyse, vérification, résultat validé, réponse simulée
-   * du LLM, réidentification. Renvoie le texte transformé et le texte réidentifié.
+   * Parcours complet par l'interface, sur une seule page (#38) : saisie, analyse automatique,
+   * résultat validé, réponse simulée du LLM, réidentification en direct. Renvoie le texte
+   * transformé et le texte réidentifié.
    */
   async runJourney(opts: {
     ner: boolean;
   }): Promise<{ transformed: string; reidentified: string; tokens: string[] }> {
-    await this.clickLabelled("Pseudonymisation");
+    await this.setMode("pseudonymization");
     // Le NER s'active d'office quand un modèle est chargé : on fixe l'état voulu, sans basculer.
     await this.setChecked("Reconnaître les noms", opts.ner);
     await this.type("#source-text", INPUT_TEXT);
-    await this.analyzeAndReview(opts.ner ? 180_000 : 30_000);
-    await this.clickButton("Voir le résultat");
-    await this.waitFor(
-      `document.querySelector('[aria-labelledby="h-after"]')?.innerText.trim()`,
-      "résultat",
-    );
+    await this.waitForResult(opts.ner ? 180_000 : 30_000);
     await this.clickLabelled("J'ai relu le résultat");
     await this.waitFor(
-      `[...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "Copier le texte" && !b.disabled)`,
+      `[...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "Copier le texte pour l'IA" && !b.disabled)`,
       "validation du résultat",
     );
-    const transformed = await this.text('[aria-labelledby="h-after"]');
+    const transformed = await this.text(RESULT_PREVIEW);
     const tokens = [...new Set(transformed.match(/\b[A-ZÉ]+_\d{3}\b/g) ?? [])];
-    await this.clickButton("Réponse du LLM");
     await this.type(
       "#llm-response",
       `Voici la réponse simulée. Contacts : ${tokens.join(", ")}. Cordialement.`,
     );
-    await this.clickButton("Remettre les vrais noms");
     await this.waitFor(
-      `document.querySelector("main [role=status]")?.innerText.includes("remplacé")`,
+      `document.querySelector("#reponse [role=status]")?.innerText.includes("retrouvé")`,
       "réidentification",
     );
-    const reidentified = await this.text("main");
+    const reidentified = await this.text("#reponse");
     return { transformed, reidentified, tokens };
   }
 
   /**
-   * Lance l'analyse puis rejoint l'écran de vérification : l'application y passe directement
-   * quand aucun avertissement nouveau n'est à lire, sinon elle reste sur « Texte » le temps de
-   * les lire et l'on clique « Passer à la vérification ».
+   * Attend la fin de l'analyse automatique (lancée par la saisie) et l'aperçu du texte à copier,
+   * à jour : il n'est affiché qu'une fois l'analyse terminée et le résultat recalculé.
    */
-  async analyzeAndReview(timeoutMs = 30_000): Promise<void> {
-    await this.clickButton("Analyser");
+  async waitForResult(timeoutMs = 30_000): Promise<void> {
     await this.waitFor(
-      `document.querySelector("#h-review") || [...document.querySelectorAll("button")].some((b) => b.textContent.trim() === "Passer à la vérification" && !b.disabled)`,
-      "fin de l'analyse",
+      `document.querySelector(${JSON.stringify(RESULT_PREVIEW)})`,
+      "fin de l'analyse et aperçu du résultat",
       timeoutMs,
     );
-    if (!(await this.evaluate<boolean>(`Boolean(document.querySelector("#h-review"))`))) {
-      await this.clickButton("Passer à la vérification");
-    }
   }
 
   /**

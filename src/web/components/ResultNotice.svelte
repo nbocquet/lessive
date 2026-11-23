@@ -8,16 +8,16 @@
   const languageLabel = $derived(language === "fr" ? "français" : "anglais");
 </script>
 
-<!-- Repliée : elle sert le bouton « Copier avec la consigne pour l'IA », placé juste au-dessus. -->
+<!-- Repliée, sous la case « Inclure la consigne pour l'IA » : texte et langue de la consigne. -->
 <details class="notice-details">
   <summary>
-    <h3 id="h-notice">Consigne pour l'IA</h3>
+    <h3 id="h-notice">Voir la consigne</h3>
     <span class="hint">en {languageLabel}</span>
   </summary>
   <section aria-labelledby="h-notice">
     <p class="hint">
-      Elle demande au LLM de recopier les pseudonymes tels quels, ce qui permet de réidentifier sa
-      réponse. Utilisez « Copier avec la consigne pour l'IA » pour la joindre au texte.
+      Elle demande à l'assistant de recopier les repères tels quels, ce qui permet de retrouver les
+      données dans sa réponse (étape 4).
     </p>
     <fieldset class="lang">
       <legend>Langue de la consigne</legend>
@@ -34,7 +34,8 @@
 
 <style>
   .notice-details {
-    margin-top: -0.75rem;
+    margin: -0.25rem 0 0 1.75rem;
+    font-size: var(--text-small);
   }
 
   /* Marqueur natif conservé, comme les autres volets repliables de l'application. */
@@ -45,8 +46,9 @@
 
   h3 {
     display: inline;
-    margin: 0 0.75rem 0 0;
-    font-size: var(--text-body);
+    margin: 0 0.5rem 0 0;
+    font-size: var(--text-small);
+    font-weight: 400;
   }
 
   section {

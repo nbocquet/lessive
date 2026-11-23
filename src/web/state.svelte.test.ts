@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { AnalysisResult, Detection } from "../core/index.ts";
+import { createAnalyzer, type AnalysisResult, type Detection } from "../core/index.ts";
+import { loadBundledRegistry } from "./packs.ts";
 import {
   AnalysisCancelledError,
   AnalysisFailure,
@@ -82,7 +83,7 @@ async function analyzed(result: AnalysisResult = RESULT) {
 
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
-describe("AppState : état initial et navigation", () => {
+describe("AppState : état initial", () => {
   it("démarre vide, en masquage, langue auto, seuil 0,5", () => {
     const app = new AppState({ service: fakeService().service });
     expect(app).toMatchObject({
@@ -92,22 +93,11 @@ describe("AppState : état initial et navigation", () => {
       minScore: 0.5,
       analysisStatus: "idle",
       validated: false,
-      screen: "text",
       session: null,
       transformed: null,
     });
     expect(app.canAnalyze).toBe(false);
     expect(app.activeRuleIds.length).toBeGreaterThan(0);
-  });
-
-  it("refuse les écrans qui exigent une analyse tant qu'il n'y en a pas", async () => {
-    const app = new AppState({ service: fakeService().service });
-    expect(app.goTo("review")).toBe(false);
-    expect(app.goTo("result")).toBe(false);
-    expect(app.goTo("reidentify")).toBe(true);
-    const { app: done } = await analyzed();
-    expect(done.goTo("review")).toBe(true);
-    expect(done.screen).toBe("review");
   });
 });
 
@@ -404,15 +394,13 @@ describe("AppState : transformation et validation", () => {
     expect(app.validated).toBe(false);
   });
 
-  it("ne remet pas la validation à faux pour la navigation, la sélection et la réponse du LLM", async () => {
+  it("ne remet pas la validation à faux pour la sélection et la réponse du LLM", async () => {
     const { app } = await analyzed();
     app.refreshTransform();
     app.validate();
-    app.goTo("review");
     app.selectDetection("d1");
     app.setTextSelection({ start: 0, end: 3 });
     app.setLlmResponse("réponse");
-    app.setReidentified("texte");
     expect(app.validated).toBe(true);
     app.unvalidate();
     expect(app.validated).toBe(false);
@@ -426,12 +414,10 @@ describe("AppState : texte, réponse du LLM, remise à zéro", () => {
     app.refreshTransform();
     app.setLlmResponse("réponse");
     app.setLanguage("en");
-    app.goTo("result");
     app.setText("Nouveau");
     expect(app).toMatchObject({
       analysis: null,
       analysisStatus: "idle",
-      screen: "text",
       mode: "pseudonymization",
       language: "en",
       llmResponse: "réponse",
@@ -440,11 +426,32 @@ describe("AppState : texte, réponse du LLM, remise à zéro", () => {
     expect(app.detections).toEqual([]);
   });
 
-  it("setLlmResponse efface la réidentification précédente", () => {
-    const app = new AppState({ service: fakeService().service });
-    app.setReidentified("x");
-    app.setLlmResponse("y");
-    expect(app.reidentified).toBeNull();
+  it("la réidentification suit la réponse et la session, en direct", async () => {
+    const { app } = await analyzed();
+    expect(app.reidentification).toBeNull();
+    app.setLlmResponse("Écrire à EMAIL_001.");
+    // Masquage : aucune session, rien à réidentifier.
+    expect(app.reidentification).toBeNull();
+    app.setMode("pseudonymization");
+    const out = app.refreshTransform();
+    expect(out?.text).toContain("EMAIL_001");
+    expect(app.reidentification?.text).toBe("Écrire à jean.test@example.org.");
+    app.setLlmResponse("Écrire à EMAIL_001 et EMAIL_009.");
+    expect(app.reidentification?.unknown.map((t) => t.pseudonym)).toEqual(["EMAIL_009"]);
+    app.newSession();
+    expect(app.reidentification).toBeNull();
+  });
+
+  it("hasCorrections signale toute correction, discardCorrections les abandonne et relance", async () => {
+    const { app, calls } = await analyzed();
+    expect(app.hasCorrections).toBe(false);
+    app.removeDetection("d1");
+    expect(app.hasCorrections).toBe(true);
+    app.discardCorrections();
+    expect(app.hasCorrections).toBe(false);
+    expect(app.corrections.removedIds).toEqual([]);
+    expect(calls).toHaveLength(2);
+    expect(app.analysisStatus).toBe("running");
   });
 
   it("reset efface texte, analyse, corrections et réponse, et annule l'analyse", async () => {
@@ -458,7 +465,6 @@ describe("AppState : texte, réponse du LLM, remise à zéro", () => {
       text: "",
       analysisStatus: "idle",
       llmResponse: "",
-      screen: "text",
     });
   });
 
@@ -597,5 +603,140 @@ describe("AppState : modèle local (ADR 0003)", () => {
       expect(app.modelStatus).toBe("absent");
       expect(models).toEqual([]);
     });
+  });
+});
+
+describe("AppState : analyse automatique (#38)", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  function auto() {
+    vi.useFakeTimers();
+    const { service, calls } = fakeService();
+    const app = new AppState({ service, autoAnalysisDelayMs: 800 });
+    return { app, calls };
+  }
+
+  it("analyse tout de suite au collage", () => {
+    const { app, calls } = auto();
+    app.setText(TEXT, { immediate: true });
+    expect(calls).toHaveLength(1);
+    expect(calls[0]!.params.text).toBe(TEXT);
+    expect(app.analysisStatus).toBe("running");
+  });
+
+  it("attend la fin de la saisie : une seule analyse après plusieurs frappes", () => {
+    const { app, calls } = auto();
+    app.setText("Contact");
+    vi.advanceTimersByTime(500);
+    app.setText("Contact :");
+    vi.advanceTimersByTime(500);
+    expect(calls).toHaveLength(0);
+    expect(app.analysisScheduled).toBe(true);
+    vi.advanceTimersByTime(300);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]!.params.text).toBe("Contact :");
+    expect(app.analysisScheduled).toBe(false);
+  });
+
+  it("une frappe annule l'analyse en cours", () => {
+    const { app, calls } = auto();
+    app.setText(TEXT, { immediate: true });
+    app.setText(TEXT + " Suite");
+    expect(calls[0]!.cancelled).toBe(true);
+    vi.advanceTimersByTime(800);
+    expect(calls).toHaveLength(2);
+  });
+
+  it("ne lance rien pour un texte vide et annule l'attente", () => {
+    const { app, calls } = auto();
+    app.setText("Contact");
+    app.setText("   ");
+    vi.advanceTimersByTime(2000);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("relance après un réglage en gardant les corrections", async () => {
+    const { app, calls } = auto();
+    app.setText(TEXT, { immediate: true });
+    calls[0]!.resolve(RESULT);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(app.analysisStatus).toBe("done");
+    app.removeDetection("d1");
+    app.setLanguage("fr");
+    expect(app.analysisStale).toBe(true);
+    vi.advanceTimersByTime(800);
+    expect(calls).toHaveLength(2);
+    calls[1]!.resolve(RESULT);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(app.analysisStale).toBe(false);
+    expect(app.corrections.removedIds).toEqual(["d1"]);
+  });
+
+  it("sans délai configuré, rien n'est lancé automatiquement", () => {
+    vi.useFakeTimers();
+    const { service, calls } = fakeService();
+    const app = new AppState({ service });
+    app.setText(TEXT, { immediate: true });
+    vi.advanceTimersByTime(2000);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("transfère les corrections vers les nouveaux identifiants et retire la validation", async () => {
+    const { app, calls } = auto();
+    app.setText(TEXT, { immediate: true });
+    calls[0]!.resolve(RESULT);
+    await Promise.resolve();
+    app.removeDetection("d1");
+    app.setDetectionType("d2", "PERSON");
+    app.setDetectionOperator("d2", "categorize");
+    app.refreshTransform();
+    expect(app.validate()).toBe(true);
+    app.selectDetection("d2");
+    app.setLanguage("fr");
+    await vi.advanceTimersByTimeAsync(800);
+    calls[1]!.resolve({
+      ...RESULT,
+      detections: [det("d2", 10, 31), det("d1", 35, 57)],
+    });
+    await Promise.resolve();
+    expect(app.corrections.removedIds).toEqual(["d2"]);
+    expect(app.corrections.typeOverrides).toEqual({ d1: "PERSON" });
+    expect(app.corrections.operatorOverrides).toEqual({ d1: "categorize" });
+    expect(app.selectedDetectionId).toBeNull();
+    expect(app.validated).toBe(false);
+    expect(app.canCopy).toBe(false);
+    app.dispose();
+  });
+
+  it("ne laisse pas une URL en clair après retrait d'un courriel et désactivation de sa règle", async () => {
+    const registry = loadBundledRegistry();
+    const service: AnalysisService = {
+      start(params) {
+        const rules = registry
+          .activeRules()
+          .filter((r) => params.activeRuleIds.includes(r.globalId));
+        return {
+          result: createAnalyzer(rules).analyze(params.text, { minScore: params.minScore }),
+          cancel() {},
+        };
+      },
+      dispose() {},
+    };
+    const app = new AppState({ registry, service, autoAnalysisDelayMs: 0 });
+    app.setText("Courriel : test@example.org ; site : https://example.org");
+    await app.analyze();
+    const email = app.analysis!.detections.find((d) => d.entityType === "EMAIL")!;
+    expect(email).toBeDefined();
+    app.removeDetection(email.id);
+    app.setRuleEnabled(email.recognizerId, false);
+    await vi.waitFor(() => expect(app.analysisStatus).toBe("done"));
+    expect(app.corrections.removedIds).toEqual([]);
+    expect(app.detections.some((d) => d.entityType === "URL")).toBe(true);
+    expect(app.refreshTransform()!.text).not.toContain("https://example.org");
+    app.dispose();
   });
 });

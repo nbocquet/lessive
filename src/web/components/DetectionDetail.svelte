@@ -298,9 +298,7 @@
     font-weight: 700;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .swatch {
-      --c: hsl(var(--h) 80% 68%);
-    }
+  :global(:root[data-theme="dark"]) .swatch {
+    --c: hsl(var(--h) 80% 68%);
   }
 </style>
