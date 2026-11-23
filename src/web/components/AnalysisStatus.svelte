@@ -1,16 +1,12 @@
-<!-- État de l'analyse : progression, nombre de détections, avertissements, erreur (T5.1). -->
+<!--
+  État de l'analyse dans la barre d'outils (#38) : progression, réglages changés, erreur. Le nombre de
+  passages est dans la colonne « À vérifier », les avertissements avec le résultat.
+-->
 <script lang="ts">
   import { app } from "../state.svelte.ts";
 
   const stageLabel = $derived(
     app.analysisStage === "ner" ? "Chargement de la reconnaissance des noms" : "Analyse en cours",
-  );
-  const countLabel = $derived(
-    app.detectionCount === 0
-      ? "Aucune donnée personnelle repérée. Cela ne signifie pas que le texte n’en contient pas."
-      : app.detectionCount === 1
-        ? "1 passage à vérifier."
-        : `${app.detectionCount} passages à vérifier.`,
   );
 </script>
 
@@ -21,27 +17,13 @@
       <progress max="1" value={app.progress && app.progress > 0 ? app.progress : undefined}
       ></progress>
     </label>
-  {:else if app.analysisStatus === "done" && app.analysis}
-    <p><strong>{countLabel}</strong></p>
-    {#if app.analysisStale}
-      <p class="notice">
-        Les réglages ont changé depuis cette analyse : relancez l'analyse pour les appliquer.
-      </p>
-    {/if}
+  {:else if app.analysisStale}
+    <p class="hint">Les réglages ont changé : l'analyse va être mise à jour.</p>
   {/if}
 </div>
 
 {#if app.analysisStatus === "error" && app.errorMessage}
   <p class="notice error" role="alert">{app.errorMessage}</p>
-{/if}
-
-<!-- L'absence de modèle est déjà annoncée en tête d'écran (ModelStatus) : seuls les avis nouveaux. -->
-{#if app.analysisStatus === "done" && app.newWarnings.length > 0}
-  <ul class="warnings" aria-label="Avertissements de l'analyse">
-    {#each app.newWarnings as warning (warning)}
-      <li class="notice">{warning}</li>
-    {/each}
-  </ul>
 {/if}
 
 <style>
@@ -50,16 +32,6 @@
     width: 100%;
     max-width: 24rem;
     margin-top: 0.25rem;
-  }
-
-  .warnings {
-    margin: 0.5rem 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .warnings li + li {
-    margin-top: 0.4rem;
   }
 
   p {

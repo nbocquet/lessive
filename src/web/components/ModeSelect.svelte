@@ -3,16 +3,19 @@
   import type { Mode } from "../../core/index.ts";
   import { app } from "../state.svelte.ts";
 
+  /** Version barre d'outils (#38) : une liste déroulante, l'aide en infobulle. */
+  let { compact = false }: { compact?: boolean } = $props();
+
   const modes: { id: Mode; label: string; help: string }[] = [
     {
       id: "masking",
       label: "Masquage",
-      help: "Remplacement par des astérisques de même longueur : *****. La catégorie ([PERSONNE]) peut être choisie à l'étape Vérification. Les valeurs ne peuvent pas être restituées.",
+      help: "Remplacement par des astérisques de même longueur : *****. La catégorie ([PERSONNE]) peut être choisie dans le détail des corrections. Les valeurs ne peuvent pas être restituées.",
     },
     {
       id: "pseudonymization",
       label: "Pseudonymisation",
-      help: "Remplacement par un pseudonyme stable : PERSONNE_001. Les valeurs peuvent être restituées dans la réponse du LLM.",
+      help: "Remplacement par un pseudonyme stable : PERSONNE_001. Les valeurs peuvent être restituées dans la réponse de l'assistant.",
     },
   ];
 
@@ -25,27 +28,42 @@
       .map((t) => ({ text: t, token: TOKEN.test(t) }));
 </script>
 
-<fieldset class="modes">
-  <legend>Mode de traitement</legend>
-  {#each modes as m (m.id)}
-    <div class="option">
-      <label>
-        <input
-          type="radio"
-          name="mode"
-          value={m.id}
-          checked={app.mode === m.id}
-          onchange={() => app.setMode(m.id)}
-        />
-        <strong>{m.label}</strong>
-      </label>
-      <p class="hint">
-        {#each parts(m.help) as part, i (i)}{#if part.token}<span class="token">{part.text}</span
-            >{:else}{part.text}{/if}{/each}
-      </p>
-    </div>
-  {/each}
-</fieldset>
+{#if compact}
+  <label class="compact-mode">
+    <span>Traitement</span>
+    <select
+      value={app.mode}
+      title={modes.find((m) => m.id === app.mode)?.help}
+      onchange={(e) => app.setMode(e.currentTarget.value as Mode)}
+    >
+      {#each modes as m (m.id)}
+        <option value={m.id}>{m.label}</option>
+      {/each}
+    </select>
+  </label>
+{:else}
+  <fieldset class="modes">
+    <legend>Mode de traitement</legend>
+    {#each modes as m (m.id)}
+      <div class="option">
+        <label>
+          <input
+            type="radio"
+            name="mode"
+            value={m.id}
+            checked={app.mode === m.id}
+            onchange={() => app.setMode(m.id)}
+          />
+          <strong>{m.label}</strong>
+        </label>
+        <p class="hint">
+          {#each parts(m.help) as part, i (i)}{#if part.token}<span class="token">{part.text}</span
+              >{:else}{part.text}{/if}{/each}
+        </p>
+      </div>
+    {/each}
+  </fieldset>
+{/if}
 
 <style>
   .modes {
@@ -77,6 +95,19 @@
     color: var(--muted);
     font-size: var(--text-small);
     line-height: 1.5;
+  }
+
+  .compact-mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-small);
+    font-weight: 600;
+  }
+
+  .compact-mode select {
+    width: auto;
+    font-weight: 400;
   }
 
   input[type="radio"] {

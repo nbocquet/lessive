@@ -15,6 +15,10 @@
  * langue, seuil, NER, règles, corrections, session). Chaque transition ci-dessous
  * dit si elle remet la validation à faux.
  *
+ * Analyse automatique (#38) : avec `autoAnalysisDelayMs`, un collage lance l'analyse tout de
+ * suite, une frappe la lance après une pause, et un réglage qui la rend obsolète la relance en
+ * gardant les corrections. Une analyse dépassée est annulée.
+ *
  * Convention d'identifiants : les détections issues du moteur sont `d1`, `d2`…, les
  * ajouts manuels `m1`, `m2`… (dans l'ordre d'ajout). Les corrections par détection
  * (suppressions, types, opérateurs) sont indexées par ces identifiants.
@@ -25,8 +29,10 @@ import {
   MAX_INPUT_LENGTH,
   TransformError,
   createSession,
+  reidentify,
   transform,
   type AnalysisResult,
+  type ReidentifyResult,
   type Detection,
   type EntityType,
   type Language,
@@ -64,13 +70,13 @@ import {
 } from "./cleaning-categories.ts";
 
 export type LanguageChoice = Language | "auto";
-export type ScreenId = "text" | "review" | "result" | "reidentify";
 export type AnalysisStatus = "idle" | "running" | "done" | "error";
 /** État du modèle NER chargé par l'utilisateur (ADR 0003). */
 export type ModelStatus = "absent" | "stored" | "loading" | "ready" | "error";
 
-export const SCREEN_ORDER: readonly ScreenId[] = ["text", "review", "result", "reidentify"];
 export const DEFAULT_MIN_SCORE = 0.5;
+/** Pause de saisie avant l'analyse automatique (ms). */
+export const AUTO_ANALYSIS_DELAY_MS = 800;
 
 /** Intervalle choisi à la main (indices UTF-16 sur le texte original, `end` exclu). */
 export interface ManualSpan {
@@ -102,6 +108,16 @@ export interface AppStateOptions {
   service?: AnalysisService;
   /** Registre des packs ; par défaut les packs livrés. */
   registry?: PackRegistry;
+  /**
+   * Pause de saisie avant l'analyse automatique (ms) ; `null` ou absent : pas d'analyse
+   * automatique, seul `analyze()` la lance.
+   */
+  autoAnalysisDelayMs?: number | null;
+}
+
+export interface SetTextOptions {
+  /** Collage ou import : analyse tout de suite au lieu d'attendre la fin de la saisie. */
+  immediate?: boolean;
 }
 
 const MANUAL_ID = /^m(\d+)$/;
@@ -135,9 +151,6 @@ export class AppState {
   /** Demande la reconnaissance de noms (NER). Sans effet tant que `ner-provider.ts` n'a pas de moteur. */
   ner = $state(false);
 
-  // ---- Navigation ----
-  screen = $state<ScreenId>("text");
-
   // ---- Sélection partagée entre le texte surligné, le détail et les corrections (T5.2, T5.3) ----
   /** Détection sélectionnée (identifiant), ou `null`. Utiliser `selectDetection`. */
   selectedDetectionId = $state<string | null>(null);
@@ -154,6 +167,8 @@ export class AppState {
   errorMessage = $state<string | null>(null);
   /** Vrai si un réglage ou une correction a changé depuis le calcul de `analysis`. */
   analysisStale = $state(false);
+  /** Vrai si une analyse automatique attend la fin de la pause de saisie. */
+  analysisScheduled = $state(false);
 
   // ---- Corrections manuelles ----
   corrections = $state.raw<Corrections>(EMPTY_CORRECTIONS);
@@ -178,9 +193,13 @@ export class AppState {
   /** Session de pseudonymisation, en mémoire seulement ; créée à la première pseudonymisation. */
   session = $state.raw<Session | null>(null);
 
-  // ---- Réponse du LLM (logique en T5.6) ----
+  // ---- Réponse du LLM (T5.6, en direct depuis #38) ----
   llmResponse = $state("");
-  reidentified = $state<string | null>(null);
+  /**
+   * Compteur de révision de la session : les méthodes de la session la modifient en place,
+   * ce compteur signale aux dérivés (réidentification) qu'elle a changé.
+   */
+  sessionRevision = $state(0);
 
   // ---- Dérivés ----
   readonly registry: PackRegistry;
@@ -235,7 +254,29 @@ export class AppState {
   /** La copie n'est possible que si le résultat est validé et à jour. */
   canCopy = $derived(this.validated && this.transformed !== null && !this.analysisStale);
 
+  /** Vrai si l'utilisateur a corrigé l'analyse : le texte est alors figé (#38). */
+  hasCorrections = $derived(
+    this.corrections.added.length > 0 ||
+      this.corrections.removedIds.length > 0 ||
+      Object.keys(this.corrections.typeOverrides).length > 0 ||
+      Object.keys(this.corrections.operatorOverrides).length > 0,
+  );
+
+  /**
+   * Réponse du LLM réidentifiée, recalculée à chaque saisie et à chaque changement de la session.
+   * `null` sans réponse ou sans correspondance. Reste en mémoire, jamais stockée (R5).
+   */
+  reidentification = $derived.by<ReidentifyResult | null>(() => {
+    void this.sessionRevision;
+    const session = this.session;
+    if (!session || this.llmResponse.trim().length === 0) return null;
+    if (session.entities().length === 0) return null;
+    return reidentify(this.llmResponse, session);
+  });
+
   readonly #given: AnalysisService | undefined;
+  readonly #autoDelay: number | null;
+  #autoTimer: ReturnType<typeof setTimeout> | undefined;
   #service: AnalysisService | undefined;
   #job: AnalysisJob | null = null;
   #runId = 0;
@@ -243,26 +284,14 @@ export class AppState {
   constructor(options: AppStateOptions = {}) {
     this.registry = options.registry ?? loadBundledRegistry();
     this.#given = options.service;
+    this.#autoDelay = options.autoAnalysisDelayMs ?? null;
     // Pas de détection sous Vitest ni sans navigateur : aucun stockage à interroger.
     if (typeof caches !== "undefined" && import.meta.env.MODE !== "test") void this.refreshModel();
   }
 
   // ======================================================================
-  // Navigation
+  // Sélection
   // ======================================================================
-
-  /** Vrai si l'écran est accessible : « vérification » et « résultat » exigent une analyse. */
-  canGoTo(screen: ScreenId): boolean {
-    if (screen === "review" || screen === "result") return this.analysis !== null;
-    return true;
-  }
-
-  /** Change d'écran si possible ; renvoie `false` sinon. Ne modifie pas la validation. */
-  goTo(screen: ScreenId): boolean {
-    if (!this.canGoTo(screen)) return false;
-    this.screen = screen;
-    return true;
-  }
 
   /** Sélectionne une détection (`null` : aucune). N'affecte ni la validation ni le résultat. */
   selectDetection(id: string | null): void {
@@ -280,11 +309,13 @@ export class AppState {
 
   /**
    * Remplace le texte source. Repart de zéro : annule l'analyse en cours, efface
-   * résultat, corrections, texte transformé et validation, et revient à l'écran 1
-   * si l'écran courant exige une analyse. Conserve réglages, session et réponse du LLM.
+   * résultat, corrections, texte transformé et validation. Conserve réglages, session
+   * et réponse du LLM. Avec l'analyse automatique, relance l'analyse tout de suite
+   * (`immediate`) ou après la pause de saisie.
    */
-  setText(text: string): void {
+  setText(text: string, options: SetTextOptions = {}): void {
     if (text === this.text) return;
+    this.#cancelScheduled();
     this.#abortRun();
     this.text = text;
     this.analysis = null;
@@ -295,7 +326,20 @@ export class AppState {
     this.selectedDetectionId = null;
     this.textSelection = null;
     this.#invalidateOutput();
-    if (this.screen === "review" || this.screen === "result") this.screen = "text";
+    this.#autoAnalyze(options.immediate ? 0 : this.#autoDelay, false);
+  }
+
+  /**
+   * Abandonne les corrections et relance l'analyse du même texte (« Modifier le texte »).
+   * Le texte redevient modifiable.
+   */
+  discardCorrections(): void {
+    if (!this.hasCorrections) return;
+    this.corrections = EMPTY_CORRECTIONS;
+    this.selectedDetectionId = null;
+    this.textSelection = null;
+    this.#invalidateOutput();
+    if (this.analysis || this.analysisStatus === "running") void this.#run(false);
   }
 
   /** Change le mode. Le texte transformé et la validation sont effacés ; en masquage, les choix « pseudonymize » sont retirés. */
@@ -411,17 +455,46 @@ export class AppState {
    * (texte vide ou trop long) et signale alors l'erreur.
    */
   async analyze(): Promise<void> {
+    this.#cancelScheduled();
     await this.#run(false);
+  }
+
+  /**
+   * Analyse automatique : rien sans `autoAnalysisDelayMs`, ni pour un texte vide ou trop long.
+   * `delay` à 0 : tout de suite ; `null` : rien.
+   */
+  #autoAnalyze(delay: number | null, keepIdCorrections: boolean): void {
+    this.#cancelScheduled();
+    if (this.#autoDelay === null || delay === null) return;
+    if (this.text.trim().length === 0 || this.text.length > MAX_INPUT_LENGTH) return;
+    if (delay <= 0) {
+      void this.#run(keepIdCorrections);
+      return;
+    }
+    this.analysisScheduled = true;
+    this.#autoTimer = setTimeout(() => {
+      this.#autoTimer = undefined;
+      this.analysisScheduled = false;
+      void this.#run(keepIdCorrections);
+    }, delay);
+  }
+
+  #cancelScheduled(): void {
+    if (this.#autoTimer !== undefined) clearTimeout(this.#autoTimer);
+    this.#autoTimer = undefined;
+    this.analysisScheduled = false;
   }
 
   /** Annule l'analyse en cours ; revient à `done` si un résultat existe, sinon `idle`. */
   cancelAnalysis(): void {
+    this.#cancelScheduled();
     if (this.analysisStatus !== "running") return;
     this.#abortRun();
     this.analysisStatus = this.analysis ? "done" : "idle";
   }
 
   async #run(keepIdCorrections: boolean): Promise<void> {
+    this.#cancelScheduled();
     if (this.text.length > MAX_INPUT_LENGTH) {
       this.analysisStatus = "error";
       this.errorMessage = `Texte trop long : maximum ${MAX_INPUT_LENGTH} caractères.`;
@@ -502,14 +575,20 @@ export class AppState {
     this.analysisStage = null;
   }
 
-  /** Un réglage qui influe sur l'analyse a changé : résultat obsolète, sortie invalidée, calcul en cours abandonné. */
-  #analysisInputsChanged(): void {
-    if (this.analysisStatus === "running") {
+  /**
+   * Un réglage qui influe sur l'analyse a changé : résultat obsolète, sortie invalidée, calcul en
+   * cours abandonné. Avec l'analyse automatique, relance après la pause en gardant les corrections ;
+   * `rerun` à faux quand l'appelant relance lui-même.
+   */
+  #analysisInputsChanged(rerun = true): void {
+    const wasRunning = this.analysisStatus === "running";
+    if (wasRunning) {
       this.#abortRun();
       this.analysisStatus = this.analysis ? "done" : "idle";
     }
     if (this.analysis) this.analysisStale = true;
     this.#invalidateOutput();
+    if (rerun && (this.analysis || wasRunning)) this.#autoAnalyze(this.#autoDelay, true);
   }
 
   #manualDetections(): Detection[] {
@@ -557,8 +636,9 @@ export class AppState {
     }
     if (added.length === this.corrections.added.length) return;
     this.corrections = { ...this.corrections, added };
-    this.#analysisInputsChanged();
-    if (this.analysis) void this.#run(true);
+    const hadAnalysis = this.analysis !== null;
+    this.#analysisInputsChanged(false);
+    if (hadAnalysis) void this.#run(true);
   }
 
   /**
@@ -580,7 +660,7 @@ export class AppState {
         operatorOverrides: rekeyAfterManualRemoval(this.corrections.operatorOverrides, rank),
         removedIds: this.corrections.removedIds.filter((x) => x !== id),
       };
-      this.#analysisInputsChanged();
+      this.#analysisInputsChanged(false);
       void this.#run(true);
       return;
     }
@@ -655,6 +735,8 @@ export class AppState {
       }
       this.transformed = transform(this.text, this.detections, this.plan, session);
       this.transformError = null;
+      // La transformation alimente la session en place : la réidentification doit suivre.
+      if (session) this.sessionRevision++;
     } catch (err) {
       this.transformed = null;
       // Les TransformError sont sans valeur originale par contrat (R5).
@@ -684,12 +766,14 @@ export class AppState {
    */
   newSession(): void {
     this.session = createSession();
+    this.sessionRevision++;
     this.#invalidateOutput();
   }
 
   /** Remplace la session (import chiffré, T5.5). Efface texte transformé et validation. */
   replaceSession(session: Session): void {
     this.session = session;
+    this.sessionRevision++;
     this.#invalidateOutput();
   }
 
@@ -697,23 +781,18 @@ export class AppState {
   // Réponse du LLM (T5.6)
   // ======================================================================
 
-  /** Enregistre la réponse collée et efface la réidentification précédente. N'affecte pas la validation. */
+  /** Enregistre la réponse collée ; `reidentification` suit. N'affecte pas la validation. */
   setLlmResponse(text: string): void {
     this.llmResponse = text;
-    this.reidentified = null;
-  }
-
-  /** Enregistre le texte réidentifié (calculé par T5.6) ; `null` pour l'effacer. */
-  setReidentified(text: string | null): void {
-    this.reidentified = text;
   }
 
   // ======================================================================
   // Remise à zéro
   // ======================================================================
 
-  /** « Nouveau document » : efface texte, analyse, corrections, sortie et réponse du LLM, revient à l'écran 1. Conserve réglages et session. */
+  /** « Nouveau document » : efface texte, analyse, corrections, sortie et réponse du LLM. Conserve réglages et session. */
   reset(): void {
+    this.#cancelScheduled();
     this.#abortRun();
     this.text = "";
     this.analysis = null;
@@ -725,13 +804,12 @@ export class AppState {
     this.selectedDetectionId = null;
     this.textSelection = null;
     this.llmResponse = "";
-    this.reidentified = null;
-    this.screen = "text";
     this.#invalidateOutput();
   }
 
   /** Libère le worker. */
   dispose(): void {
+    this.#cancelScheduled();
     this.#abortRun();
     this.#service?.dispose();
     this.#service = undefined;
@@ -762,7 +840,7 @@ export class AppState {
   devModelAvailable = $state(false);
 
   /**
-   * Vrai quand l'encadré d'état du modèle (écran « Texte ») annonce déjà que les noms ne seront pas
+   * Vrai quand l'encadré d'état du modèle (en tête de page) annonce déjà que les noms ne seront pas
    * reconnus : même condition que ModelStatus, hors installation et chargement en cours.
    */
   modelLimitShown = $derived.by(
@@ -773,9 +851,9 @@ export class AppState {
   );
 
   /**
-   * Avertissements d'analyse que l'écran « Texte » n'affiche pas déjà : l'absence de NER y est
-   * annoncée par l'état du modèle, la répéter sous les boutons doublait le message et empêchait
-   * le passage direct à la vérification. L'écran « Résultat » garde la liste complète.
+   * Avertissements d'analyse que l'encadré du modèle n'affiche pas déjà : l'absence de NER y est
+   * annoncée par l'état du modèle, la répéter doublait le message. La colonne « Texte à copier »
+   * garde la liste complète.
    */
   newWarnings = $derived.by(() =>
     this.modelLimitShown ? this.warnings.filter((w) => w !== NER_INACTIVE_WARNING) : this.warnings,
@@ -812,6 +890,11 @@ export class AppState {
     if (import.meta.env.DEV && import.meta.env.MODE !== "test") {
       const { probeDevModel } = await import("./dev-model.ts");
       this.devModelAvailable = await probeDevModel(this.#appRoot());
+      // Développement : le modèle du dépôt ne vit qu'en mémoire, il serait perdu à chaque
+      // rechargement. Sans autre modèle conservé, il est repris d'office.
+      if (this.devModelAvailable && this.modelStatus === "absent" && !this.modelBusy) {
+        await this.useDevModel();
+      }
     }
   }
 
@@ -937,4 +1020,6 @@ export class AppState {
 }
 
 /** Instance unique utilisée par l'interface. Les tests créent leur propre `AppState`. */
-export const app = new AppState();
+export const app = new AppState({
+  autoAnalysisDelayMs: import.meta.env.MODE === "test" ? null : AUTO_ANALYSIS_DELAY_MS,
+});

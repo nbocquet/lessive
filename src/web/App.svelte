@@ -1,21 +1,20 @@
 <!--
-  Structure de l'application : identité, navigation du parcours, espace de travail et réglages avancés.
+  Structure de l'application : identité, parcours sur une page (#38) et réglages avancés.
 -->
 <script lang="ts">
   import { ENGINE_VERSION } from "../core/index.ts";
   import LimitsBanner from "./components/LimitsBanner.svelte";
   import OfflineBadge from "./components/OfflineBadge.svelte";
-  import StepNav from "./components/StepNav.svelte";
-  import ReidentifyScreen from "./screens/ReidentifyScreen.svelte";
-  import ResultScreen from "./screens/ResultScreen.svelte";
-  import ReviewScreen from "./screens/ReviewScreen.svelte";
   import SettingsScreen from "./screens/SettingsScreen.svelte";
-  import TextScreen from "./screens/TextScreen.svelte";
-  import { app } from "./state.svelte.ts";
+  import Workspace from "./screens/Workspace.svelte";
 
-  let main: HTMLElement | undefined = $state();
   let settings: HTMLDetailsElement | undefined = $state();
-  let previousScreen = app.screen;
+  /** Thème clair par défaut ; le choix sombre vaut pour la visite, il n'est pas enregistré. */
+  let dark = $state(false);
+
+  $effect(() => {
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  });
 
   function openModelSettings(): void {
     if (!settings) return;
@@ -24,39 +23,20 @@
     model?.focus();
     model?.scrollIntoView({ block: "start" });
   }
-
-  // Après un changement d'écran, le focus passe au contenu (lecteurs d'écran, clavier).
-  $effect(() => {
-    const current = app.screen;
-    if (current !== previousScreen) {
-      previousScreen = current;
-      main?.focus({ preventScroll: true });
-      main?.scrollIntoView({ block: "start" });
-    }
-  });
 </script>
 
 <a class="skip-link" href="#contenu">Aller au contenu</a>
-<LimitsBanner />
 
 <div class="page">
   <header>
-    <h1><img src="./lessive-mark.svg" width="50" height="60" alt="" />Lessive</h1>
-    <p>Traitement local : votre texte reste dans ce navigateur.</p>
+    <h1><img src="./lessive-mark.svg" width="20" height="24" alt="" />Lessive</h1>
+    <p>Traitement local, dans ce navigateur.</p>
+    <!-- Avertissement permanent (R6) : dans l'en-tête, toujours visible (#38). -->
+    <LimitsBanner />
   </header>
 
-  <StepNav />
-
-  <main id="contenu" tabindex="-1" bind:this={main}>
-    {#if app.screen === "text"}
-      <TextScreen onConfigureModel={openModelSettings} />
-    {:else if app.screen === "review"}
-      <ReviewScreen />
-    {:else if app.screen === "result"}
-      <ResultScreen />
-    {:else}
-      <ReidentifyScreen />
-    {/if}
+  <main id="contenu" tabindex="-1">
+    <Workspace onConfigureModel={openModelSettings} />
   </main>
 
   <details class="settings" bind:this={settings}>
@@ -82,7 +62,10 @@
         target="_blank"
         rel="noopener noreferrer">Limites</a
       >
-      · Licence Apache 2.0
+      · Licence Apache 2.0 ·
+      <button type="button" class="theme" aria-pressed={dark} onclick={() => (dark = !dark)}
+        >Thème sombre</button
+      >
     </span>
     <OfflineBadge />
   </footer>
@@ -92,29 +75,26 @@
   .page {
     max-width: 76rem;
     margin: 0 auto;
-    padding: 1.25rem clamp(1rem, 3vw, 2rem);
+    padding: 0.75rem clamp(1rem, 3vw, 2rem);
   }
 
-  /*
-   * La marque domine les titres d'étape : logo et nom au corps --text-brand, au-dessus de
-   * --text-heading, l'accroche centrée sur la marque.
-   */
+  /* En-tête réduit au minimum (#38) : la page commence par le travail. */
   header {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.25rem 1.75rem;
-    margin-bottom: 1.25rem;
+    gap: 0.25rem 1rem;
+    margin-bottom: 0.5rem;
   }
 
   h1 {
     display: inline-flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.4rem;
     margin: 0;
-    font-size: var(--text-brand);
+    font-size: var(--text-subheading);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     line-height: 1;
   }
 
@@ -126,11 +106,11 @@
   header p {
     margin: 0;
     color: var(--muted);
-    font-size: var(--text-small);
+    font-size: var(--text-meta);
   }
 
   main {
-    margin: 1.5rem 0;
+    margin: 0.5rem 0 1.5rem;
   }
 
   main:focus {
@@ -154,6 +134,20 @@
     margin-left: 0.75rem;
     font-weight: 400;
     font-size: var(--text-meta);
+  }
+
+  .theme {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .theme[aria-pressed="true"]::before {
+    content: "✓ ";
   }
 
   footer {

@@ -1,29 +1,22 @@
 <!--
-  T5.4 — Aperçu et sortie : vue avant/après, avertissements, validation obligatoire avant copie,
-  copie (avec ou sans la consigne pour l'IA), téléchargement. Le texte transformé est calculé ici
-  (app.refreshTransform) puis effacé par l'état à toute modification.
+  Colonne « Texte à copier » (T5.4, page unique depuis #38) : aperçu du texte transformé,
+  avertissements, validation obligatoire avant copie, copie (avec ou sans la consigne pour l'IA),
+  téléchargement. Le texte transformé est calculé ici (app.refreshTransform) puis effacé par l'état
+  à toute modification ; il se recalcule aussitôt.
 -->
 <script lang="ts">
-  import CleaningCategories from "./CleaningCategories.svelte";
   import { untrack } from "svelte";
-  import { CLEANING_CATEGORIES } from "../cleaning-categories.ts";
   import { app } from "../state.svelte.ts";
-  import ResultBeforeAfter from "./ResultBeforeAfter.svelte";
   import ResultCopy from "./ResultCopy.svelte";
   import type { NoticeLanguage } from "./ResultLogic.ts";
   import ResultNotice from "./ResultNotice.svelte";
+  import ResultPreview from "./ResultPreview.svelte";
   import ResultWarnings from "./ResultWarnings.svelte";
 
   // Langue de la consigne : français par défaut, anglais en option. Purement visuel.
   let language = $state<NoticeLanguage>("fr");
 
-  const categoriesSummary = $derived.by(() => {
-    const total = CLEANING_CATEGORIES.length;
-    const count = app.cleaningCategories.length;
-    if (count === total) return `toutes (${total})`;
-    if (count === 0) return "aucune : le texte reste inchangé";
-    return `${count} sur ${total}`;
-  });
+  const count = $derived(app.transformed?.applied.length ?? 0);
 
   // Calcule le texte transformé à l'affichage et après toute invalidation (corrections, session…).
   $effect(() => {
@@ -41,19 +34,25 @@
 </script>
 
 <div class="result">
-  <!-- Repliées par défaut : le résumé dit l'état, le parcours principal reste lire → valider → copier. -->
-  <details class="categories">
-    <summary>
-      <span class="summary-label">Catégories remplacées</span>
-      <span class="hint">{categoriesSummary}</span>
-    </summary>
-    <CleaningCategories />
-  </details>
-  {#if app.analysisStale}
-    <p class="notice">
-      Les réglages ont changé depuis l'analyse : relancez-la (écran « Texte ») pour obtenir un
-      résultat à jour.
+  <div class="pane-title">
+    <h3 id="h-result">
+      <span class="step" aria-hidden="true">3</span><span class="visually-hidden"
+        >Étape 3 :
+      </span>Copiez pour l'IA
+    </h3>
+    {#if app.transformed}
+      <span class="hint">{count === 1 ? "1 remplacement" : `${count} remplacements`}</span>
+    {/if}
+  </div>
+
+  {#if !app.analysis}
+    <p class="hint empty">
+      {app.analysisStatus === "running" || app.analysisScheduled
+        ? "Analyse en cours…"
+        : "Le résultat apparaîtra ici."}
     </p>
+  {:else if app.analysisStale || app.analysisStatus === "running"}
+    <p class="hint" role="status">Mise à jour de l'analyse…</p>
   {:else if app.transformError}
     <p class="notice error" role="alert">
       {app.transformError}
@@ -63,38 +62,41 @@
     <p role="status">Calcul du résultat…</p>
   {/if}
 
-  {#if app.transformed}
-    <ResultWarnings />
-    <ResultBeforeAfter original={app.text} result={app.transformed} />
-    <ResultCopy {language} />
-    {#if app.mode === "pseudonymization"}
-      <ResultNotice bind:language />
-    {/if}
+  {#if app.transformed && !app.analysisStale}
+    <ResultPreview result={app.transformed} />
+    <ResultWarnings part="situational" />
+    <ResultCopy {language}>
+      {#snippet notice()}
+        <ResultNotice bind:language />
+      {/snippet}
+    </ResultCopy>
+    <ResultWarnings part="limits" />
   {/if}
 </div>
 
 <style>
   .result {
     display: grid;
-    gap: 1.5rem;
+    gap: 0.9rem;
+    align-content: start;
+    min-width: 0;
   }
 
-  .categories {
-    border-bottom: 1px solid var(--border-soft);
-    padding-bottom: 0.75rem;
+  .pane-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
   }
 
-  .categories summary {
-    padding: 0.6rem 0 0;
-    cursor: pointer;
+  h3 {
+    margin: 0;
   }
 
-  .categories .summary-label {
-    margin-right: 0.75rem;
-    font-weight: 600;
-  }
-
-  .categories[open] summary {
-    margin-bottom: 0.25rem;
+  .pane-title .hint,
+  .empty,
+  [role="status"] {
+    margin: 0;
+    font-size: var(--text-small);
   }
 </style>

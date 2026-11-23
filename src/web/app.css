@@ -1,6 +1,6 @@
 /* Styles communs de l’interface, sans ressource externe. */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --bg: #ffffff;
   --canvas: #ffffff;
   --surface: #f4f5f6;
@@ -44,30 +44,30 @@
   line-height: 1.5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1b1d21;
-    --canvas: #1b1d21;
-    --surface: #24272c;
-    --text: #e8eaed;
-    --muted: #b0b5be;
-    --border: #7f8792;
-    --border-soft: #3b414a;
-    --accent: #9cbbec;
-    --accent-soft: #26344a;
-    --accent-text: #172438;
-    --focus: #f5b14c;
-    --warn-bg: #302b1c;
-    --warn-border: #aa8d50;
-    --warn-text: #e4d3a8;
-    --danger-bg: #3d1414;
-    --danger-border: #f08080;
-    --danger-text: #fbd0d0;
-    --success: #4ac26b;
-    --token-bg: #11312e;
-    --token-border: #2f8a81;
-    --token-text: #86e2d8;
-  }
+/* Thème clair par défaut (#38) ; le thème sombre se choisit en pied de page, pour la visite. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1b1d21;
+  --canvas: #1b1d21;
+  --surface: #24272c;
+  --text: #e8eaed;
+  --muted: #b0b5be;
+  --border: #7f8792;
+  --border-soft: #3b414a;
+  --accent: #9cbbec;
+  --accent-soft: #26344a;
+  --accent-text: #172438;
+  --focus: #f5b14c;
+  --warn-bg: #302b1c;
+  --warn-border: #aa8d50;
+  --warn-text: #e4d3a8;
+  --danger-bg: #3d1414;
+  --danger-border: #f08080;
+  --danger-text: #fbd0d0;
+  --success: #4ac26b;
+  --token-bg: #11312e;
+  --token-border: #2f8a81;
+  --token-text: #86e2d8;
 }
 
 *,
@@ -233,6 +233,31 @@ fieldset {
 legend {
   padding: 0 0.25rem;
   font-weight: 600;
+}
+
+/* Titres des quatre étapes : même rang visuel, qu'ils soient h2 ou h3 (#38). */
+h2:has(> .step),
+h3:has(> .step) {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Numéro d'étape du parcours sur une page (#38), devant le titre de chaque zone. */
+.step {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6em;
+  height: 1.6em;
+  margin-right: 0.5em;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1;
+  vertical-align: 0.1em;
+  font-variant-numeric: tabular-nums;
 }
 
 .visually-hidden {

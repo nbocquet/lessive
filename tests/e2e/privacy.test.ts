@@ -10,6 +10,7 @@ import {
   DIST,
   INPUT_TEXT,
   NEEDLES,
+  RESULT_PREVIEW,
   SENSITIVE,
   SKIP_MESSAGE,
   Session,
@@ -135,12 +136,15 @@ describe("confidentialité (e2e)", { skip: chrome ? false : SKIP_MESSAGE }, () =
     const body = await s.text("body");
     for (const needle of NEEDLES.slice(0, 7))
       assert.ok(!body.includes(needle), `texte encore affiché : ${needle}`);
-    // Pas de session : vérification et résultat sont inaccessibles (l'écran « Réponse du LLM » reste
-    // ouvert : on peut y importer une table chiffrée, T4.5).
-    const disabled = await s.evaluate<string[]>(
-      `[...document.querySelectorAll("nav button")].filter((b) => b.disabled).map((b) => b.textContent.trim())`,
+    // Pas de session : rien à vérifier ni à copier, aucune réponse réidentifiable.
+    assert.equal(
+      await s.evaluate<boolean>(`Boolean(document.querySelector('${RESULT_PREVIEW}'))`),
+      false,
     );
-    assert.deepEqual(disabled, ["2. Vérification", "3. Résultat"]);
+    assert.equal(
+      await s.evaluate<boolean>(`Boolean(document.querySelector("#verifier .forms"))`),
+      false,
+    );
     const report = await s.inspectStorage(NEEDLES);
     assert.deepEqual(report.hits, []);
     assert.equal(INPUT_TEXT.length > 0, true);

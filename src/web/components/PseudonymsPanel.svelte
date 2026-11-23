@@ -1,12 +1,11 @@
 <!--
-  T5.5 — Table des pseudonymes et gestion de session (mode Pseudonymisation, voir ResultScreen) :
-  liste des entités, fusion, scission, nouvelle session, export et import chiffrés.
+  T5.5 — Gestion de la session de pseudonymisation : nouvelle session, export et import chiffrés.
+  Depuis #38, la liste des entités (séparer, rattacher) est dans la colonne « À vérifier ».
   Tout reste en mémoire (R5), sauf le fichier chiffré que l'utilisateur demande à télécharger.
 -->
 <script lang="ts">
   import { app } from "../state.svelte.ts";
   import { isSessionEmpty } from "./PseudoLogic.ts";
-  import PseudoEntityList from "./PseudoEntityList.svelte";
   import PseudoExport from "./PseudoExport.svelte";
   import PseudoImport from "./PseudoImport.svelte";
   import { confirmFocus } from "./confirm-focus.ts";
@@ -36,13 +35,11 @@
 </script>
 
 <section class="pseudonyms" aria-labelledby="h-pseudonyms">
-  <h3 id="h-pseudonyms">Pseudonymes de la session</h3>
+  <h3 id="h-pseudonyms">Session de pseudonymisation</h3>
   <p class="hint">
     Une même session garde les mêmes pseudonymes d'un document à l'autre. La table ne quitte pas ce
     navigateur, sauf export chiffré demandé ci-dessous.
   </p>
-
-  <PseudoEntityList />
 
   <div class="session">
     <button type="button" bind:this={trigger} onclick={requestNewSession}>Nouvelle session</button>
@@ -56,8 +53,8 @@
       >
         <p id="h-new-session">
           <strong>Démarrer une nouvelle session ?</strong>
-          Les correspondances non exportées seront perdues : un texte déjà envoyé au LLM ne pourra plus
-          être réidentifié.
+          Les correspondances non exportées seront perdues : un texte déjà envoyé à l'assistant ne pourra
+          plus être réidentifié.
         </p>
         <div class="actions">
           <button type="button" class="primary" onclick={startNewSession}>
@@ -84,9 +81,7 @@
   .pseudonyms {
     display: grid;
     gap: 1.25rem;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-soft);
+    margin-top: 0.75rem;
   }
 
   h3 {

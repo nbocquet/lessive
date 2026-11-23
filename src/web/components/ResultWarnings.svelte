@@ -3,13 +3,17 @@
   import { app } from "../state.svelte.ts";
   import { buildWarnings } from "./ResultLogic.ts";
 
+  /** `situational` : avis de cette analyse ; `limits` : limites permanentes, repliées. */
+  let { part = "all" }: { part?: "all" | "situational" | "limits" } = $props();
+
   const items = $derived(
     buildWarnings({
       mode: app.mode,
       detectionCount: app.detectionCount,
       discardedCount: app.discarded.length,
       removedCount: app.corrections.removedIds.length,
-      analysisWarnings: app.warnings,
+      // L'absence de modèle est déjà annoncée en tête de page : pas de doublon (#38).
+      analysisWarnings: app.newWarnings,
       transformErrors: app.transformed?.errors ?? [],
     }),
   );
@@ -23,27 +27,27 @@
   const limits = $derived(items.filter((item) => item.kind === "limit"));
 </script>
 
-<section aria-labelledby="h-warnings">
-  <h3 id="h-warnings">À savoir avant de copier</h3>
-  {#if situational.length > 0}
+<section aria-label="À savoir avant de copier">
+  {#if part !== "limits" && situational.length > 0}
     <ul class="warnings">
       {#each situational as item, i (i)}
         <li class:untreated={item.kind === "untreated"}>{item.text}</li>
       {/each}
     </ul>
   {/if}
-  <ul class="limits hint">
-    {#each limits as item, i (i)}
-      <li>{item.text}</li>
-    {/each}
-  </ul>
+  {#if part !== "situational"}
+    <details class="limits-details">
+      <summary class="hint">Limites à garder en tête</summary>
+      <ul class="limits hint">
+        {#each limits as item, i (i)}
+          <li>{item.text}</li>
+        {/each}
+      </ul>
+    </details>
+  {/if}
 </section>
 
 <style>
-  h3 {
-    margin: 0 0 0.5rem;
-  }
-
   .warnings {
     margin: 0 0 0.75rem;
     padding: 0.6rem 0.9rem 0.6rem 2rem;
@@ -61,8 +65,13 @@
     font-weight: 600;
   }
 
+  .limits-details summary {
+    cursor: pointer;
+    font-size: var(--text-small);
+  }
+
   .limits {
-    margin: 0;
+    margin: 0.35rem 0 0;
     padding-left: 1.25rem;
   }
 </style>

@@ -56,9 +56,7 @@
     text-underline-offset: 3px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .mark {
-      --c: hsl(var(--h) 80% 68%);
-    }
+  :global(:root[data-theme="dark"]) .mark {
+    --c: hsl(var(--h) 80% 68%);
   }
 </style>

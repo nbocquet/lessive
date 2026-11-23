@@ -51,7 +51,7 @@
     done = `Session importée : ${count} ${count === 1 ? "entité" : "entités"}. ${
       app.analysis
         ? "Le résultat va être recalculé avec ces pseudonymes ; relisez-le et validez-le."
-        : "Vous pouvez coller la réponse du LLM."
+        : "Vous pouvez coller la réponse de l'assistant."
     }`;
   }
 

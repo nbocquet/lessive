@@ -3,6 +3,7 @@
   les réglages vivent en mémoire et reviennent aux valeurs par défaut au rechargement.
 -->
 <script lang="ts">
+  import LanguageSelect from "../components/LanguageSelect.svelte";
   import SettingsNer from "../components/SettingsNer.svelte";
   import SettingsPacks from "../components/SettingsPacks.svelte";
   import SettingsThreshold from "../components/SettingsThreshold.svelte";
@@ -19,8 +20,9 @@
 <div class="settings-body">
   <p class="hint">
     Réglages avancés. Les réglages ne sont pas enregistrés : ils sont réinitialisés au rechargement
-    de la page. Après un changement, relancez l'analyse pour l'appliquer.
+    de la page. Un changement relance l'analyse.
   </p>
+  <LanguageSelect />
   <SettingsThreshold />
   <SettingsNer />
   <SettingsPacks />
