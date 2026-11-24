@@ -22,6 +22,7 @@ import { getValidator } from "../validators/index.ts";
 import { mergeAddressParts } from "./merge-addresses.ts";
 import { mergeAdjacentPersons } from "./merge-persons.ts";
 import { collectAmbiguousNames, createPersonNamePropagator } from "./propagate-names.ts";
+import { urlQueryView } from "./url-query-view.ts";
 
 /** Seuil par défaut de l'analyse (aligné sur la résolution des conflits). */
 const DEFAULT_MIN_SCORE = 0.5;
@@ -79,6 +80,23 @@ function appliesTo(r: Recognizer, language: Language | undefined): boolean {
   return language === undefined || r.languages === "any" || r.languages.includes(language);
 }
 
+/** Test d'inclusion en O(log n), sans comparer chaque détection à chaque URL du document. */
+function coveredBy(urls: readonly Detection[], overlap = false): (d: Detection) => boolean {
+  const sorted = [...urls].sort((a, b) => a.start - b.start);
+  const maxEnds: number[] = [];
+  sorted.forEach((d, i) => maxEnds.push(Math.max(d.end, maxEnds[i - 1] ?? 0)));
+  return (d) => {
+    let lo = 0;
+    let hi = sorted.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (overlap ? sorted[mid]!.start < d.end : sorted[mid]!.start <= d.start) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo > 0 && (overlap ? maxEnds[lo - 1]! > d.start : maxEnds[lo - 1]! >= d.end);
+  };
+}
+
 const isHigh = (c: number) => c >= 0xd800 && c <= 0xdbff;
 const isLow = (c: number) => c >= 0xdc00 && c <= 0xdfff;
 
@@ -123,6 +141,9 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
       }
       const { language, ner, signal, manual = [] } = options;
       manual.forEach((d, i) => assertValidManual(text, d, i));
+      const original = text;
+      const view = urlQueryView(original, signal);
+      text = view?.text ?? original;
       let counter = 0;
       const ctx: AnalysisContext = {
         nextId: () => `d${++counter}`,
@@ -157,6 +178,7 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
       const addresses = mergeAddressParts(text, contextual, ctx);
       const manualWithIds = manual.map((d, i) => ({
         ...d,
+        ...(view ? view.viewRange(d) : {}),
         id: `m${i + 1}`,
         source: "manual" as const,
       }));
@@ -170,8 +192,47 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
           ? { ambiguousGivenNames: options.ambiguousGivenNames }
           : {}),
       });
-      const { kept, discarded } = resolveConflicts([...known, ...propagated], { minScore, text });
-
+      const toOriginal = (d: Detection): Detection =>
+        view ? { ...d, ...view.originalRange(d) } : d;
+      let candidates = [...known, ...propagated].map(toOriginal);
+      if (view) {
+        // Le décodage d'un espace ne doit pas découper une URL absolue que sa règle protège
+        // déjà en entier. Les ajouts manuels restent prioritaires, comme dans le texte ordinaire.
+        const urls: Detection[] = [];
+        for (const r of recognizers) {
+          if (signal?.aborted) throw new AbortError();
+          if (appliesTo(r, language) && r.supportedEntities.includes("URL")) {
+            urls.push(...(await r.analyze(original, ctx)));
+          }
+        }
+        const overlapsManual = coveredBy(manual, true);
+        const covered = coveredBy(
+          urls.filter(
+            (u) =>
+              u.score >= minScore &&
+              !overlapsManual(u) &&
+              /\?[^#]*[+%]/.test(original.slice(u.start, u.end)),
+          ),
+        );
+        candidates = candidates.filter((d) => d.source === "manual" || !covered(d));
+        candidates.push(...urls);
+      }
+      const { kept, discarded } = resolveConflicts(candidates, { minScore, text: original });
+      if (view) {
+        // La résolution peut rogner une détection autour d'une adresse protégée. Cette dernière
+        // coupe doit elle aussi respecter les échappements ; une seconde résolution sans rognure
+        // arbitre les éventuels chevauchements créés par l'élargissement d'un triplet entier.
+        const snap = (d: Detection): Detection => ({
+          ...d,
+          ...view.originalRange(view.viewRange(d)),
+        });
+        const safe = resolveConflicts(kept.map(snap), { minScore });
+        return {
+          detections: safe.kept,
+          discarded: [...dropped.map(toOriginal), ...discarded.map(snap), ...safe.discarded],
+          warnings,
+        };
+      }
       return { detections: kept, discarded: [...dropped, ...discarded], warnings };
     },
   };

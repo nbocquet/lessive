@@ -36,6 +36,24 @@ d'union coupé par un seul saut et la coupure en présence de plusieurs sauts. C
 correctif ; les 54 tests du fichier passent après. Cette mesure ne valide pas le comportement de
 CamemBERT dans le navigateur.
 
+## Vérification des paramètres d'URL encodés (#30, #31) — 24 novembre 2026
+
+La vue de reconnaissance de l'analyseur décode maintenant une fois les valeurs de paramètres query,
+avant les règles et le NER, puis reporte leurs positions sur le texte original. Le modèle et son
+post-traitement restent inchangés. `scripts/eval/evaluate.ts --models <modèles locaux> --json <sortie>`
+a été exécuté avant et après ce changement sur les 300 phrases synthétiques, avec
+`Xenova/distilbert-base-multilingual-cased-ner-hrl` q8, CPU Apple M5, Node 26.13.1, sans téléchargement.
+Les objets `counts`, `byCategory` et `examples` des rapports JSON sont strictement identiques dans
+les trois configurations (packs, NER, combinaison), en exact et par recouvrement. Ce corpus général
+ne contient pas les nouveaux formats query : les tests `url-query-view.test.ts`,
+`url-query.packs.test.ts` et le test CLI ciblé couvrent séparément `%20`, `%40`, `%2B`, les séparateurs
+`+`, les accents et emoji, les séquences UTF-8 malformées, les ajouts manuels et la projection des
+sorties d'un faux NER. Cette vérification ne mesure pas le chemin WASM du navigateur.
+
+Une vérification ciblée avec le CLI compilé et `Xenova/camembert-ner` q8 local sur CPU remplace aussi
+en entier `Romain%20Vuilleumier`, `romain.vuilleumier%40example.org` et
+`%2B41%2079%20412%2058%2003` dans une même requête, tout en conservant `ids=12+34+56`.
+
 ## Reproduire
 
 ```bash
