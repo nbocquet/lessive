@@ -10,6 +10,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 - Les mentions homonymes ambiguës peuvent être rattachées séparément dans la vérification : chaque passage affiche son contexte et permet de choisir une personne connue, sans fusionner les autres occurrences ni leurs correspondances (#12). Ce choix vaut pour le document courant, en mémoire seulement.
 
+- Les horodatages nginx/Apache, Apache error, ISO 8601 et syslog sont remplacés en entier (date, heure et fuseau fourni), quelle que soit la langue choisie. Dans le CLI, ils restent intacts sans `--mask-dates` (#29).
+
 - Les corrections par passage restent attachées à la bonne détection lorsqu'un réglage relance l'analyse : un identifiant réattribué ne peut plus laisser un autre passage en clair. Les corrections sans correspondance certaine sont abandonnées et le résultat doit être relu et validé.
 
 - La description du mode Masquage annonce ce qu'il produit réellement : des astérisques de même longueur, la catégorie (`[PERSONNE]`) restant au choix à l'étape « Vérification ».

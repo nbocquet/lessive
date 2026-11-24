@@ -4,11 +4,12 @@
   "engineVersion": "0.1.0",
   "type": "global",
   "name": "Dates",
-  "description": "Dates numériques (JJ.MM.AAAA, JJ/MM/AAAA, JJ-MM-AAAA, AAAA-MM-JJ, JJ.MM.AA) et littérales en français et en anglais.",
+  "description": "Dates numériques et littérales en français et en anglais, plages de dates et horodatages de journaux serveur.",
   "rules": [
     "rules/numeric.json",
     "rules/literal-fr.json",
     "rules/literal-en.json",
-    "rules/ranges.json"
+    "rules/ranges.json",
+    "rules/timestamps.json"
   ]
 }

@@ -33,6 +33,25 @@
           "value": "12.03.2027"
         }
       ]
+    },
+    {
+      "id": "timestamp-log-cross",
+      "language": "fr",
+      "text": "😀 192.0.2.1 [21/Nov/2026:08:14:02 +0100] test@example.org HTTP/1.1 Chrome/131.0 200 5123",
+      "expectAll": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "192.0.2.1"
+        },
+        {
+          "type": "DATE",
+          "value": "21/Nov/2026:08:14:02 +0100"
+        },
+        {
+          "type": "EMAIL",
+          "value": "test@example.org"
+        }
+      ]
     }
   ]
 }
