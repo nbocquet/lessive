@@ -57,6 +57,23 @@ describe("binaire CLI compilé", () => {
     expect((await execute([], "2026-11-19")).stdout).toBe("2026-11-19");
     expect((await execute(["--mask-dates"], "2026-11-19")).stdout).toBe("[DATE]");
   });
+  it("protège les valeurs query encodées sans altérer la structure du journal (#30, #31)", async () => {
+    const input =
+      "😀 GET /c?name=Romain%20Vuilleumier&email=test%40example.org&phone=%2B41+79+412+58+03&ids=12+34+56 HTTP/1.1\r\n";
+    const result = await execute([], input);
+    expect(result.code).toBe(0);
+    expect(result.stdout).toBe(
+      "😀 GET /c?name=[PERSONNE]&email=[EMAIL]&phone=[TELEPHONE]&ids=12+34+56 HTTP/1.1\r\n",
+    );
+  });
+  it("conserve le local-part des courriels avec + dans les paramètres simples et tableaux", async () => {
+    const result = await execute(
+      [],
+      "/r?email=prenom+alias@example.org&email[]=prenom+alias%40example.org&phone=+41+79+412+58+03\n",
+    );
+    expect(result.code).toBe(0);
+    expect(result.stdout).toBe("/r?email=[EMAIL]&email[]=[EMAIL]&phone=[TELEPHONE]\n");
+  });
   it("publie uniquement après succès et conserve le fichier source", async () => {
     const dir = await mkdtemp(join(tmpdir(), "lessive-cli-"));
     try {

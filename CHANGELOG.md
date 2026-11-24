@@ -6,6 +6,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
+- Les valeurs des paramètres d'URL sont reconnues après un décodage UTF-8 unique : les noms (`Romain%20Vuilleumier`), courriels (`%40`) et téléphones (`%2B`, séparateurs `+`) sont remplacés en entier dans le navigateur et le CLI. Les positions restent celles du texte original, les triplets `%XX` ne sont pas coupés et le texte hors des remplacements reste intact (#30, #31).
+
 - Les corrections par passage restent attachées à la bonne détection lorsqu'un réglage relance l'analyse : un identifiant réattribué ne peut plus laisser un autre passage en clair. Les corrections sans correspondance certaine sont abandonnées et le résultat doit être relu et validé.
 
 - La description du mode Masquage annonce ce qu'il produit réellement : des astérisques de même longueur, la catégorie (`[PERSONNE]`) restant au choix à l'étape « Vérification ».
