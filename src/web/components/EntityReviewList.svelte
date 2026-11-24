@@ -6,7 +6,7 @@
 -->
 <script lang="ts">
   import { tick } from "svelte";
-  import { ENTITY_TYPES, type EntityType } from "../../core/index.ts";
+  import { ENTITY_TYPES, normalizeForm, type EntityType } from "../../core/index.ts";
   import { app } from "../state.svelte.ts";
   import CorrectionsToolbar from "./CorrectionsToolbar.svelte";
   import DetectionDetail from "./DetectionDetail.svelte";
@@ -29,10 +29,11 @@
     }),
   );
   const busy = $derived(app.analysisStatus === "running");
-  const people = $derived.by(() => {
+  const sessionEntities = $derived.by(() => {
     void app.sessionRevision;
-    return app.session?.entities().filter((e) => e.entityType === "PERSON") ?? [];
+    return app.session?.entities() ?? [];
   });
+  const people = $derived(sessionEntities.filter((e) => e.entityType === "PERSON"));
 
   /** Contexte local pour distinguer deux occurrences dont la surface est identique. */
   function occurrenceContext(id: string): { before: string; value: string; after: string } {
@@ -123,6 +124,15 @@
   /** La session est modifiée en place : replaceSession invalide la sortie, qui se recalcule. */
   function sessionChanged(): void {
     if (app.session) app.replaceSession(app.session);
+  }
+
+  /** La scission agit sur les formes de la session, pas sur les rattachements locaux. */
+  function canSplit(group: ReviewGroup, form: string): boolean {
+    const entity = sessionEntities.find((e) => e.id === group.sessionEntityId);
+    if (!entity) return false;
+    const key = normalizeForm(form, entity.entityType);
+    const keys = entity.surfaceForms.map((f) => normalizeForm(f, entity.entityType));
+    return keys.includes(key) && keys.some((k) => k !== key);
   }
 
   function split(group: ReviewGroup, form: string): void {
@@ -222,7 +232,7 @@
                     <span class="hint">×{form.detectionIds.length}</span>
                   {/if}
                 </label>
-                {#if group.sessionEntityId && group.forms.length > 1 && !form.detectionIds.some((id) => app.corrections.entityAssignments?.[id])}
+                {#if canSplit(group, form.value)}
                   <button
                     type="button"
                     class="link"

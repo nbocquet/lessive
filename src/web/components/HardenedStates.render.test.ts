@@ -128,6 +128,44 @@ it("distingue chaque occurrence homonyme dans le contexte avec un choix de perso
   app.refreshTransform();
   const assigned = render(EntityReviewList).body;
   expect(assigned).not.toContain('aria-label="Séparer « Bernard »"');
+  expect(assigned).not.toContain('aria-label="Séparer « Hervé Bernard »"');
+});
+
+it("conserve la scission des formes réellement présentes dans une même entité", () => {
+  const text = "Nérine Valombre et Nérine.";
+  app.setText(text);
+  const detections: Detection[] = [
+    {
+      id: "d1",
+      start: 0,
+      end: 15,
+      entityType: "PERSON",
+      score: 1,
+      recognizerId: "test/person",
+      packId: "test",
+      source: "pattern",
+      explanation: [],
+    },
+    {
+      id: "d2",
+      start: 19,
+      end: 25,
+      entityType: "PERSON",
+      score: 1,
+      recognizerId: "test/person",
+      packId: "test",
+      source: "pattern",
+      explanation: [],
+    },
+  ];
+  app.analysis = { detections, discarded: [], warnings: [] };
+  app.analysisStatus = "done";
+  app.setMode("pseudonymization");
+  app.refreshTransform();
+  expect(app.session!.entities()).toHaveLength(1);
+  const html = render(EntityReviewList).body;
+  expect(html).toContain('aria-label="Séparer « Nérine Valombre »"');
+  expect(html).toContain('aria-label="Séparer « Nérine »"');
 });
 
 describe("description du Masquage", () => {
