@@ -153,6 +153,27 @@ describe("AppState : homonymes par occurrence (#12)", () => {
     expect(app.corrections.entityAssignments ?? {}).toEqual({});
     app.dispose();
   });
+
+  it("fait primer les affectations par passage sur le retrait de la catégorie Identité", () => {
+    const app = homonyms();
+    const people = app.session!.entities();
+    const herve = people.find((e) => e.surfaceForms.includes("Hervé Bernard"))!;
+    const christine = people.find((e) => e.surfaceForms.includes("Christine Bernard"))!;
+    app.assignOccurrence("d1", herve.pseudonym);
+    app.assignOccurrence("d2", christine.pseudonym);
+    app.setCleaningCategory("identity", false);
+    expect(app.detections.map((d) => d.id)).toEqual(["d1", "d2"]);
+    expect(app.refreshTransform()!.text).toBe(
+      `😀 M. ${herve.pseudonym} et Mme ${christine.pseudonym}. Hervé Bernard et Christine Bernard.`,
+    );
+    expect(app.canCopy).toBe(false);
+    app.assignOccurrence("d1", null);
+    expect(app.detections.map((d) => d.id)).toEqual(["d2"]);
+    expect(app.refreshTransform()!.text).toBe(
+      `😀 M. Bernard et Mme ${christine.pseudonym}. Hervé Bernard et Christine Bernard.`,
+    );
+    app.dispose();
+  });
 });
 
 describe("AppState : état initial", () => {

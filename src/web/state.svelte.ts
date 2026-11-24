@@ -221,6 +221,7 @@ export class AppState {
     return selectCleaningDetections(corrected, this.analysis.discarded, this.cleaningCategories, [
       ...Object.keys(this.corrections.typeOverrides),
       ...Object.keys(this.corrections.operatorOverrides),
+      ...Object.keys(this.corrections.entityAssignments ?? {}),
     ]);
   });
 
