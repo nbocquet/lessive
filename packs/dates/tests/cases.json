@@ -73,7 +73,7 @@
       "expect": [
         {
           "type": "DATE",
-          "value": "2024-02-29"
+          "value": "2024-02-29T10:15:00Z"
         }
       ]
     },
@@ -1070,6 +1070,207 @@
       "language": "en",
       "text": "du 7 au 11 octobre",
       "expect": []
+    },
+    {
+      "id": "timestamp-common-fr",
+      "language": "fr",
+      "text": "[21/Nov/2026:08:14:02 +0100]",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "21/Nov/2026:08:14:02 +0100"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-common-en",
+      "language": "en",
+      "text": "[07/Jan/2027:00:00:00 -0430]",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "07/Jan/2027:00:00:00 -0430"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-apache-fr",
+      "language": "fr",
+      "text": "[Sat Nov 21 08:14:02.123456 2026] [core:error] incident",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "Sat Nov 21 08:14:02.123456 2026"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-apache-en",
+      "language": "en",
+      "text": "[Tue Jan  5 23:59:59 2027] [core:error] incident",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "Tue Jan  5 23:59:59 2027"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-iso-fr",
+      "language": "fr",
+      "text": "2026-11-21T08:14:02+01:00",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2026-11-21T08:14:02+01:00"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-iso-negative",
+      "language": "en",
+      "text": "2026-11-21T08:14:02-05:30",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2026-11-21T08:14:02-05:30"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-iso-utc",
+      "language": "fr",
+      "text": "2026-11-21T08:14:02Z",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2026-11-21T08:14:02Z"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-iso-fraction",
+      "language": "fr",
+      "text": "2026-11-21T08:14:02.123456789+01:00",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2026-11-21T08:14:02.123456789+01:00"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-iso-fraction-utc",
+      "language": "en",
+      "text": "2026-11-21t08:14:02.1z",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2026-11-21t08:14:02.1z"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-iso-local",
+      "language": "en",
+      "text": "2026-11-21T08:14:02",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2026-11-21T08:14:02"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-iso-local-fraction",
+      "language": "fr",
+      "text": "2026-11-21T08:14:02.456",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2026-11-21T08:14:02.456"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-syslog-fr",
+      "language": "fr",
+      "text": "Nov 21 08:14:02 host incident",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "Nov 21 08:14:02"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-syslog-en",
+      "language": "en",
+      "text": "Jan  5 00:00:00 host incident",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "Jan  5 00:00:00"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-emoji",
+      "language": "fr",
+      "text": "😀 [21/Nov/2026:08:14:02 +0100] café",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "21/Nov/2026:08:14:02 +0100"
+        }
+      ]
+    },
+    {
+      "id": "timestamp-negative-versions",
+      "language": "fr",
+      "text": "HTTP/1.1 Chrome/131.0 200 5123 duration=08:14:02.123456",
+      "expect": []
+    },
+    {
+      "id": "timestamp-negative-clock",
+      "language": "fr",
+      "text": "12:30 12h30 08:14:02 +0100",
+      "expect": []
+    },
+    {
+      "id": "timestamp-negative-nginx-bad-month",
+      "language": "fr",
+      "text": "21/Xxx/2026:08:14:02 +0100",
+      "expect": []
+    },
+    {
+      "id": "timestamp-negative-nginx-bad-day",
+      "language": "fr",
+      "text": "32/Nov/2026:08:14:02 +0100",
+      "expect": []
+    },
+    {
+      "id": "timestamp-negative-cross-line",
+      "language": "fr",
+      "text": "Nov 21\n08:14:02 host",
+      "expect": []
+    },
+    {
+      "id": "timestamp-negative-syslog-bad-day",
+      "language": "fr",
+      "text": "Nov 32 08:14:02 host",
+      "expect": []
+    },
+    {
+      "id": "timestamp-iso-final-period",
+      "language": "fr",
+      "text": "À 2026-11-21T08:14:02Z.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "2026-11-21T08:14:02Z"
+        }
+      ]
     }
   ]
 }

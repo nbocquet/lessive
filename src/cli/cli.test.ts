@@ -74,6 +74,28 @@ describe("binaire CLI compilé", () => {
     expect(result.code).toBe(0);
     expect(result.stdout).toBe("/r?email=[EMAIL]&email[]=[EMAIL]&phone=[TELEPHONE]\n");
   });
+  it.each(["fr", "en"])(
+    "remplace les horodatages entiers seulement avec --mask-dates, en langue %s",
+    async (language) => {
+      const input =
+        "😀 [21/Nov/2026:08:14:02 +0100] HTTP/1.1 200 5123\r\n" +
+        "[Sat Nov 21 08:14:02.123456 2026] incident\n" +
+        "2026-11-21T08:14:02+01:00 Chrome/131.0\n" +
+        "Nov 21 08:14:02 host duration=08:14:02.123456";
+      expect(await execute(["--language", language], input)).toMatchObject({
+        code: 0,
+        stdout: input,
+      });
+      expect(await execute(["--language", language, "--mask-dates"], input)).toMatchObject({
+        code: 0,
+        stdout:
+          "😀 [[DATE]] HTTP/1.1 200 5123\r\n" +
+          "[[DATE]] incident\n" +
+          "[DATE] Chrome/131.0\n" +
+          "[DATE] host duration=08:14:02.123456",
+      });
+    },
+  );
   it("publie uniquement après succès et conserve le fichier source", async () => {
     const dir = await mkdtemp(join(tmpdir(), "lessive-cli-"));
     try {
