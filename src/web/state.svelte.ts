@@ -63,6 +63,7 @@ import {
 import { fetchBundledModel, probeBundledModel, type BundledManifest } from "./bundled-model.ts";
 import { loadBundledRegistry } from "./packs.ts";
 import { remapCorrections } from "./remap-corrections.ts";
+import { applyOccurrenceAssignments } from "./occurrence-assignments.ts";
 
 import {
   ALL_CLEANING_CATEGORIES,
@@ -95,6 +96,8 @@ export interface Corrections {
   typeOverrides: Readonly<Record<string, EntityType>>;
   /** Opérateur choisi pour une détection (priorité maximale du plan). */
   operatorOverrides: Readonly<Record<string, OperatorId>>;
+  /** Repère de la personne choisie pour cette occurrence seulement, sans fusion de session. */
+  entityAssignments?: Readonly<Record<string, string>>;
 }
 
 const EMPTY_CORRECTIONS: Corrections = {
@@ -218,6 +221,7 @@ export class AppState {
     return selectCleaningDetections(corrected, this.analysis.discarded, this.cleaningCategories, [
       ...Object.keys(this.corrections.typeOverrides),
       ...Object.keys(this.corrections.operatorOverrides),
+      ...Object.keys(this.corrections.entityAssignments ?? {}),
     ]);
   });
 
@@ -260,7 +264,8 @@ export class AppState {
     this.corrections.added.length > 0 ||
       this.corrections.removedIds.length > 0 ||
       Object.keys(this.corrections.typeOverrides).length > 0 ||
-      Object.keys(this.corrections.operatorOverrides).length > 0,
+      Object.keys(this.corrections.operatorOverrides).length > 0 ||
+      Object.keys(this.corrections.entityAssignments ?? {}).length > 0,
   );
 
   /**
@@ -662,6 +667,7 @@ export class AppState {
         added,
         typeOverrides: rekeyAfterManualRemoval(this.corrections.typeOverrides, rank),
         operatorOverrides: rekeyAfterManualRemoval(this.corrections.operatorOverrides, rank),
+        entityAssignments: rekeyAfterManualRemoval(this.corrections.entityAssignments ?? {}, rank),
         removedIds: this.corrections.removedIds.filter((x) => x !== id),
       };
       this.#analysisInputsChanged(false);
@@ -688,7 +694,25 @@ export class AppState {
     const next = { ...this.corrections.typeOverrides };
     if (entityType === null) delete next[id];
     else next[id] = entityType;
-    this.corrections = { ...this.corrections, typeOverrides: next };
+    const assignments = { ...this.corrections.entityAssignments };
+    delete assignments[id];
+    this.corrections = { ...this.corrections, typeOverrides: next, entityAssignments: assignments };
+    this.#invalidateOutput();
+  }
+
+  /** Affecte un passage à une personne connue, sans fusionner les autres occurrences homonymes. */
+  assignOccurrence(id: string, pseudonym: string | null): void {
+    const assignments = { ...this.corrections.entityAssignments };
+    if (pseudonym === null) delete assignments[id];
+    else {
+      const detection = this.detections.find((d) => d.id === id);
+      const entity = this.session?.byPseudonym(pseudonym);
+      if (!detection || detection.entityType !== "PERSON" || entity?.entityType !== "PERSON") {
+        throw new Error("Rattachement indisponible : choisissez une personne connue.");
+      }
+      assignments[id] = entity.pseudonym;
+    }
+    this.corrections = { ...this.corrections, entityAssignments: assignments };
     this.#invalidateOutput();
   }
 
@@ -738,6 +762,13 @@ export class AppState {
         session = this.session;
       }
       this.transformed = transform(this.text, this.detections, this.plan, session);
+      if (session && this.corrections.entityAssignments) {
+        this.transformed = applyOccurrenceAssignments(
+          this.transformed,
+          this.corrections.entityAssignments,
+          session,
+        );
+      }
       this.transformError = null;
       // La transformation alimente la session en place : la réidentification doit suivre.
       if (session) this.sessionRevision++;
@@ -769,6 +800,7 @@ export class AppState {
    * recommencés). Efface texte transformé et validation. Utilisé par T5.5.
    */
   newSession(): void {
+    this.corrections = { ...this.corrections, entityAssignments: {} };
     this.session = createSession();
     this.sessionRevision++;
     this.#invalidateOutput();
@@ -776,6 +808,9 @@ export class AppState {
 
   /** Remplace la session (import chiffré, T5.5). Efface texte transformé et validation. */
   replaceSession(session: Session): void {
+    if (session !== this.session) {
+      this.corrections = { ...this.corrections, entityAssignments: {} };
+    }
     this.session = session;
     this.sessionRevision++;
     this.#invalidateOutput();

@@ -110,3 +110,80 @@ describe(
     });
   },
 );
+
+describe(
+  "homonymes : rattachement manuel par occurrence (#12)",
+  { skip: chromeOrNull() ? false : SKIP_MESSAGE },
+  () => {
+    let s: Session;
+    before(async () => {
+      s = await Session.start();
+      await s.navigate("/");
+      await s.evaluate(`(() => {
+        const select = document.querySelector('.compact-mode select');
+        select.value = 'pseudonymization';
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      })()`);
+      await s.type(
+        "#source-text",
+        "M. Bernard et Mme Bernard. Hervé Bernard et Christine Bernard.",
+      );
+      await s.waitForResult();
+    });
+    after(async () => {
+      await s?.close();
+    });
+
+    it("permet de distinguer les deux mêmes surfaces et de restituer deux noms complets", async () => {
+      await s.waitFor(
+        `document.querySelectorAll('.occurrence select').length === 2`,
+        "deux occurrences ambiguës",
+      );
+      const targets = await s.evaluate<string[]>(`(() => {
+        const options = [...document.querySelector('.occurrence select').options];
+        return ['Hervé Bernard', 'Christine Bernard'].map(name => options.find(o => o.textContent.includes(name)).value);
+      })()`);
+      assert.notEqual(targets[0], targets[1]);
+      const occurrenceIds = await s.evaluate<string[]>(
+        `[...document.querySelectorAll('.occurrence select')].map(s => s.id)`,
+      );
+      await s.evaluate(`document.querySelector('.validate input').click()`);
+      for (let i = 0; i < 2; i++) {
+        await s.evaluate(`(() => {
+          const select = document.getElementById(${JSON.stringify(occurrenceIds[i])});
+          select.value = ${JSON.stringify(targets[i])};
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        })()`);
+        await s.waitFor(
+          `${preview}.includes(${JSON.stringify(targets[i])})`,
+          "rattachement appliqué",
+        );
+        await s.waitFor(
+          `document.activeElement.id === ${JSON.stringify(occurrenceIds[i])}`,
+          "focus conservé sur le choix du passage",
+        );
+      }
+      assert.equal(
+        await s.evaluate<string>(preview),
+        `M. ${targets[0]} et Mme ${targets[1]}. ${targets[0]} et ${targets[1]}.`,
+      );
+      assert.equal(
+        await s.evaluate<boolean>(`document.querySelector('.validate input').checked`),
+        false,
+      );
+      await s.type("#llm-response", `${targets[0]} et ${targets[1]}`);
+      await s.waitFor(
+        `document.querySelector('.restored').textContent.includes('Hervé Bernard et Christine Bernard')`,
+        "réidentification distincte",
+      );
+      await s.send("Emulation.setDeviceMetricsOverride", {
+        width: 375,
+        height: 812,
+        deviceScaleFactor: 1,
+        mobile: true,
+      });
+      assert.ok(await s.evaluate<boolean>(`document.documentElement.scrollWidth <= innerWidth`));
+      assert.deepEqual(s.foreign, []);
+    });
+  },
+);

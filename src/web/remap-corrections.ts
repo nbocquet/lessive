@@ -54,5 +54,8 @@ export function remapCorrections(
     }),
     typeOverrides: remap(corrections.typeOverrides),
     operatorOverrides: remap(corrections.operatorOverrides),
+    ...(corrections.entityAssignments
+      ? { entityAssignments: remap(corrections.entityAssignments) }
+      : {}),
   };
 }
