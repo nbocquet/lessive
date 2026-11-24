@@ -77,6 +77,17 @@ it("suit aussi une détection passant sous le seuil ou perdant un conflit", () =
   expect(remapCorrections(corrections, result([email]), discarded).removedIds).toEqual(["d9"]);
 });
 
+it("transfère les rattachements par occurrence vers la même détection seulement", () => {
+  const assigned = { ...corrections, entityAssignments: { d1: "PERSONNE_002" } };
+  expect(
+    remapCorrections(assigned, result([email]), result([{ ...email, id: "d9" }])).entityAssignments,
+  ).toEqual({ d9: "PERSONNE_002" });
+  expect(
+    remapCorrections(assigned, result([email]), result([{ ...email, start: 25 }]))
+      .entityAssignments,
+  ).toEqual({});
+});
+
 it("conserve les clés des ajouts manuels déjà décalées après une suppression", () => {
   const manual: Corrections = {
     added: [{ start: 21, end: 24, entityType: "PERSON" }],

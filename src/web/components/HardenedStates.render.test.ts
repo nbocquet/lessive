@@ -92,6 +92,44 @@ describe("réponse de l'assistant sans correspondance : toujours une issue", () 
   });
 });
 
+it("distingue chaque occurrence homonyme dans le contexte avec un choix de personne indépendant", () => {
+  const text = "M. Bernard et Mme Bernard. Hervé Bernard et Christine Bernard.";
+  app.setText(text);
+  let cursor = 0;
+  const detections = ["Bernard", "Bernard", "Hervé Bernard", "Christine Bernard"].map(
+    (value, i) => {
+      const start = text.indexOf(value, cursor);
+      cursor = start + value.length;
+      return {
+        id: `d${i + 1}`,
+        start,
+        end: cursor,
+        entityType: "PERSON" as const,
+        score: 1,
+        recognizerId: "test/person",
+        packId: "test",
+        source: "pattern" as const,
+        explanation: [],
+      };
+    },
+  );
+  app.analysis = { detections, discarded: [], warnings: [] };
+  app.analysisStatus = "done";
+  app.setMode("pseudonymization");
+  app.refreshTransform();
+  const html = render(EntityReviewList).body;
+  expect(html).toContain('id="occurrence-person-d1"');
+  expect(html).toContain('id="occurrence-person-d2"');
+  expect(html).not.toContain('id="occurrence-person-d3"');
+  expect(html.match(/<strong>Bernard<\/strong>/g)).toHaveLength(2);
+  expect(html).toContain("Hervé Bernard");
+  expect(html).toContain("Christine Bernard");
+  app.assignOccurrence("d1", app.session!.entities()[0]!.pseudonym);
+  app.refreshTransform();
+  const assigned = render(EntityReviewList).body;
+  expect(assigned).not.toContain('aria-label="Séparer « Bernard »"');
+});
+
 describe("description du Masquage", () => {
   it("annonce les astérisques produits par défaut, pas une catégorie", () => {
     const html = render(ModeSelect).body;

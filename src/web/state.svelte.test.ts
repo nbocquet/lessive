@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createAnalyzer, type AnalysisResult, type Detection } from "../core/index.ts";
+import {
+  createAnalyzer,
+  createSession,
+  type AnalysisResult,
+  type Detection,
+} from "../core/index.ts";
 import { loadBundledRegistry } from "./packs.ts";
 import {
   AnalysisCancelledError,
@@ -82,6 +87,73 @@ async function analyzed(result: AnalysisResult = RESULT) {
 }
 
 const tick = () => new Promise((r) => setTimeout(r, 0));
+
+describe("AppState : homonymes par occurrence (#12)", () => {
+  function homonyms() {
+    const { service } = fakeService();
+    const app = new AppState({ service });
+    const text = "😀 M. Bernard et Mme Bernard. Hervé Bernard et Christine Bernard.";
+    app.setText(text);
+    const values = ["Bernard", "Bernard", "Hervé Bernard", "Christine Bernard"];
+    let cursor = 0;
+    const detections = values.map((value, i) => {
+      const start = text.indexOf(value, cursor);
+      cursor = start + value.length;
+      return det(`d${i + 1}`, start, cursor, { entityType: "PERSON" });
+    });
+    app.analysis = { detections, discarded: [], warnings: [] };
+    app.analysisStatus = "done";
+    app.setMode("pseudonymization");
+    app.refreshTransform();
+    return app;
+  }
+
+  it("affecte séparément deux Bernard, sans fusion et avec réidentification distincte", () => {
+    const app = homonyms();
+    const people = app.session!.entities();
+    const herve = people.find((e) => e.surfaceForms.includes("Hervé Bernard"))!;
+    const christine = people.find((e) => e.surfaceForms.includes("Christine Bernard"))!;
+    expect(herve.id).not.toBe(christine.id);
+    expect(people.find((e) => e.surfaceForms.includes("Bernard"))!.needsReview).toBe(true);
+    expect(app.validate()).toBe(true);
+    app.assignOccurrence("d1", herve.pseudonym);
+    app.assignOccurrence("d2", christine.pseudonym);
+    expect(app.hasCorrections).toBe(true);
+    expect(app.canCopy).toBe(false);
+    const result = app.refreshTransform()!;
+    expect(result.text).toBe(
+      `😀 M. ${herve.pseudonym} et Mme ${christine.pseudonym}. ${herve.pseudonym} et ${christine.pseudonym}.`,
+    );
+    app.setLlmResponse(`${herve.pseudonym} et ${christine.pseudonym}`);
+    expect(app.reidentification!.text).toBe("Hervé Bernard et Christine Bernard");
+    expect(app.session!.entities()).toEqual(people);
+    expect(() => app.assignOccurrence("d1", "PERSONNE_999")).toThrow();
+    app.assignOccurrence("d1", null);
+    expect(app.corrections.entityAssignments).toEqual({ d2: christine.pseudonym });
+    app.dispose();
+  });
+
+  it("efface les affectations au changement de texte ou de session et de type", () => {
+    const app = homonyms();
+    const target = app.session!.entities()[0]!.pseudonym;
+    app.assignOccurrence("d1", target);
+    app.setDetectionType("d1", "LOCATION");
+    expect(app.corrections.entityAssignments).toEqual({});
+    app.setDetectionType("d1", null);
+    app.assignOccurrence("d1", target);
+    app.newSession();
+    expect(app.corrections.entityAssignments).toEqual({});
+    app.refreshTransform();
+    app.assignOccurrence("d1", app.session!.entities()[0]!.pseudonym);
+    app.replaceSession(createSession());
+    expect(app.corrections.entityAssignments).toEqual({});
+    app.refreshTransform();
+    app.assignOccurrence("d1", app.session!.entities()[0]!.pseudonym);
+    app.setText("Autre document fictif.");
+    expect(app.corrections.entityAssignments ?? {}).toEqual({});
+    app.dispose();
+  });
+});
 
 describe("AppState : état initial", () => {
   it("démarre vide, en masquage, langue auto, seuil 0,5", () => {

@@ -5,12 +5,14 @@
   résultat est recalculé et la validation retirée. Les valeurs ne sont affichées qu'ici (R5).
 -->
 <script lang="ts">
+  import { tick } from "svelte";
   import { ENTITY_TYPES, type EntityType } from "../../core/index.ts";
   import { app } from "../state.svelte.ts";
   import CorrectionsToolbar from "./CorrectionsToolbar.svelte";
   import DetectionDetail from "./DetectionDetail.svelte";
   import { entityGroups, mergeTargets, type ReviewGroup } from "./entity-review.ts";
   import { typeName } from "./review-labels.ts";
+  import { snapToCodePoints } from "./review-selection.ts";
 
   let message = $state("");
 
@@ -27,6 +29,37 @@
     }),
   );
   const busy = $derived(app.analysisStatus === "running");
+  const people = $derived.by(() => {
+    void app.sessionRevision;
+    return app.session?.entities().filter((e) => e.entityType === "PERSON") ?? [];
+  });
+
+  /** Contexte local pour distinguer deux occurrences dont la surface est identique. */
+  function occurrenceContext(id: string): { before: string; value: string; after: string } {
+    const d = app.analysis?.detections.find((d) => d.id === id);
+    if (!d) return { before: "", value: "Passage indisponible", after: "" };
+    const { start, end } = snapToCodePoints(
+      app.text,
+      Math.max(0, d.start - 24),
+      Math.min(app.text.length, d.end + 24),
+    );
+    return {
+      before: `${start > 0 ? "…" : ""}${app.text.slice(start, d.start)}`,
+      value: app.text.slice(d.start, d.end),
+      after: `${app.text.slice(d.end, end)}${end < app.text.length ? "…" : ""}`,
+    };
+  }
+
+  async function assignOccurrence(id: string, pseudonym: string): Promise<void> {
+    try {
+      app.assignOccurrence(id, pseudonym || null);
+      message = "Rattachement de ce passage mis à jour. Relisez le résultat.";
+      await tick();
+      document.getElementById(`occurrence-person-${id}`)?.focus();
+    } catch {
+      message = "Rattachement indisponible : choisissez une personne connue.";
+    }
+  }
 
   /**
    * Au-delà de ce seuil, la liste est écourtée : un long document repousserait sinon la suite de
@@ -189,7 +222,7 @@
                     <span class="hint">×{form.detectionIds.length}</span>
                   {/if}
                 </label>
-                {#if group.sessionEntityId && group.forms.length > 1}
+                {#if group.sessionEntityId && group.forms.length > 1 && !form.detectionIds.some((id) => app.corrections.entityAssignments?.[id])}
                   <button
                     type="button"
                     class="link"
@@ -201,6 +234,43 @@
               </li>
             {/each}
           </ul>
+          {#if app.mode === "pseudonymization" && group.entityType === "PERSON" && (group.needsReview || group.forms.some( (f) => f.detectionIds.some((id) => app.corrections.entityAssignments?.[id]) ))}
+            <div class="occurrences">
+              <p class="hint">
+                Choisissez la personne pour chaque passage, sans fusionner les homonymes.
+              </p>
+              {#each group.forms as form (form.value)}
+                {#each form.detectionIds as id (id)}
+                  {#if group.needsReview || app.corrections.entityAssignments?.[id]}
+                    {@const context = occurrenceContext(id)}
+                    <label class="occurrence">
+                      <span class="context"
+                        >{context.before}<strong>{context.value}</strong>{context.after}</span
+                      >
+                      <select
+                        id={`occurrence-person-${id}`}
+                        aria-label={`Personne du passage ${id}`}
+                        value={app.session?.byPseudonym(
+                          app.corrections.entityAssignments?.[id] ?? "",
+                        )?.pseudonym ??
+                          app.corrections.entityAssignments?.[id] ??
+                          ""}
+                        disabled={busy || !app.detections.some((d) => d.id === id)}
+                        onchange={(e) => assignOccurrence(id, e.currentTarget.value)}
+                      >
+                        <option value="">À vérifier (automatique)</option>
+                        {#each people as person (person.id)}
+                          <option value={person.pseudonym}>
+                            {person.pseudonym} — {person.surfaceForms[0]}
+                          </option>
+                        {/each}
+                      </select>
+                    </label>
+                  {/if}
+                {/each}
+              {/each}
+            </div>
+          {/if}
           {#if targets.length > 0}
             <select
               class="merge"
@@ -393,5 +463,32 @@
     cursor: pointer;
     font-size: var(--text-small);
     font-weight: 600;
+  }
+
+  .occurrences,
+  .occurrence {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .occurrences {
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .occurrences p {
+    margin: 0;
+  }
+
+  .context {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: var(--text-small);
+  }
+
+  .occurrence select {
+    width: 100%;
+    min-width: 0;
   }
 </style>
