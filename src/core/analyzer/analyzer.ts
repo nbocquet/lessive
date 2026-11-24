@@ -156,7 +156,10 @@ export function createAnalyzer(activeRules: readonly ActiveRule[]): Analyzer {
       for (const r of recognizers) {
         if (signal?.aborted) throw new AbortError();
         if (!appliesTo(r, language)) continue;
-        raw.push(...(await r.analyze(text, ctx)));
+        // Un + de query sépare les mots et groupes téléphoniques, mais reste légal dans la
+        // partie locale d'un courriel. La variante EMAIL garde exactement les mêmes positions.
+        const input = view && r.supportedEntities.includes("EMAIL") ? view.emailText : text;
+        raw.push(...(await r.analyze(input, ctx)));
       }
 
       if (ner) {

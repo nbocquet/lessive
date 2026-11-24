@@ -12,11 +12,13 @@ export interface TextRange {
 
 export interface QueryView {
   text: string;
+  /** Même longueur et mêmes positions, avec les + littéraux admis dans la partie locale d'un courriel. */
+  emailText: string;
   originalRange(range: TextRange): TextRange;
   viewRange(range: TextRange): TextRange;
 }
 
-const QUERY = /[?&][\w.~-]+=(?<value>[^&#\s"'<>]*)/g;
+const QUERY = /[?&][^?&#=\s"'<>]+=(?<value>[^&#\s"'<>]*)/g;
 const HEX = /^[\da-f]{2}$/i;
 
 function byteAt(text: string, offset: number): number | null {
@@ -28,7 +30,17 @@ function byteAt(text: string, offset: number): number | null {
 export function urlQueryView(original: string, signal?: AbortSignal): QueryView | null {
   if (signal?.aborted) throw new AbortError();
   const values: TextRange[] = [];
+  let scanned = 0;
+  let inFragment = false;
   for (const match of original.matchAll(QUERY)) {
+    // Le # borne le fragment jusqu'à la fin du jeton URL, même s'il contient ?x= ou &x=.
+    while (scanned < match.index) {
+      if (scanned % 1024 === 0 && signal?.aborted) throw new AbortError();
+      const char = original[scanned++]!;
+      if (/[\s"'<>]/.test(char)) inFragment = false;
+      else if (char === "#") inFragment = true;
+    }
+    if (inFragment) continue;
     const value = match.groups!.value!;
     if (/[+%]/.test(value)) {
       const end = match.index + match[0].length;
@@ -40,6 +52,7 @@ export function urlQueryView(original: string, signal?: AbortSignal): QueryView 
   const parts: string[] = [];
   const starts: number[] = [];
   const ends: number[] = [];
+  const literalPluses: number[] = [];
   let cursor = 0;
   function append(text: string, start: number, end: number): void {
     parts.push(text);
@@ -63,6 +76,7 @@ export function urlQueryView(original: string, signal?: AbortSignal): QueryView 
       // Les liens saisis à la main conservent souvent le + international initial d'un téléphone.
       if (original[cursor] === "+") {
         const prefix = cursor === value.start && /^\+\d/.test(original.slice(cursor, cursor + 2));
+        if (!prefix) literalPluses.push(starts.length);
         append(prefix ? "+" : " ", cursor, cursor + 1);
         cursor++;
         continue;
@@ -99,8 +113,16 @@ export function urlQueryView(original: string, signal?: AbortSignal): QueryView 
   }
   copy(original.length);
   const text = parts.join("");
+  const emailParts: string[] = [];
+  let lastPlus = 0;
+  for (const offset of literalPluses) {
+    emailParts.push(text.slice(lastPlus, offset), "+");
+    lastPlus = offset + 1;
+  }
+  emailParts.push(text.slice(lastPlus));
   return {
     text,
+    emailText: literalPluses.length === 0 ? text : emailParts.join(""),
     originalRange({ start, end }) {
       return { start: starts[start] ?? original.length, end: ends[end - 1] ?? 0 };
     },

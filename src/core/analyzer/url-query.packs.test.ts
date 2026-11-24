@@ -50,6 +50,26 @@ describe("URL encodées avec les packs livrés (#30, #31)", () => {
     },
   );
 
+  it.each([
+    "prenom+alias@example.org",
+    "prenom%2Balias@example.org",
+    "prenom+alias%40example.org",
+    "prenom%2Balias%40example.org",
+  ])("préserve le + légal du courriel complet %s", async (email) => {
+    expect(await clean(`/r?email=${email}&phone=+41+79+412+58+03`)).toBe(
+      "/r?email=[EMAIL]&phone=[TELEPHONE]",
+    );
+  });
+
+  it.each(["email[]", "email%5B%5D", "contact.email", "contact[email]"])(
+    "décode les valeurs de la clé %s",
+    async (key) => {
+      expect(await clean(`/r?${key}=prenom+alias%40example.org&ids=12+34+56`)).toBe(
+        `/r?${key}=[EMAIL]&ids=12+34+56`,
+      );
+    },
+  );
+
   it("conserve la protection d'une URL absolue entière malgré un espace encodé", async () => {
     expect(await clean("Lien : https://example.org/c?name=Romain%20Vuilleumier.")).toBe(
       "Lien : [URL].",
