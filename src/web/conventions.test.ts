@@ -24,8 +24,10 @@ describe("conventions de src/web", () => {
     expect(sources().length).toBeGreaterThan(10);
   });
 
-  it("R5 : aucun stockage navigateur ni console.log", () => {
-    expect(offenders(/\b(localStorage|sessionStorage|indexedDB)\b|console\.log/)).toEqual([]);
+  it("R5 : aucun console.log ; stockage navigateur réservé aux préférences (ADR 0005)", () => {
+    expect(offenders(/console\.log/)).toEqual([]);
+    expect(offenders(/\b(sessionStorage|indexedDB)\b/)).toEqual([]);
+    expect(offenders(/\blocalStorage\b/)).toEqual(["preferences.ts"]);
   });
 
   it("R6 : jamais « anonymisé » ou dérivés dans l'interface", () => {

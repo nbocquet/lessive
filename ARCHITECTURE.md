@@ -122,6 +122,7 @@ Les tests, les fichiers de configuration et `packs/_tools/` échappent à ces r�
 | [0002](docs/adr/0002-format-jetons.md) | Format des repères de pseudonymisation (`PERSONNE_001`) | Accepté |
 | [0003](docs/adr/0003-modele-charge-par-l-utilisateur.md) | Modèle chargé par l'utilisateur depuis son disque | Accepté |
 | [0004](docs/adr/0004-modele-fourni-pages.md) | Version en ligne avec un modèle fourni (CamemBERT-NER) | Accepté |
+| [0005](docs/adr/0005-preferences-categories.md) | Mémoriser sur demande le choix des catégories | Accepté |
 
 ## Où brancher quoi
 

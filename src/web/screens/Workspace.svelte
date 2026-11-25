@@ -30,9 +30,10 @@
   const categoriesSummary = $derived.by(() => {
     const total = CLEANING_CATEGORIES.length;
     const count = app.cleaningCategories.length;
-    if (count === total) return `toutes (${total})`;
-    if (count === 0) return "aucune : le texte reste inchangé";
-    return `${count} sur ${total}`;
+    const saved = app.rememberCategories ? " · choix enregistré" : "";
+    if (count === total) return `toutes (${total})${saved}`;
+    if (count === 0) return `aucune : le texte reste inchangé${saved}`;
+    return `${count} sur ${total}${saved}`;
   });
 
   /** Sur téléphone, un clic sur un passage amène au détail de la colonne « À vérifier ». */
