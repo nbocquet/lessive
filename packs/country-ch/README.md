@@ -110,6 +110,8 @@ Le score de la détection réunie est le meilleur score des morceaux + 0,1 ; ell
 - **Case postale** : `postbox` (0,8) : « Case postale 123 », « Postfach 123 », « Casella postale 12 » (et variantes de casse) ; `postbox-short` (0,4, mot de contexte d'adresse obligatoire) : « CP 123 », « C.P. 123 ». Un numéro de 1 à 6 chiffres, éventuellement précédé de « n° ».
 - Faux positifs écartés par les tests : « la route est longue », « 3 places disponibles », « Rue de Lausanne » sans numéro, « Strasse » et « Weg » isolés, « Spring 25 », « 1204 Genève est une belle ville », « En 2023, 2024 Personnes ont voté ».
 
+Le numéro d’office postal final (`1211 Genève 3`, `Zürich 80`) est inclus dans le groupe NPA/localité lorsqu’il comporte de 1 à 2 chiffres (1–99) et précède une ponctuation ou la fin de ligne. Les séparateurs U+00A0 et U+202F sont acceptés. Un nombre suivi d’un mot (`1211 Genève 3 exemplaires`) reste lisible : après la virgule d’une case postale, seule l’adresse jusqu’à `Genève` est réunie. Un nombre final isolé peut toutefois être une quantité : sans mot qui le précise, cette ambiguïté ne peut pas être levée par le motif. Cette garde sacrifie les numéros d’office suivis de prose pour éviter d’absorber une quantité. Les numéros à trois chiffres et les suffixes alphanumériques ne sont pas couverts. Les variantes `postal-code-office` et `postal-code-ch-prefix-office` limitent ici la localité à un mot, avec au plus deux composants liés par tiret ou barre oblique ; les localités à plusieurs mots séparés d’espaces ne sont pas étendues par ces variantes.
+
 ## Validateurs
 
 `ean13` et `ch_uid_mod11` sont fournis par le moteur (`src/core/validators/`). `ean13` ne vérifie
@@ -117,7 +119,7 @@ que les 13 chiffres et la clé : le préfixe 756 et la présentation sont contr�
 
 ## Tests
 
-`tests/cases.json` : 114 cas (fr, en, allemand ; positifs, négatifs, pièges, espaces insécables U+00A0 et U+202F pour téléphones, AVS, IDE et codes postaux) ; `tests/cross.json` : 3 cas croisés, tous packs actifs. Toutes les
+`tests/cases.json` : 125 cas (fr, en, allemand ; positifs, négatifs, pièges, espaces insécables U+00A0 et U+202F pour téléphones, AVS, IDE et codes postaux) ; `tests/cross.json` : 4 cas croisés, tous packs actifs. Toutes les
 valeurs sont synthétiques ; les clés EAN-13 et modulo 11 ont été calculées, ce ne sont pas de vrais
 numéros. Le banc commun (`packs/_tools/packs.test.ts`) vérifie aussi l'absence de ReDoS.
 

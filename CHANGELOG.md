@@ -6,6 +6,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
+- Les adresses suisses incluent le numéro d’office postal final (`Case postale 312, 1211 Genève 3`), sans absorber une quantité suivie de texte (#33).
+
 - Les valeurs des paramètres d'URL sont reconnues après un décodage UTF-8 unique : les noms (`Romain%20Vuilleumier`), courriels (`%40`) et téléphones (`%2B`, séparateurs `+`) sont remplacés en entier dans le navigateur et le CLI. Les positions restent celles du texte original, les triplets `%XX` ne sont pas coupés et le texte hors des remplacements reste intact (#30, #31).
 
 - Les mentions homonymes ambiguës peuvent être rattachées séparément dans la vérification : chaque passage affiche son contexte et permet de choisir une personne connue, sans fusionner les autres occurrences ni leurs correspondances (#12). Ce choix vaut pour le document courant, en mémoire seulement.

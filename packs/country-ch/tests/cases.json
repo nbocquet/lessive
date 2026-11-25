@@ -1105,6 +1105,116 @@
       "language": "fr",
       "text": "Référence 123.456.789 du dossier.",
       "expect": []
+    },
+    {
+      "id": "case-postale-office",
+      "language": "fr",
+      "text": "Case postale 312, 1211 Genève 3",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 312, 1211 Genève 3"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-sans-office",
+      "language": "fr",
+      "text": "Case postale 45, 1002 Lausanne",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 45, 1002 Lausanne"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-office-zurich",
+      "language": "fr",
+      "text": "Postfach 52, 8039 Zürich 80",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Postfach 52, 8039 Zürich 80"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-office-insecable",
+      "language": "fr",
+      "text": "Case postale 312, 1211 Genève 3",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 312, 1211 Genève 3"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-nombre-suivant",
+      "language": "fr",
+      "text": "Case postale 312, 1211 Genève 3 exemplaires",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 312, 1211 Genève"
+        }
+      ]
+    },
+    {
+      "id": "npa-office-prefixe",
+      "language": "fr",
+      "text": "CH-1211 Genève 3",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "CH-1211 Genève 3"
+        }
+      ]
+    },
+    {
+      "id": "npa-office-contexte",
+      "language": "fr",
+      "text": "Adresse : 1211 Genève 3.",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "1211 Genève 3"
+        }
+      ]
+    },
+    {
+      "id": "npa-office-ligne-suivante",
+      "language": "fr",
+      "text": "Adresse : 1211 Genève\n3 exemplaires",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "1211 Genève"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-montant-3point14",
+      "language": "fr",
+      "text": "Case postale 312, 1211 Genève 3.14 CHF",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 312, 1211 Genève"
+        }
+      ]
+    },
+    {
+      "id": "case-postale-montant-3virgule14",
+      "language": "fr",
+      "text": "Case postale 312, 1211 Genève 3,14 CHF",
+      "expect": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 312, 1211 Genève"
+        }
+      ]
     }
   ]
 }
