@@ -3,7 +3,7 @@
  *
  * Exécution, sans dépendance nouvelle (Node 26, qui exécute le TypeScript directement) :
  *
- *   node scripts/eval/evaluate.ts [--models <dossier>] [--json <fichier>] [--errors <n>]
+ *   node scripts/eval/evaluate.ts [--models <dossier>] [--model <identifiant>] [--json <fichier>] [--errors <n>]
  *
  * Le corpus n'annote que PERSON, ORGANIZATION et LOCATION : les autres types détectés par les packs
  * (courriel, date…) sont ignorés dans le calcul, ni vrais ni faux positifs. Corpus 100 % synthétique.
@@ -79,6 +79,7 @@ const arg = (name: string): string | undefined => {
   const i = argv.indexOf(name);
   return i >= 0 ? argv[i + 1] : undefined;
 };
+const modelId = arg("--model") ?? DEFAULT_NER_MODEL;
 const jsonOut = arg("--json");
 const errorsPerKind = Number(arg("--errors") ?? 0);
 const modelsDir = (() => {
@@ -88,9 +89,9 @@ const modelsDir = (() => {
     "/mnt/user-data/uploads/lessive/models",
   ];
   for (const dir of candidates) {
-    if (dir && existsSync(join(dir, DEFAULT_NER_MODEL, "onnx"))) return dir.replace(/\/?$/, "/");
+    if (dir && existsSync(join(dir, modelId, "onnx"))) return dir.replace(/\/?$/, "/");
   }
-  throw new Error(`Modèle ${DEFAULT_NER_MODEL} introuvable (voir --models ou models/README.md).`);
+  throw new Error(`Modèle ${modelId} introuvable (voir --models ou models/README.md).`);
 })();
 
 // ---------- corpus et packs ----------
@@ -162,7 +163,11 @@ const timings: Record<string, number> = {};
 async function main() {
   const rules = allActiveRules();
   const analyzer: Analyzer = createAnalyzer(rules);
-  const engine: NerEngine = new TransformersNerEngine({ localModelPath: modelsDir, device: "cpu" });
+  const engine: NerEngine = new TransformersNerEngine({
+    modelId,
+    localModelPath: modelsDir,
+    device: "cpu",
+  });
   const t0 = performance.now();
   await engine.load();
   timings.loadMs = performance.now() - t0;
@@ -306,7 +311,7 @@ function report(final: Map<string, Counts>): string {
 await main();
 const final = counts;
 const out: string[] = [];
-out.push(`Modèle : ${DEFAULT_NER_MODEL} (q8, onnxruntime-node, device cpu) — dossier ${modelsDir}`);
+out.push(`Modèle : ${modelId} (q8, onnxruntime-node, device cpu) — dossier ${modelsDir}`);
 out.push(`Node ${process.version} — ${cpus()[0]?.model ?? "CPU inconnu"} (${cpus().length} cœurs)`);
 out.push(
   `Chargement du modèle : ${((timings.loadMs ?? 0) / 1000).toFixed(1)} s ; ` +

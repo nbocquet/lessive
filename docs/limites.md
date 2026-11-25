@@ -47,6 +47,8 @@ Ce qui échappe le plus souvent :
 
 À l'inverse, Lessive **signale parfois à tort** : un nom de commune lu comme une personne (Meyrin, Vernier), un mot courant qui ressemble à un prénom, une formule de salutation. Vous pouvez retirer ces détections à l'étape « Vérification ».
 
+**Filtres ciblés du modèle.** Les formules d’appel « Madame, Monsieur » et « Mesdames, Messieurs », les libellés de numéro AVS/NIR/IBAN/IDE, « IT support » en signature et la fonction « Ingénieur/Ingénieure systèmes » sur une ligne sont filtrés dans des contextes précis. Cela ne constitue pas un filtre général des métiers ou des services. Les noms de salle, de bâtiment et les unités RH peuvent encore être proposés ; une organisation peut aussi être classée comme lieu. Voir [la mesure et ses limites](evaluation-ner.md).
+
 **Que faire.** À l'étape « Vérification », parcourez le texte surligné et **ajoutez à la main** ce qui manque : la sélection d'un mot suffit, et toutes ses occurrences sont alors traitées. Pour un texte sensible, relisez aussi le texte transformé en entier.
 
 ### Les identifiants (courriel, IBAN, téléphone, AVS…)
