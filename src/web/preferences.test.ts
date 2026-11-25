@@ -13,6 +13,7 @@ function memoryStore(initial: string | null = null) {
     value: initial,
     writes: 0,
     fail: false,
+    failRemove: false,
     read: () => store.value,
     write(v: string) {
       if (store.fail) throw new Error("quota");
@@ -20,6 +21,7 @@ function memoryStore(initial: string | null = null) {
       store.value = v;
     },
     remove() {
+      if (store.failRemove) throw new Error("refus");
       store.value = null;
     },
   };
@@ -112,6 +114,35 @@ describe("AppState : mémorisation sur demande", () => {
     app.setRememberCategories(true);
     expect(app.rememberCategories).toBe(false);
     expect(app.preferencesError).toMatch(/n’a pas pu être enregistré/);
+  });
+
+  it("un échec de mise à jour efface l’ancienne exclusion avant le rechargement", () => {
+    const store = memoryStore('{"v":1,"excludedCategories":["dates"]}');
+    const app = new AppState({ preferences: store });
+    store.fail = true;
+    app.setCleaningCategory("dates", true);
+    expect(app.cleaningCategories).toContain("dates");
+    expect(app.rememberCategories).toBe(false);
+    expect(store.value).toBeNull();
+    const reloaded = new AppState({ preferences: store });
+    expect(reloaded.rememberCategories).toBe(false);
+    expect(reloaded.cleaningCategories).toEqual(ALL_CLEANING_CATEGORIES);
+  });
+
+  it("signale une ancienne préférence impossible à effacer et permet de réessayer", () => {
+    const store = memoryStore('{"v":1,"excludedCategories":["dates"]}');
+    const app = new AppState({ preferences: store });
+    store.fail = true;
+    store.failRemove = true;
+    app.setCleaningCategory("dates", true);
+    expect(app.rememberCategories).toBe(false);
+    expect(app.cleaningCategories).toContain("dates");
+    expect(app.preferencesError).toMatch(/l’ancien choix n’a pas pu être effacé/);
+    expect(app.preferencesError).toMatch(/pourra revenir au rechargement/);
+    store.failRemove = false;
+    app.setRememberCategories(false);
+    expect(store.value).toBeNull();
+    expect(app.preferencesError).toBeNull();
   });
 
   it("sans stockage disponible, la mémorisation n’est pas proposée", () => {

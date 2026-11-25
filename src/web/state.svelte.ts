@@ -450,7 +450,7 @@ export class AppState {
    */
   setRememberCategories(remember: boolean): void {
     this.preferencesError = null;
-    if (remember === this.rememberCategories) return;
+    if (remember && this.rememberCategories) return;
     const store = this.#preferences;
     if (!store) {
       this.preferencesError = "Ce navigateur ne permet pas d’enregistrer ce choix.";
@@ -495,6 +495,13 @@ export class AppState {
       this.rememberCategories = false;
       this.preferencesError =
         "Le choix n’a pas pu être enregistré sur cet appareil. Il reste valable jusqu’au rechargement de la page.";
+      try {
+        // Une ancienne exclusion ne doit pas revenir après la réactivation d’une catégorie.
+        this.#preferences.remove();
+      } catch {
+        this.preferencesError =
+          "Le choix n’a pas pu être enregistré et l’ancien choix n’a pas pu être effacé. Il pourra revenir au rechargement. Videz les données du site dans le navigateur.";
+      }
     }
   }
 

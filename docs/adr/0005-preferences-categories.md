@@ -28,7 +28,9 @@ catégorie décochée et oubliée laisse des données lisibles sans que l'utilis
 5. **Catégories seulement.** Les réglages avancés (packs, règles, seuils, modèle) restent en mémoire : une
    règle désactivée et oubliée serait encore moins visible qu'une catégorie décochée.
 6. Stockage absent ou refusé : la case n'est pas proposée. Échec d'écriture : la mémorisation est désactivée
-   et un message le dit ; le choix reste valable jusqu'au rechargement.
+   et un message le dit ; l'ancienne préférence est effacée pour qu'elle ne revienne pas au rechargement.
+   Si cet effacement échoue aussi, le message prévient que l'ancien choix peut revenir et invite à vider
+   les données du site. Le choix en cours reste valable jusqu'au rechargement.
 
 ## Conséquences
 
