@@ -39,6 +39,21 @@
           "value": "021 123 45 67"
         }
       ]
+    },
+    {
+      "id": "case-postale-office-telephone",
+      "language": "fr",
+      "text": "Case postale 312, 1211 Genève 3, tél. 022 123 45 67.",
+      "expectAll": [
+        {
+          "type": "LOCATION",
+          "value": "Case postale 312, 1211 Genève 3"
+        },
+        {
+          "type": "PHONE",
+          "value": "022 123 45 67"
+        }
+      ]
     }
   ]
 }

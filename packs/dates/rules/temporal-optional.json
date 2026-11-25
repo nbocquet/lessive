@@ -1,0 +1,86 @@
+{
+  "rules": [
+    {
+      "kind": "pattern",
+      "id": "fr-time",
+      "entityType": "DATE",
+      "score": 0.7,
+      "enabled": false,
+      "pattern": "(?<![A-Za-zÀ-ÿ0-9_:/.-])(?:[01]?[0-9]|2[0-3])(?:[ \\u00a0\\u202f]?h(?:[ \\u00a0\\u202f]?[0-5][0-9])?|:[0-5][0-9])(?![A-Za-zÀ-ÿ0-9_])",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Option désactivée par défaut : heure 0–23 h, minutes 00–59 facultatives, ou H:MM (« 14 h », « 9h30 », « 14:30 »)."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-time-range",
+      "entityType": "DATE",
+      "score": 0.75,
+      "enabled": false,
+      "pattern": "(?<![A-Za-zÀ-ÿ0-9_:/.-])entre[ \\u00a0\\u202f](?:[01]?[0-9]|2[0-3])(?:[ \\u00a0\\u202f]?h(?:[ \\u00a0\\u202f]?[0-5][0-9])?|:[0-5][0-9])[ \\u00a0\\u202f]et[ \\u00a0\\u202f](?:[01]?[0-9]|2[0-3])(?:[ \\u00a0\\u202f]?h(?:[ \\u00a0\\u202f]?[0-5][0-9])?|:[0-5][0-9])(?![A-Za-zÀ-ÿ0-9_])",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Option désactivée par défaut : intervalle « entre 14 h et 16 h », bornes comprises."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-relative",
+      "entityType": "DATE",
+      "score": 0.7,
+      "enabled": false,
+      "pattern": "(?<![A-Za-zÀ-ÿ0-9_:/.-])(?:(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)[ \\u00a0\\u202f](?:prochain|dernier)|(?:aujourd[’\\x27]hui|demain|hier)(?:[ \\u00a0\\u202f](?:matin|soir|apr[èe]s-midi))?|ce[ \\u00a0\\u202f](?:matin|soir)|cette[ \\u00a0\\u202f]semaine|la[ \\u00a0\\u202f]semaine[ \\u00a0\\u202f](?:prochaine|derni[èe]re))(?![A-Za-zÀ-ÿ0-9_])",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Option désactivée par défaut : repères « demain matin », « mardi prochain », « hier soir », « ce matin », « cette semaine », « la semaine prochaine »."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-relative-time-range",
+      "entityType": "DATE",
+      "score": 0.8,
+      "enabled": false,
+      "pattern": "(?<![A-Za-zÀ-ÿ0-9_:/.-])(?:(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)[ \\u00a0\\u202f](?:prochain|dernier)|(?:aujourd[’\\x27]hui|demain|hier)(?:[ \\u00a0\\u202f](?:matin|soir|apr[èe]s-midi))?|ce[ \\u00a0\\u202f](?:matin|soir)|cette[ \\u00a0\\u202f]semaine|la[ \\u00a0\\u202f]semaine[ \\u00a0\\u202f](?:prochaine|derni[èe]re))[ \\u00a0\\u202f]entre[ \\u00a0\\u202f](?=[01]?[0-9](?![0-9])|2[0-3])[0-9]{1,2}[ \\u00a0\\u202f]?h[ \\u00a0\\u202f]et[ \\u00a0\\u202f](?=[01]?[0-9](?![0-9])|2[0-3])[0-9]{1,2}[ \\u00a0\\u202f]?h(?![A-Za-zÀ-ÿ0-9_])",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Option désactivée par défaut : repère relatif avec intervalle d’heures pleines en h (« mardi prochain entre 14 h et 16 h »)."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-relative-time",
+      "entityType": "DATE",
+      "score": 0.8,
+      "enabled": false,
+      "pattern": "(?<![A-Za-zÀ-ÿ0-9_:/.-])(?:(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)[ \\u00a0\\u202f](?:prochain|dernier)|(?:aujourd[’\\x27]hui|demain|hier)(?:[ \\u00a0\\u202f](?:matin|soir|apr[èe]s-midi))?|ce[ \\u00a0\\u202f](?:matin|soir)|cette[ \\u00a0\\u202f]semaine|la[ \\u00a0\\u202f]semaine[ \\u00a0\\u202f](?:prochaine|derni[èe]re))[ \\u00a0\\u202f][àa][ \\u00a0\\u202f](?:[01]?[0-9]|2[0-3])(?:[ \\u00a0\\u202f]?h(?:[ \\u00a0\\u202f]?[0-5][0-9])?|:[0-5][0-9])(?![A-Za-zÀ-ÿ0-9_])",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Option désactivée par défaut : repère relatif avec heure complète (« demain matin à 9 h 30 »)."
+    },
+    {
+      "kind": "pattern",
+      "id": "fr-month-year",
+      "entityType": "DATE",
+      "score": 0.65,
+      "enabled": false,
+      "pattern": "(?<![A-Za-zÀ-ÿ0-9_:/.-])(?:janvier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[ée]cembre)[ \\u00a0\\u202f](?:19|20)[0-9]{2}(?![A-Za-zÀ-ÿ0-9_])",
+      "flags": "i",
+      "languages": ["fr"],
+      "description": "Option désactivée par défaut : mois et année 1900–2099, avec contexte temporel (« depuis septembre 2022 », « en mars 2027 »).",
+      "context": {
+        "required": true,
+        "words": {
+          "fr": [
+            "depuis",
+            "en",
+            "dès",
+            "avant",
+            "après",
+            "jusqu’à",
+            "jusqu’au",
+            "date",
+            "naissance"
+          ]
+        }
+      }
+    }
+  ]
+}

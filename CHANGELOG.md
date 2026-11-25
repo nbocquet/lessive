@@ -6,6 +6,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 
 ### Corrigé
 
+- Les adresses suisses incluent le numéro d’office postal final (`Case postale 312, 1211 Genève 3`), sans absorber une quantité suivie de texte (#33).
+
 - Le modèle ne remplace plus les formules d’appel « Madame, Monsieur » et « Mesdames, Messieurs », les libellés de numéro AVS/NIR/IBAN/IDE, « IT support » en signature et la fonction « Ingénieur/Ingénieure systèmes » sur sa propre ligne. Les titres suivis de noms et les raisons sociales restent proposés ; les noms de salle et de bâtiment restent à vérifier (#15, #32 partiellement).
 
 - Les noms de personnes écrits dans l’ordre inversé (« Jean Dupont », « DUPONT Jean ») partagent le même repère lorsque leurs mots complets correspondent hors titres et particules. Le rattachement reste à vérifier ; plusieurs candidats gardent une entité distincte et les séparations manuelles sont respectées (#36).
@@ -34,6 +36,8 @@ Les changements notables de Lessive sont consignés ici. Le format suit [Keep a 
 - CLI : second Ctrl+C pour forcer l’arrêt, statut de succès conservé après publication, diagnostics sans accumulation d’écouteurs et ordre des packs indépendant de la locale. Analyse accélérée en l’absence de personnes à propager ; mesures du débit complétées pour les lignes courtes.
 
 ### Ajouté
+
+- Dans les règles avancées du pack Dates, les horaires, intervalles, repères relatifs français et mois–année en contexte peuvent être activés séparément. Ils restent lisibles par défaut ; les expressions comme `mardi prochain entre 14 h et 16 h` sont remplacées en entier avec les règles correspondantes (#16).
 
 - Textes d'exemple entièrement inventés dans `docs/exemples/` (courriel RH, compte rendu, demande de remboursement, dossier administratif français, ticket de support en anglais, journal d'accès nginx, note qui illustre les limites), avec ce que le moteur repère et manque sur chacun ; référencés dans le README.
 

@@ -47,6 +47,54 @@
       "flags": "m",
       "languages": "any",
       "description": "Code postal précédé de CH- et suivi de la localité : « CH-1003 Lausanne ». Le préfixe CH- suffit : pas de mot de contexte exigé."
+    },
+    {
+      "kind": "pattern",
+      "id": "postal-code-office",
+      "entityType": "LOCATION",
+      "score": 0.5,
+      "pattern": "(?<![\\w.,'’/-])(?:[1-8]\\d{3}|9[0-6]\\d{2})[ \\u00a0\\u202f](?!(?:Rue|Route|Chemin|Avenue|Av|Boulevard|Bd|Place|Impasse|Quai|Allée|Passage|Strasse|Platz|Via|Street|Road|Francs?|Franken|Euros?|CHF|EUR|Fr|Dollars?|Mètres|Heures|Jours|Ans|Mois)(?![A-Za-zÀ-ÿ]))[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[-/][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,2}[ \\u00a0\\u202f][1-9][0-9]?(?![.,][0-9])(?=[ \\u00a0\\u202f]*(?:[,.;:)\\]]|$))",
+      "flags": "m",
+      "languages": "any",
+      "context": {
+        "words": {
+          "fr": [
+            "NPA",
+            "code postal",
+            "case postale",
+            "adresse",
+            "rue",
+            "route",
+            "chemin",
+            "avenue",
+            "domicile",
+            "localité"
+          ],
+          "en": ["postcode", "postal code", "zip", "address", "street", "avenue", "PO box"],
+          "any": [
+            "PLZ",
+            "Postleitzahl",
+            "Postfach",
+            "Adresse",
+            "Strasse",
+            "Gasse",
+            "Wohnort",
+            "indirizzo"
+          ]
+        },
+        "required": true
+      },
+      "description": "Code postal suisse (1000-9699) suivi d'un nom de localité capitalisé en fin de groupe (virgule, point, fin de ligne), localité comprise dans la détection : « 1204 Genève ». Mot de contexte d'adresse obligatoire ; les codes 1900-2099 sont admis (2000 Neuchâtel), ce qui exige la localité et le contexte. Numéro d’office postal final obligatoire de 1 à 99 (par exemple « 1211 Genève 3 »)."
+    },
+    {
+      "kind": "pattern",
+      "id": "postal-code-ch-prefix-office",
+      "entityType": "LOCATION",
+      "score": 0.6,
+      "pattern": "(?<![\\w.,'’/-])CH-(?:[1-8]\\d{3}|9[0-6]\\d{2})[ \\u00a0\\u202f](?!(?:Rue|Route|Chemin|Avenue|Av|Boulevard|Bd|Place|Impasse|Quai|Allée|Passage|Strasse|Platz|Via|Street|Road|Francs?|Franken|Euros?|CHF|EUR|Fr|Dollars?|Mètres|Heures|Jours|Ans|Mois)(?![A-Za-zÀ-ÿ]))[A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}(?:[-/][A-ZÀ-ÖØ-ÞŒ][A-Za-zÀ-ÖØ-öø-ÿŒœ]{1,19}){0,2}[ \\u00a0\\u202f][1-9][0-9]?(?![.,][0-9])(?=[ \\u00a0\\u202f]*(?:[,.;:)\\]]|$))",
+      "flags": "m",
+      "languages": "any",
+      "description": "Code postal précédé de CH- et suivi de la localité : « CH-1003 Lausanne ». Le préfixe CH- suffit : pas de mot de contexte exigé. Numéro d’office postal final obligatoire de 1 à 99 (par exemple « 1211 Genève 3 »)."
     }
   ]
 }

@@ -136,3 +136,7 @@ Le CLI traite chaque ligne UTF-8 indépendamment, sans contexte entre lignes : u
 Une erreur tardive laisse les lignes déjà écrites sur stdout ; contrôlez le code de sortie. Avec `--output`, le fichier final est publié seulement après succès et sans écrasement. Une coupure brutale peut laisser le temporaire transformé. Aucun export de correspondances ni réidentification n'est disponible dans le CLI.
 
 La publication par `--output` exige des liens physiques dans le dossier de destination. FAT/exFAT et certains montages SMB ou Docker ne les prennent pas en charge : la publication échoue alors après le traitement et le temporaire est supprimé. Choisissez un système de fichiers compatible pour la sortie. Un premier Ctrl+C demande un arrêt avec nettoyage ; un second force la sortie (code 130) et peut laisser un temporaire transformé.
+
+### Horaires et repères temporels optionnels
+
+Les dates absolues et horodatages sont repérés par défaut ; les heures (`14 h`, `14:30`), intervalles (`entre 14 h et 16 h`), repères français (`demain matin`, `mardi prochain`) et mois–année en contexte (`depuis septembre 2022`) demandent l’activation des règles avancées du pack Dates. Voir [le périmètre exact et les limites de cette option](../packs/dates/README.md#horaires-et-repères-relatifs-option-avancée). La catégorie Dates doit aussi être sélectionnée. Les expressions libres ou anglaises ne sont pas couvertes ; une vérification humaine reste nécessaire.
