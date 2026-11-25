@@ -70,6 +70,12 @@ import {
   selectCleaningDetections,
   type CleaningCategory,
 } from "./cleaning-categories.ts";
+import {
+  browserPreferenceStore,
+  parseSelectedCategories,
+  serializeExcludedCategories,
+  type PreferenceStore,
+} from "./preferences.ts";
 
 export type LanguageChoice = Language | "auto";
 export type AnalysisStatus = "idle" | "running" | "done" | "error";
@@ -117,6 +123,8 @@ export interface AppStateOptions {
    * automatique, seul `analyze()` la lance.
    */
   autoAnalysisDelayMs?: number | null;
+  /** Stockage des préférences mémorisées sur demande ; absent : rien n'est lu ni écrit. */
+  preferences?: PreferenceStore | null;
 }
 
 export interface SetTextOptions {
@@ -179,8 +187,15 @@ export class AppState {
   /** Opérateur par type d'entité (priorité entre le défaut du mode et les choix par détection). */
   operatorByType = $state.raw<Partial<Record<EntityType, OperatorId>>>({});
 
-  /** Catégories à remplacer ; les catégories décochées restent lisibles. En mémoire seulement. */
+  /**
+   * Catégories à remplacer ; les catégories décochées restent lisibles. En mémoire, et sur cet
+   * appareil seulement si `rememberCategories` (identifiants de catégories, jamais de texte : R5).
+   */
   cleaningCategories = $state.raw<readonly CleaningCategory[]>([...ALL_CLEANING_CATEGORIES]);
+  /** L'utilisateur a demandé de mémoriser le choix des catégories sur cet appareil. */
+  rememberCategories = $state(false);
+  /** Échec d'enregistrement ou d'effacement de la préférence, sans valeur du texte. */
+  preferencesError = $state<string | null>(null);
 
   // ---- Réglages : packs et règles ----
   disabledPackIds = $state.raw<readonly string[]>([]);
@@ -281,6 +296,7 @@ export class AppState {
   });
 
   readonly #given: AnalysisService | undefined;
+  readonly #preferences: PreferenceStore | null;
   readonly #autoDelay: number | null;
   #autoTimer: ReturnType<typeof setTimeout> | undefined;
   #service: AnalysisService | undefined;
@@ -291,6 +307,8 @@ export class AppState {
     this.registry = options.registry ?? loadBundledRegistry();
     this.#given = options.service;
     this.#autoDelay = options.autoAnalysisDelayMs ?? null;
+    this.#preferences = options.preferences ?? null;
+    this.#loadPreferences();
     // Pas de détection sous Vitest ni sans navigateur : aucun stockage à interroger.
     if (typeof caches !== "undefined" && import.meta.env.MODE !== "test") void this.refreshModel();
   }
@@ -405,6 +423,7 @@ export class AppState {
     this.selectedDetectionId = null;
     this.textSelection = null;
     this.#invalidateOutput();
+    this.#savePreferences();
   }
 
   setCleaningCategory(category: CleaningCategory, enabled: boolean): void {
@@ -418,6 +437,65 @@ export class AppState {
   /** Les valeurs par défaut remplacent toutes les catégories reconnues. */
   resetCleaningCategories(): void {
     this.setCleaningCategories(ALL_CLEANING_CATEGORIES);
+  }
+
+  /** Vrai si le navigateur permet de mémoriser le choix des catégories. */
+  get canRememberCategories(): boolean {
+    return this.#preferences !== null;
+  }
+
+  /**
+   * Mémorise le choix des catégories sur cet appareil, ou l'oublie. Sur demande seulement :
+   * rien n'est écrit tant que l'utilisateur ne l'a pas demandé.
+   */
+  setRememberCategories(remember: boolean): void {
+    this.preferencesError = null;
+    if (remember === this.rememberCategories) return;
+    const store = this.#preferences;
+    if (!store) {
+      this.preferencesError = "Ce navigateur ne permet pas d’enregistrer ce choix.";
+      return;
+    }
+    this.rememberCategories = remember;
+    if (remember) {
+      this.#savePreferences();
+      return;
+    }
+    try {
+      store.remove();
+    } catch {
+      this.preferencesError =
+        "Le choix enregistré n’a pas pu être effacé. Videz les données du site dans le navigateur.";
+    }
+  }
+
+  #loadPreferences(): void {
+    const store = this.#preferences;
+    if (!store) return;
+    try {
+      const raw = store.read();
+      const selected = parseSelectedCategories(raw);
+      if (selected) {
+        this.cleaningCategories = selected;
+        this.rememberCategories = true;
+      } else if (raw !== null) {
+        // Valeur illisible : on revient aux valeurs par défaut, toutes cochées.
+        store.remove();
+      }
+    } catch {
+      // Stockage refusé : comportement par défaut, rien de mémorisé.
+    }
+  }
+
+  #savePreferences(): void {
+    if (!this.rememberCategories || !this.#preferences) return;
+    try {
+      this.#preferences.write(serializeExcludedCategories(this.cleaningCategories));
+    } catch {
+      this.rememberCategories = false;
+      this.preferencesError =
+        "Le choix n’a pas pu être enregistré sur cet appareil. Il reste valable jusqu’au rechargement de la page.";
+    }
   }
 
   /** Active ou désactive un pack entier : l'analyse devient obsolète. */
@@ -1061,4 +1139,5 @@ export class AppState {
 /** Instance unique utilisée par l'interface. Les tests créent leur propre `AppState`. */
 export const app = new AppState({
   autoAnalysisDelayMs: import.meta.env.MODE === "test" ? null : AUTO_ANALYSIS_DELAY_MS,
+  preferences: import.meta.env.MODE === "test" ? null : browserPreferenceStore(),
 });

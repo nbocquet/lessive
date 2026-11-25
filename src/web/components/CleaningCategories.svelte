@@ -54,9 +54,38 @@
       </p>
     {/if}
   </div>
+  {#if app.canRememberCategories}
+    <label class="remember">
+      <input
+        id="cleaning-remember"
+        type="checkbox"
+        checked={app.rememberCategories}
+        onchange={(e) => app.setRememberCategories(e.currentTarget.checked)}
+        aria-describedby="cleaning-remember-help"
+      />
+      <span
+        ><strong>Mémoriser ce choix sur cet appareil</strong><small id="cleaning-remember-help"
+          >Seules les catégories décochées sont enregistrées dans ce navigateur, jamais votre texte.
+          Décocher efface le choix enregistré.</small
+        ></span
+      >
+    </label>
+  {/if}
+  {#if app.rememberCategories && kept.length > 0}
+    <p class="notice" role="status">
+      Choix enregistré sur cet appareil : {kept.length}
+      {kept.length === 1 ? "catégorie reste lisible" : "catégories restent lisibles"} à chaque visite.
+    </p>
+  {/if}
+  {#if app.preferencesError}
+    <p class="notice" role="alert">{app.preferencesError}</p>
+  {/if}
   <p class="hint policy">
     Les ajouts et corrections manuels par passage restent prioritaires. Les réglages avancés
-    déterminent ce qui est détecté. Ce choix est conservé jusqu’au rechargement de la page.
+    déterminent ce qui est détecté.
+    {app.rememberCategories
+      ? "Ce choix est enregistré sur cet appareil."
+      : "Ce choix est conservé jusqu’au rechargement de la page."}
   </p>
 </fieldset>
 
@@ -108,6 +137,9 @@
   }
   p {
     margin: 0.4rem 0;
+  }
+  .remember {
+    margin: 0.75rem 0;
   }
   .policy {
     font-size: var(--text-small);
