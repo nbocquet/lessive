@@ -89,11 +89,13 @@ En mode Pseudonymisation, vous collez la réponse de l'assistant dans Lessive, q
 
 Lessive rattache entre elles les variantes d'une même personne (« Claire Martin », « Mme Martin », « C. Martin ») pour leur donner le même repère. Les identifiants dérivés (`CMARTIN`, `EMOREL`, `JPLAMBERT`, `claire.martin`…) rejoignent aussi une personne connue si leur forme correspond à un seul nom complet, même lorsqu’ils sont détectés séparément par le modèle de reconnaissance des noms. Les noms complets du document sont résolus avant les formes partielles : le login peut donc précéder le nom dans ce document. Les cas incertains sont marqués « à vérifier ». Si deux personnes partagent la même forme dérivée (par exemple Claire Martin et Camille Martin pour `CMARTIN`), le login reste une entité distincte à vérifier. Une initiale seule ne suffit pas à établir ce lien.
 
+Les noms écrits dans un ordre différent (« Jean Dupont », « DUPONT Jean ») se rattachent aussi, avec la mention « à vérifier », si au moins deux mots complets correspondent après retrait des titres et particules. Accents et casse sont normalisés, les mots répétés restent comptés. Si plusieurs personnes connues correspondent, la nouvelle forme garde un repère distinct à vérifier. Une séparation manuelle reste prioritaire pour les formes déjà connues. Ce rapprochement suppose que chaque nom a été détecté en entier : il ne corrige pas une détection absente ou découpée en amont.
+
 Il se trompe ou rate encore ceci :
 
 - Si une forme partielle ou un login a reçu son propre repère dans un document précédent, un nom complet découvert dans un nouveau document ne fusionne pas automatiquement les deux entités : elles restent à fusionner à la main.
 - « M. Dupont » et « Mme Dupont » reçoivent le **même** repère : si ce sont deux personnes de la même famille, séparez-les à la main.
-- Les prénoms composés (« Jean-Pierre » et « Jean »), les noms composés sans trait d'union, l'ordre inversé (« Martin Claire »), les surnoms et les fautes de frappe ne sont pas rapprochés.
+- Les prénoms composés (« Jean-Pierre » et « Jean »), les noms composés sans trait d'union lorsqu'un mot manque, les surnoms et les fautes de frappe ne sont pas rapprochés. L'ordre inversé avec une initiale (« Martin C. ») ne suffit pas non plus.
 
 Vous pouvez fusionner et séparer les entités dans le panneau des correspondances.
 
