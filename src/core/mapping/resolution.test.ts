@@ -31,6 +31,46 @@ describe("normalizeForm", () => {
 });
 
 describe("résolution des personnes", () => {
+  it.each([
+    ["Jean Dupont", "DUPONT Jean"],
+    ["DUPONT Jean", "Jean Dupont"],
+    ["Mme Éloïse d’Aubigné", "D'AUBIGNE Eloise"],
+    ["Jean-Pierre de La Tour", "TOUR Jean-Pierre"],
+    ["Claire Anne Martin", "Martin Claire Anne"],
+  ])("rattache les mots de %s dans l’ordre %s, avec revue", (first, reversed) => {
+    const { s, ids: resolved } = ids([first, reversed]);
+    expect(resolved[0]).toBe(resolved[1]);
+    expect(s.entities()).toHaveLength(1);
+    expect(s.entities()[0]?.needsReview).toBe(true);
+    expect(s.entities()[0]?.surfaceForms).toEqual([first, reversed]);
+  });
+
+  it("respecte la séparation manuelle des ordres et ne choisit pas entre deux candidats", () => {
+    const s = createSession();
+    const first = s.resolve("Claire Anne Martin", "PERSON");
+    s.resolve("Martin Claire Anne", "PERSON");
+    const second = s.split(first.id, "Martin Claire Anne");
+    expect(s.resolve("Mme Martin Claire Anne", "PERSON").id).toBe(second.id);
+    expect(s.resolve("CLAIRE ANNE MARTIN", "PERSON").id).toBe(first.id);
+    const ambiguous = s.resolve("Anne Martin Claire", "PERSON");
+    expect(ambiguous.id).not.toBe(first.id);
+    expect(ambiguous.id).not.toBe(second.id);
+    expect(ambiguous.needsReview).toBe(true);
+    expect(s.entities()).toHaveLength(3);
+  });
+
+  it.each([
+    ["Claire Martin", "Martin C."],
+    ["Claire Martin", "Paul Martin"],
+    ["Jean Jean Martin", "Jean Martin Martin"],
+    ["Claire Martin", "Claire Anne Martin"],
+    ["Jean-Pierre Martin", "Jean Pierre Martin"],
+    ["Agent007 Martin", "Martin Agent007"],
+  ])("ne rapproche pas %s de %s par une simple ressemblance", (first, other) => {
+    const { ids: resolved } = ids([first, other]);
+    expect(resolved[0]).not.toBe(resolved[1]);
+  });
+
   it("rattache les variantes d'une même personne à une seule entité", () => {
     const { s, ids: r } = ids([
       "Claire Martin",
@@ -239,6 +279,8 @@ describe("autres types", () => {
     const l = ids(["Genève", "geneve", "Mme Genève"], "LOCATION");
     expect(l.ids[0]).toBe(l.ids[1]);
     expect(l.ids[2]).not.toBe(l.ids[0]);
+    expect(ids(["Alpha Beta", "Beta Alpha"], "ORGANIZATION").s.entities()).toHaveLength(2);
+    expect(ids(["Alpha Beta", "Beta Alpha"], "LOCATION").s.entities()).toHaveLength(2);
   });
 
   it("courriel, IBAN, téléphone, AVS", () => {

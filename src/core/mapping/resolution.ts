@@ -16,15 +16,18 @@
  *    et « Tour » ont le même cœur « tour ».
  * Règles, dans l'ordre :
  *  1. forme normalisée identique à une forme connue : même entité ;
- *  2. initiale + nom (« C. Martin ») : rattachée à l'unique entité dont un
+ *  2. mêmes mots complets dans un ordre différent, hors titres et particules
+ *     (au moins deux mots) : rattachée à l'unique entité, needsReview.
+ *     Plusieurs candidats : nouvelle entité, needsReview ;
+ *  3. initiale + nom (« C. Martin ») : rattachée à l'unique entité dont un
  *     prénom commence par cette initiale et dont le nom a le même cœur ;
  *     needsReview. Plusieurs candidats : nouvelle entité, needsReview ;
- *  3. un seul mot, ou un nom seul avec particule (« La Tour »), égal au
+ *  4. un seul mot, ou un nom seul avec particule (« La Tour »), égal au
  *     premier prénom ou au cœur du nom d'exactement une entité : rattachée,
  *     needsReview. Pour un mot unique, les identifiants dérivés d’un nom complet
  *     (CMARTIN, EMOREL, JPLAMBERT, claire.martin…) participent à la même recherche ;
  *     une initiale seule ne suffit pas. Plusieurs entités : nouvelle entité, needsReview ;
- *  4. sinon : nouvelle entité.
+ *  5. sinon : nouvelle entité.
  *
  * Limites connues
  *  - Un prénom composé (« Jean-Pierre ») est un seul mot : « Jean » ne s'y
@@ -35,7 +38,8 @@
  *    dernier mot est pris pour le nom.
  *  - « Claire Martin » citée après « Claire » seule : nouvelle entité (le
  *    rattachement ne va que du connu vers le partiel) ; à fusionner à la main.
- *  - Ordre inversé (« Martin Claire »), surnoms, fautes de frappe : non gérés.
+ *  - Surnoms et fautes de frappe : non gérés. Les initiales ne participent
+ *    pas au rapprochement par ordre inversé.
  *  - « M. Dupont » et « Mme Dupont » reçoivent le même pseudonyme : les titres
  *    sont retirés à la normalisation et le pack exclut le titre de
  *    l'intervalle détecté, donc la civilité ne distingue pas deux personnes
@@ -117,6 +121,21 @@ function stripTitles(ws: string[]): string[] {
   let i = 0;
   while (i < ws.length - 1 && TITLES.has(ws[i] as string)) i++;
   return ws.slice(i);
+}
+
+/** Même ensemble de mots complets, doublons conservés ; jamais une simple initiale. */
+function unorderedPersonKey(form: string): string | undefined {
+  const tokens = stripTitles(words(form)).filter((word) => !isPersonNameParticle(word));
+  if (
+    tokens.length < 2 ||
+    tokens.some(
+      (word) =>
+        !/^[\p{L}]+(?:[-'][\p{L}]+)*$/u.test(word) || (word.match(/\p{L}/gu)?.length ?? 0) < 2,
+    )
+  ) {
+    return undefined;
+  }
+  return tokens.sort().join(" ");
 }
 
 /**
@@ -220,6 +239,16 @@ export function matchSurfaceForm(
     matching.length === 1
       ? { outcome: "attached", entity: matching[0] as Entity }
       : { outcome: "new", needsReview: matching.length > 1 };
+
+  // Ordre administratif « DUPONT Jean ». La correspondance exacte ci-dessus
+  // reste prioritaire pour respecter une séparation manuelle des deux formes.
+  const unorderedKey = unorderedPersonKey(form);
+  if (unorderedKey !== undefined) {
+    const reordered = candidates.filter((e) =>
+      e.surfaceForms.some((f) => unorderedPersonKey(f) === unorderedKey),
+    );
+    if (reordered.length > 0) return pick(reordered);
+  }
 
   // Initiale + nom : « C. Martin ».
   const initial = query.given.length === 1 ? (query.given[0] as string) : "";
