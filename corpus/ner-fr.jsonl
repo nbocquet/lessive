@@ -148,3 +148,13 @@
 {"id":"fr-148-trap","text":"Le Café de la Poste cherche un serveur.","entities":[{"start":3,"end":19,"type":"ORGANIZATION"}]}
 {"id":"fr-149-trap","text":"Le saint-bernard a retrouvé le randonneur.","entities":[]}
 {"id":"fr-150-trap","text":"Il a croqué dans une pomme verte.","entities":[]}
+{"id":"fr-151-ner-context","text":"Madame, Monsieur,","entities":[]}
+{"id":"fr-152-ner-context","text":"Mesdames, Messieurs,","entities":[]}
+{"id":"fr-153-ner-context","text":"Numéro AVS : 756.9217.0769.85","entities":[]}
+{"id":"fr-154-ner-context","text":"IT support, Riverside Analytics Ltd","entities":[{"start":12,"end":35,"type":"ORGANIZATION"}]}
+{"id":"fr-155-ner-context","text":"Sophie Corvelet\nIngénieure systèmes\nHexaTech Conseil SAS","entities":[{"start":0,"end":15,"type":"PERSON"},{"start":36,"end":56,"type":"ORGANIZATION"}]}
+{"id":"fr-156-ner-context","text":"Sophie Corvelet\nIngénieur systèmes\nHexaTech Conseil SAS","entities":[{"start":0,"end":15,"type":"PERSON"},{"start":35,"end":55,"type":"ORGANIZATION"}]}
+{"id":"fr-157-ner-context","text":"Notre partenaire Ingénieur Conseil SAS intervient.","entities":[{"start":17,"end":38,"type":"ORGANIZATION"}]}
+{"id":"fr-158-ner-context","text":"Nous travaillons avec AVS Conseil SA.","entities":[{"start":22,"end":36,"type":"ORGANIZATION"}]}
+{"id":"fr-159-ner-context","text":"Réunion dans la salle Rhône du bâtiment B.","entities":[]}
+{"id":"fr-160-ner-context","text":"Banque : Banque Cantonale fictive, Neuchâtel","entities":[{"start":9,"end":33,"type":"ORGANIZATION"},{"start":35,"end":44,"type":"LOCATION"}]}

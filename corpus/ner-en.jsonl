@@ -148,3 +148,6 @@
 {"id":"en-148-trap","text":"Victoria met Georgia at the station.","entities":[{"start":0,"end":8,"type":"PERSON"},{"start":13,"end":20,"type":"PERSON"}]}
 {"id":"en-149-trap","text":"The fox crossed the road.","entities":[]}
 {"id":"en-150-trap","text":"Louis Fox crossed the road.","entities":[{"start":0,"end":9,"type":"PERSON"}]}
+{"id":"en-151-ner-context","text":"IT support, Riverside Analytics Ltd","entities":[{"start":12,"end":35,"type":"ORGANIZATION"}]}
+{"id":"en-152-ner-context","text":"Please contact IT Support Ltd for assistance.","entities":[{"start":15,"end":29,"type":"ORGANIZATION"}]}
+{"id":"en-153-ner-context","text":"IBAN: GB82 WEST 1234 5698 7654 32","entities":[]}

@@ -1,9 +1,36 @@
 # Évaluation du NER et des packs
 
-**Portée du rapport :** vérification ciblée du correctif #20, puis mesures historiques avec DistilBERT et les packs de l'évaluation initiale. La version publiée fournit désormais CamemBERT-NER (ADR 0004). Les chiffres historiques ne valident ni ce modèle ni les ajouts ultérieurs aux packs ; la vérification #20 précise son propre périmètre. Une nouvelle évaluation avec CamemBERT reste à faire.
+**Portée du rapport :** vérifications ciblées des correctifs #15, #20, #30–32, puis mesures historiques avec DistilBERT et les packs de l'évaluation initiale. Les nouvelles mesures #15/#32 couvrent CamemBERT-NER fourni dans la version en ligne (ADR 0004) et DistilBERT, sur CPU local ; elles ne mesurent pas le chemin WASM du navigateur.
 
-Rapport reproductible : toutes les valeurs ci-dessous sortent de `scripts/eval/evaluate.ts`, sans donnée réelle
-(corpus synthétique `corpus/ner-fr.jsonl` et `corpus/ner-en.jsonl`, 150 phrases chacun).
+Rapport reproductible : les comptes viennent de `scripts/eval/evaluate.ts`, sur les corpus synthétiques `corpus/ner-fr.jsonl` et `corpus/ner-en.jsonl`. Les sections historiques portent sur 150 phrases par langue ; la vérification #15/#32 ajoute 10 phrases françaises et 3 anglaises (313 au total).
+
+## Vérification des faux positifs NER (#15, #32) — 25 novembre 2026
+
+Le filtre intervient après localisation, segmentation et dédoublonnage du NER. Il retire les titres seuls pris pour des personnes dans les formules d'appel, les sigles AVS/NIR/IBAN/IDE employés comme libellés de numéro, « IT » dans une ligne « IT support, … » et « Ingénieur/Ingénieure systèmes » sur une ligne de fonction. Il conserve les raisons sociales plus longues et les titres suivis d'un nom. Un sigle suivi de deux-points n'est pas exclu à lui seul : il faut un contexte « numéro » ou un début de ligne suivi d'une valeur d'identifiant plausible.
+
+Mesure avec `scripts/eval/evaluate.ts`, Node 26.13.1, Apple M5 (10 cœurs), modèles q8 locaux `Xenova/camembert-ner` et `Xenova/distilbert-base-multilingual-cased-ner-hrl`, backend CPU. Aucun fichier de modèle ni paquet téléchargé. Les 313 phrases sont **identiques avant/après**, y compris les nouveaux cas négatifs et les contre-exemples d'organisations. La mesure avant utilise un hook Node temporaire `registerHooks` qui remplace uniquement `return filterContextualFalsePositives(text, dedupeSpans(all));` par `return dedupeSpans(all);` dans le chargement de `src/ner/postprocess.ts` ; ni le corpus, ni les autres sources ne changent.
+
+CamemBERT, toutes catégories, correspondance par recouvrement (TP/FP/FN) :
+
+| Configuration | Langue | Avant | Après |
+|---|---|---:|---:|
+| NER seul | fr | 162 / 18 / 23 | 162 / 11 / 23 |
+| Packs + NER | fr | 166 / 16 / 19 | 166 / 9 / 19 |
+| NER seul | en | 148 / 18 / 34 | 148 / 17 / 34 |
+| Packs + NER | en | 156 / 15 / 26 | 156 / 14 / 26 |
+
+Le filtre retire 8 faux positifs dans chacune des configurations avec NER (7 en français, 1 en anglais). Aucun compte TP ou FN ne change, pour aucune catégorie, en exact ou par recouvrement. Les comptes des packs seuls sont identiques. Avec DistilBERT, tous les comptes avant/après sont identiques dans les trois configurations. Ces petits corpus ne garantissent pas l'absence de régression sur d'autres textes.
+
+Les tests unitaires couvrent les sorties NER fragmentées ou entières, les espaces insécables, CRLF, emoji et la segmentation. Un test facultatif charge le CamemBERT local et vérifie le fil synthétique `courriels-migration.md` en entier : la fonction « Ingénieure systèmes » reste lisible et « HexaTech Conseil SAS » reste une organisation. Il vérifie aussi les formules d'appel, le libellé AVS, la signature Riverside et une société fictive contenant « Ingénieur ».
+
+**Reste de #32 :** les noms de salle (« Rhône »), les repères de bâtiment (« B »), les unités RH et les mauvaises catégories d'établissements restent proposés par le modèle. Aucun filtre global de lieux ou de sigles de service n'est ajouté : il pourrait conserver en clair de véritables lieux ou organisations. Les cas synthétiques `fr-159-ner-context` et `fr-160-ner-context` documentent respectivement le faux positif de salle et la confusion organisation/lieu de « Banque Cantonale fictive » ; ces erreurs restent dans les comptes. #32 reste donc partiellement traité.
+
+Pour reproduire la mesure après :
+
+```bash
+node scripts/eval/evaluate.ts --model Xenova/camembert-ner --models models --json /tmp/camembert-apres.json
+node scripts/eval/evaluate.ts --model Xenova/distilbert-base-multilingual-cased-ner-hrl --models models --json /tmp/distilbert-apres.json
+```
 
 ## Vérification du correctif #20 — 19 novembre 2026
 
@@ -62,7 +89,7 @@ ONNXRUNTIME_NODE_INSTALL=skip npm ci
 node scripts/eval/evaluate.ts --errors 40 --json /tmp/eval.json
 ```
 
-Options : `--models <dossier>` (défaut : `models/`, puis `/mnt/user-data/uploads/lessive/models/`), `--json <fichier>`
+Options : `--model <identifiant>` (défaut : DistilBERT multilingue), `--models <dossier>` (défaut : `models/`, puis `/mnt/user-data/uploads/lessive/models/`), `--json <fichier>`
 (comptes bruts, minutes de chargement, exemples d'erreurs), `--errors <n>` (liste d'exemples d'erreurs).
 Node 26 exécute le TypeScript directement : aucune option ni dépendance n'est nécessaire (`erasableSyntaxOnly`
 dans `tsconfig.json` garantit que le moteur n'utilise que de la syntaxe effaçable). La sortie est déterministe
