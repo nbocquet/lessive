@@ -10,6 +10,7 @@
  */
 import type { AnalysisContext, Detection, EntityType } from "../core/types/index.ts";
 import { AbortError } from "../core/recognizers/index.ts";
+import { filterContextualFalsePositives } from "./context-filter.ts";
 
 /** Types d'entités que le NER sait produire. */
 export type NerEntityType = Extract<EntityType, "PERSON" | "ORGANIZATION" | "LOCATION">;
@@ -471,7 +472,7 @@ export async function recognizeSegments(
     await yieldToEventLoop();
   }
   if (signal?.aborted) throw new AbortError();
-  return dedupeSpans(all);
+  return filterContextualFalsePositives(text, dedupeSpans(all));
 }
 
 // ---------------------------------------------------------------------------
