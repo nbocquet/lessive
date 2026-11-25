@@ -1271,6 +1271,179 @@
           "value": "2026-11-21T08:14:02Z"
         }
       ]
+    },
+    {
+      "id": "option-temporelle-inactive",
+      "language": "fr",
+      "text": "mardi prochain entre 14 h et 16 h ; depuis septembre 2022 ; demain matin.",
+      "expect": []
+    },
+    {
+      "id": "option-preserve-dates-absolues",
+      "language": "fr",
+      "text": "Le 12.03.2027 à 14 h, demain matin.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "12.03.2027"
+        }
+      ]
+    },
+    {
+      "id": "option-heure-h",
+      "language": "fr",
+      "text": "Rendez-vous à 9h30 et à 14 h 05.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "9h30"
+        },
+        {
+          "type": "DATE",
+          "value": "14 h 05"
+        }
+      ],
+      "enableRules": ["dates/fr-time"]
+    },
+    {
+      "id": "option-heure-deux-points",
+      "language": "fr",
+      "text": "Rendez-vous à 14:30.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "14:30"
+        }
+      ],
+      "enableRules": ["dates/fr-time"]
+    },
+    {
+      "id": "option-heure-insecable",
+      "language": "fr",
+      "text": "Rendez-vous à 14\u00a0h\u202f05.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "14\u00a0h\u202f05"
+        }
+      ],
+      "enableRules": ["dates/fr-time"]
+    },
+    {
+      "id": "option-heures-bornes-invalides",
+      "language": "fr",
+      "text": "À 24 h, 25:30 et 14h99, version 1.2.3 et 12.50 CHF.",
+      "expect": [],
+      "enableRules": ["dates/fr-time"]
+    },
+    {
+      "id": "option-intervalle",
+      "language": "fr",
+      "text": "Disponible entre 14 h et 16 h.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "entre 14 h et 16 h"
+        }
+      ],
+      "enableRules": ["dates/fr-time-range", "dates/fr-time"]
+    },
+    {
+      "id": "option-relatif",
+      "language": "fr",
+      "text": "Prévu demain matin ; mardi prochain ; hier soir ; ce matin ; la semaine prochaine.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "demain matin"
+        },
+        {
+          "type": "DATE",
+          "value": "mardi prochain"
+        },
+        {
+          "type": "DATE",
+          "value": "hier soir"
+        },
+        {
+          "type": "DATE",
+          "value": "ce matin"
+        },
+        {
+          "type": "DATE",
+          "value": "la semaine prochaine"
+        }
+      ],
+      "enableRules": ["dates/fr-relative"]
+    },
+    {
+      "id": "option-relatif-intervalle",
+      "language": "fr",
+      "text": "Disponible mardi prochain entre 14 h et 16 h.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "mardi prochain entre 14 h et 16 h"
+        }
+      ],
+      "enableRules": [
+        "dates/fr-relative",
+        "dates/fr-time",
+        "dates/fr-time-range",
+        "dates/fr-relative-time-range"
+      ]
+    },
+    {
+      "id": "option-relatif-heure",
+      "language": "fr",
+      "text": "Disponible demain matin à 9 h 30.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "demain matin à 9 h 30"
+        }
+      ],
+      "enableRules": ["dates/fr-relative", "dates/fr-time", "dates/fr-relative-time"]
+    },
+    {
+      "id": "option-mois-annee-contexte",
+      "language": "fr",
+      "text": "En poste depuis septembre 2022.",
+      "expect": [
+        {
+          "type": "DATE",
+          "value": "septembre 2022"
+        }
+      ],
+      "enableRules": ["dates/fr-month-year"]
+    },
+    {
+      "id": "option-mois-annee-sans-contexte",
+      "language": "fr",
+      "text": "Référence SEPTEMBRE2022 : 42. September 2022.",
+      "expect": [],
+      "enableRules": ["dates/fr-month-year"]
+    },
+    {
+      "id": "option-pas-de-nombres-courants",
+      "language": "fr",
+      "text": "Référence REF_14h, 16 exemplaires, total 14.50 CHF, 2027 pièces.",
+      "expect": [],
+      "enableRules": ["dates/fr-time", "dates/fr-relative", "dates/fr-month-year"]
+    },
+    {
+      "id": "option-pas-de-francais-en-anglais",
+      "language": "en",
+      "text": "demain matin à 14 h",
+      "expect": [],
+      "enableRules": ["dates/fr-time", "dates/fr-relative", "dates/fr-relative-time"]
+    },
+    {
+      "id": "option-relatif-intervalle-bornes",
+      "language": "fr",
+      "enableRules": ["dates/fr-relative-time-range"],
+      "text": "mardi prochain entre 24 h et 16 h ; demain entre 14 h et 29 h.",
+      "expect": []
     }
   ]
 }

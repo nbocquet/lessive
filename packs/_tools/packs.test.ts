@@ -28,7 +28,8 @@
  * Règle : les détections RETENUES produites par les règles de ce pack doivent être
  * exactement `expect` (type + texte), ni plus ni moins. Les détections des autres
  * packs sont ignorées, sauf si elles font disparaître une entité attendue.
- * Un cas négatif s'écrit avec "expect": [].
+ * Un cas négatif s'écrit avec "expect": []. `enableRules` active localement les identifiants
+ * globaux de règles optionnelles pour ce cas uniquement (également pour les tests croisés).
  *
  * 4. Tests croisés (facultatifs). Le contrôle 3 ne voit que les détections du pack testé : un
  *    conflit entre packs lui échappe. Chaque pack peut donc fournir tests/cross.json, et le banc
@@ -80,6 +81,7 @@ function scanDuration(re: RegExp, input: string): number {
 
 interface Case {
   id: string;
+  enableRules?: string[];
   language?: Language;
   text: string;
   expect: Array<{ type: string; value: string }>;
@@ -90,6 +92,26 @@ const packs = dirs.map((dir) => ({ dir, pack: loadPackDir(dir) }));
 const registry = new PackRegistry();
 for (const { pack } of packs) registry.register(pack);
 const analyzer = createAnalyzer(registry.activeRules());
+
+/** Activation locale au cas : les règles optionnelles ne modifient jamais le banc par défaut. */
+const optionalAnalyzers = new Map<string, ReturnType<typeof createAnalyzer>>();
+function analyzerFor(enableRules: readonly string[] = []) {
+  if (enableRules.length === 0) return analyzer;
+  const key = [...enableRules].sort().join(",");
+  let optional = optionalAnalyzers.get(key);
+  if (!optional) {
+    const local = new PackRegistry();
+    for (const { pack } of packs) local.register(pack);
+    for (const globalId of enableRules) {
+      const [packId, ruleId] = globalId.split("/");
+      if (!packId || !ruleId) throw new Error("Identifiant de règle optionnelle invalide.");
+      local.setRuleEnabled(packId, ruleId, true);
+    }
+    optional = createAnalyzer(local.activeRules());
+    optionalAnalyzers.set(key, optional);
+  }
+  return optional;
+}
 
 describe("packs livrés", () => {
   it("se chargent et ont des dépendances résolues", () => {
@@ -156,7 +178,10 @@ describe("packs livrés", () => {
       const { cases } = JSON.parse(readFileSync(casesFile, "utf8")) as { cases: Case[] };
       for (const c of cases) {
         it(`cas ${c.id}`, async () => {
-          const res = await analyzer.analyze(c.text, c.language ? { language: c.language } : {});
+          const res = await analyzerFor(c.enableRules).analyze(
+            c.text,
+            c.language ? { language: c.language } : {},
+          );
           const mine = res.detections
             .filter((d) => d.packId === pack.manifest.id)
             .map((d) => ({ type: d.entityType, value: c.text.slice(d.start, d.end) }));
@@ -172,6 +197,7 @@ describe("packs livrés", () => {
 
 interface CrossCase {
   id: string;
+  enableRules?: string[];
   language?: Language;
   text: string;
   expectAll: Array<{ type: string; value: string }>;
@@ -191,7 +217,10 @@ describe("tests croisés (tous packs actifs, détections retenues exactes)", () 
       });
       for (const c of cases) {
         it(`cas ${c.id}`, async () => {
-          const res = await analyzer.analyze(c.text, c.language ? { language: c.language } : {});
+          const res = await analyzerFor(c.enableRules).analyze(
+            c.text,
+            c.language ? { language: c.language } : {},
+          );
           const all = res.detections.map((d) => ({
             type: d.entityType,
             value: c.text.slice(d.start, d.end),

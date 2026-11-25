@@ -52,6 +52,37 @@
           "value": "test@example.org"
         }
       ]
+    },
+    {
+      "id": "option-temporelle-toutes-regles",
+      "language": "fr",
+      "enableRules": [
+        "dates/fr-time",
+        "dates/fr-time-range",
+        "dates/fr-relative",
+        "dates/fr-relative-time-range",
+        "dates/fr-relative-time",
+        "dates/fr-month-year"
+      ],
+      "text": "Contact : test@example.org, mardi prochain entre 14 h et 16 h ; en poste depuis septembre 2022 ; demain matin. Référence REF-2022, 42 pièces.",
+      "expectAll": [
+        {
+          "type": "EMAIL",
+          "value": "test@example.org"
+        },
+        {
+          "type": "DATE",
+          "value": "mardi prochain entre 14 h et 16 h"
+        },
+        {
+          "type": "DATE",
+          "value": "septembre 2022"
+        },
+        {
+          "type": "DATE",
+          "value": "demain matin"
+        }
+      ]
     }
   ]
 }

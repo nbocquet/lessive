@@ -25,13 +25,27 @@ Dates numériques, littérales et plages de deux jours à mois partagé, en fran
 - Les règles littérales françaises ont `languages: ["fr"]`, les anglaises `["en"]`, les numériques `"any"`.
 - Horodatages : les formes Common Log Format (nginx et accès Apache), erreurs Apache, ISO 8601 avec secondes et syslog traditionnel sont reconnues quelle que soit la langue d'analyse. L'heure, le fuseau fourni et les fractions de seconde prises en charge font partie de la même détection. Les crochets du journal restent hors de celle-ci : `[21/Nov/2026:08:14:02 +0100]` devient `[[DATE]]` avec l'opérateur catégorie. Le score 0,8 fait primer l'horodatage entier sur une date littérale ou numérique qu'il contient. Le CLI conserve les dates par défaut ; `--mask-dates` active leur remplacement.
 
+## Horaires et repères relatifs (option avancée)
+
+Les six règles de `temporal-optional.json` sont **désactivées par défaut**. Dans le navigateur, ouvrez **Réglages → Packs de règles → Dates → Règles du pack** et cochez les règles `fr-time`, `fr-time-range`, `fr-relative`, `fr-relative-time-range`, `fr-relative-time` et `fr-month-year` selon le besoin. Leurs descriptions affichent les formes couvertes et signalent leur caractère optionnel. L’aperçu est recalculé ; relisez-le avant de le valider. La catégorie **Dates** doit également être sélectionnée pour remplacer ces détections. Elles s’appliquent aux deux modes de traitement et restent du type `DATE`.
+
+- `fr-time` : heures 0–23, sous les formes `14 h`, `9h30`, `14 h 05` ou `14:30` ; minutes 00–59. Espaces ordinaires, insécables U+00A0 et fines insécables U+202F.
+- `fr-time-range` : `entre 14 h et 16 h`, introducteurs et bornes compris.
+- `fr-relative` : `aujourd’hui`, `demain`, `hier`, avec `matin`, `soir` ou `après-midi` facultatif ; jour de semaine suivi de `prochain` ou `dernier` ; `ce matin`, `ce soir`, `cette semaine`, `la semaine prochaine` et `la semaine dernière`.
+- `fr-relative-time-range` et `fr-relative-time` réunissent respectivement un de ces repères et un intervalle d’heures pleines en `h` (`entre … et …`), ou une heure (`à …`), dans une seule détection : `mardi prochain entre 14 h et 16 h`, `demain matin à 9 h 30`. Activez-les pour éviter qu’une partie de l’expression reste en clair.
+- `fr-month-year` : mois français complet et année 1900–2099 (`septembre 2022`), seulement près d’un mot de contexte (`depuis`, `en`, `dès`, `avant`, `après`, `jusqu’à`, `jusqu’au`, `date`, `naissance`, fenêtre de cinq mots).
+
+Ces règles ne fonctionnent qu’en analyse française. La réunion d’un repère relatif et d’un intervalle avec minutes ou deux-points n’est pas couverte (les éléments sont détectés séparément). Les formes anglaises, secondes, fuseaux, heures sans `h` ni minutes (`à 14`), intervalles à tiret et expressions libres (`dans trois jours`) ne sont pas couverts par cette option. Un intitulé ou une référence qui ressemble exactement à une heure peut être détecté : corrigez ces cas dans la vérification. Les listes de jours/mois et les motifs ont été écrits pour le projet, sans données ni motifs tiers.
+
+Le CLI ne propose pas encore de réglage par règle : `--mask-dates` conserve son périmètre habituel et n’active pas ces règles optionnelles. Sans activation, les dates absolues et horodatages continuent à être détectés comme auparavant, tandis que les horaires et repères relatifs restent lisibles.
+
 ## Sources des formats de journaux
 
 Les motifs sont écrits pour ce projet à partir des conventions documentées, sans motif tiers repris : [nginx, module de journalisation et `$time_local`](https://nginx.org/en/docs/http/ngx_http_log_module.html), [Apache, journaux d'accès et d'erreurs](https://httpd.apache.org/docs/2.4/logs.html), [RFC 3339 §5.6, profil ISO 8601](https://www.rfc-editor.org/rfc/rfc3339.html#section-5.6), [RFC 3164 §4.1.2, horodatage syslog](https://www.rfc-editor.org/rfc/rfc3164.html#section-4.1.2). Les cas de test sont synthétiques.
 
-## Ce qui n'est pas détecté
+## Ce qui n'est pas détecté par défaut
 
-Heures isolées (`12:30`, `12h30`), versions (`1.2.3`), montants (`12.50`), numéros AVS, IBAN, téléphones, adresses IPv4, références de loi (`art. 12.3`), plages de pages, années seules (`en 2020`), mois et année (`March 1985`), jours de la semaine seuls.
+Horaires et repères relatifs (voir option ci-dessus), versions (`1.2.3`), montants (`12.50`), numéros AVS, IBAN, téléphones, adresses IPv4, références de loi (`art. 12.3`), plages de pages, années seules (`en 2020`), mois et année (`septembre 2022`, `March 1985`), jours de la semaine seuls.
 
 ## Limites connues
 
